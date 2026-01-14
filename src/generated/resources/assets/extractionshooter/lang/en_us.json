@@ -1,0 +1,11 @@
+{
+  "firemode.extractionshooter.auto": "AUTO",
+  "firemode.extractionshooter.burst": "BURST",
+  "firemode.extractionshooter.semi": "SEMI",
+  "item.extractionshooter.m4a1": "M4A1",
+  "itemGroup.extractionshooter": "Extraction Shooter",
+  "key.extractionshooter.reload": "Reload",
+  "key.extractionshooter.switch_mode": "Switch Fire Mode",
+  "message.extractionshooter.firemode_changed": "Fire Mode: %s",
+  "tooltip.extractionshooter.ammo": "Remaining Ammo: %s"
+}

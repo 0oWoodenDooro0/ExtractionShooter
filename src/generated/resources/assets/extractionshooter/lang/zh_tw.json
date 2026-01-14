@@ -1,0 +1,11 @@
+{
+  "firemode.extractionshooter.auto": "自動",
+  "firemode.extractionshooter.burst": "三連發",
+  "firemode.extractionshooter.semi": "半自動",
+  "item.extractionshooter.m4a1": "M4A1",
+  "itemGroup.extractionshooter": "搜打撤行動",
+  "key.extractionshooter.reload": "換彈",
+  "key.extractionshooter.switch_mode": "切換射擊模式",
+  "message.extractionshooter.firemode_changed": "射擊模式: %s",
+  "tooltip.extractionshooter.ammo": "剩餘子彈: %s"
+}
