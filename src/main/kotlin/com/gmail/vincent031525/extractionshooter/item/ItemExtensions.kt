@@ -17,3 +17,17 @@ fun ItemStack.getMagazineData(): MagazineData? {
 fun ItemStack.getMagazineStack(): ItemStack {
     return this.getGunData()?.magazineStack ?: ItemStack.EMPTY
 }
+
+fun ItemStack.nextFireMode(): Int {
+    val data = this.getGunData() ?: return -1
+    val stats = (this.item as GunItem<*>).gunStats
+    val nextFireModeIndex = (data.fireModeIndex + 1) % stats.fireModeCycle.size
+    this.set(ModDataComponents.GUN_DATA, data.copy(fireModeIndex = nextFireModeIndex))
+    return nextFireModeIndex
+}
+
+fun ItemStack.getFireMode(): GunItem.FireMode? {
+    val data = this.getGunData() ?: return null
+    val stats = (this.item as GunItem<*>).gunStats
+    return stats.fireModeCycle[data.fireModeIndex]
+}

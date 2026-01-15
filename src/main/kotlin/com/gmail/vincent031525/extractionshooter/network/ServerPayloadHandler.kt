@@ -1,7 +1,8 @@
 package com.gmail.vincent031525.extractionshooter.network
 
-import com.gmail.vincent031525.extractionshooter.datacomponent.GunData
 import com.gmail.vincent031525.extractionshooter.item.GunItem
+import com.gmail.vincent031525.extractionshooter.item.getFireMode
+import com.gmail.vincent031525.extractionshooter.item.nextFireMode
 import com.gmail.vincent031525.extractionshooter.network.payload.ReloadPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.ShootPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.SwitchModePayload
@@ -22,14 +23,9 @@ object ServerPayloadHandler {
             val currentData = stack.get(ModDataComponents.GUN_DATA)
             if (currentData != null) {
 
-                val newMode = when (currentData.fireMode) {
-                    GunData.FireMode.SEMI -> GunData.FireMode.AUTO
-                    GunData.FireMode.AUTO -> GunData.FireMode.BURST
-                    GunData.FireMode.BURST -> GunData.FireMode.SEMI
-                }
-
-                val newData = currentData.copy(fireMode = newMode)
-                stack.set(ModDataComponents.GUN_DATA, newData)
+                val nextFireModeIndex = stack.nextFireMode()
+                if (nextFireModeIndex == -1) return@enqueueWork
+                val nextFireMode = stack.getFireMode() ?: return@enqueueWork
 
                 player.level().playSound(
                     null,
@@ -41,7 +37,7 @@ object ServerPayloadHandler {
                 )
 
                 player.displayClientMessage(
-                    Component.translatable("message.extractionshooter.firemode_changed", newMode.getDisplayName()),
+                    Component.translatable("message.extractionshooter.firemode_changed", nextFireMode.getDisplayName()),
                     true
                 )
             }

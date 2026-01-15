@@ -24,14 +24,12 @@ object ModItems {
                     10,
                     100.0,
                     1.2f,
-                    0.5f
+                    0.5f,
+                    listOf(GunItem.FireMode.AUTO, GunItem.FireMode.BURST, GunItem.FireMode.SEMI)
                 ), ::M4A1Renderer
             )
         }) { ->
-        Item.Properties().component(
-            ModDataComponents.GUN_DATA,
-            GunData(fireMode = GunData.FireMode.AUTO)
-        )
+        Item.Properties().component(ModDataComponents.GUN_DATA, GunData())
     }
 
     val M4A1_MAGAZINE_ITEM: DeferredItem<MagazineItem> =

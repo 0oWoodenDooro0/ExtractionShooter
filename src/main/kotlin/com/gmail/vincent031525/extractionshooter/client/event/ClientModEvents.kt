@@ -2,8 +2,8 @@ package com.gmail.vincent031525.extractionshooter.client.event
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
 import com.gmail.vincent031525.extractionshooter.client.KeyBindings
-import com.gmail.vincent031525.extractionshooter.datacomponent.GunData
 import com.gmail.vincent031525.extractionshooter.item.GunItem
+import com.gmail.vincent031525.extractionshooter.item.getFireMode
 import com.gmail.vincent031525.extractionshooter.network.payload.ReloadPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.ShootPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.SwitchModePayload
@@ -63,13 +63,14 @@ object ClientGameEvents {
             return
         }
 
-        val data = stack.get(ModDataComponents.GUN_DATA) ?: GunData()
-
-        if (data.fireMode == GunData.FireMode.AUTO || !wasShooting) {
-            ClientPacketDistributor.sendToServer(ShootPayload())
-            applyRecoil(player, item.gunStats)
+        stack.getFireMode()?.let {
+            if (it == GunItem.FireMode.AUTO || !wasShooting) {
+                ClientPacketDistributor.sendToServer(ShootPayload())
+                applyRecoil(player, item.gunStats)
+            }
+            wasShooting = true
         }
-        wasShooting = true
+        wasShooting = false
     }
 
     private fun handleClientBurstRecoil() {

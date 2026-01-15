@@ -47,8 +47,22 @@ class GunItem<T : GeoItemRenderer<*>>(
 ) : Item(
     properties.stacksTo(1).component(
         DataComponents.PIERCING_WEAPON,
-        PiercingWeapon(false, false, Optional.empty(), Optional.empty())
-    ).component(DataComponents.ATTACK_RANGE, AttackRange(0f, 0f, 0f, 0f, 0f, 0f))
+        PiercingWeapon(
+            false,
+            false,
+            Optional.empty(),
+            Optional.empty()
+        )
+    ).component(
+        DataComponents.ATTACK_RANGE, AttackRange(
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f
+        )
+    )
 ),
     GeoItem {
 
@@ -63,12 +77,21 @@ class GunItem<T : GeoItemRenderer<*>>(
         val rps: Int,
         val range: Double,
         val verticalRecoil: Float,
-        val horizontalRecoil: Float
+        val horizontalRecoil: Float,
+        val fireModeCycle: List<FireMode>
     ) {
         val shootTickDelay: Int
             get() = if (rps > 0) (20 / rps).coerceAtLeast(1) else 20
         val animationSpeed: Double
             get() = 20.0 / shootTickDelay.toDouble()
+    }
+
+    enum class FireMode {
+        SEMI, AUTO, BURST;
+
+        fun getDisplayName(): Component {
+            return Component.translatable("firemode.extractionshooter.${name.lowercase()}")
+        }
     }
 
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
@@ -178,7 +201,7 @@ class GunItem<T : GeoItemRenderer<*>>(
             Component.literal("ammoCount ${magazineData.ammoCount}").withStyle(ChatFormatting.GRAY)
         )
         tooltipAdder.accept(
-            Component.literal("FireMode ${data.fireMode.name}")
+            Component.literal("FireMode ${gunStats.fireModeCycle[data.fireModeIndex].name}")
                 .withStyle(ChatFormatting.YELLOW)
         )
         tooltipAdder.accept(
@@ -256,7 +279,7 @@ class GunItem<T : GeoItemRenderer<*>>(
 
         performShoot(level, player, stack)
 
-        val newData = if (gunData.fireMode == GunData.FireMode.BURST) {
+        val newData = if (gunStats.fireModeCycle[gunData.fireModeIndex] == FireMode.BURST) {
             gunData.copy(
                 burstRemaining = 2,
                 burstTickDelay = gunStats.shootTickDelay,
