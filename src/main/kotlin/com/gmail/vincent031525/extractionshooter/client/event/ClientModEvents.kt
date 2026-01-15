@@ -51,7 +51,7 @@ object ClientGameEvents {
         val player = minecraft.player ?: return
         val stack = player.mainHandItem
         val item = stack.item
-        if (item !is GunItem) return
+        if (item !is GunItem<*>) return
 
         if (!minecraft.options.keyAttack.isDown) {
             wasShooting = false
@@ -76,7 +76,7 @@ object ClientGameEvents {
         val minecraft = Minecraft.getInstance()
         val player = minecraft.player ?: return
         val stack = player.mainHandItem
-        val item = stack.item as? GunItem ?: return
+        val item = stack.item as? GunItem<*> ?: return
 
         val data = stack.get(ModDataComponents.GUN_DATA.get()) ?: return
 

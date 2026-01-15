@@ -26,13 +26,25 @@ import net.minecraft.world.item.component.TooltipDisplay
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
+import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.animatable.GeoItem
+import software.bernie.geckolib.animatable.client.GeoRenderProvider
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.animatable.manager.AnimatableManager
+import software.bernie.geckolib.animation.AnimationController
+import software.bernie.geckolib.animation.RawAnimation
+import software.bernie.geckolib.animation.`object`.PlayState
+import software.bernie.geckolib.animation.state.AnimationTest
+import software.bernie.geckolib.renderer.GeoItemRenderer
 import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 import java.util.function.Consumer
 
-abstract class GunItem(properties: Properties) : Item(
+class GunItem<T : GeoItemRenderer<*>>(
+    properties: Properties,
+    val gunStats: GunStats,
+    private val rendererFactory: () -> T
+) : Item(
     properties.stacksTo(1).component(
         DataComponents.PIERCING_WEAPON,
         PiercingWeapon(false, false, Optional.empty(), Optional.empty())
@@ -41,7 +53,6 @@ abstract class GunItem(properties: Properties) : Item(
     GeoItem {
 
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
-    abstract val gunStats: GunStats
 
     init {
         GeoItem.registerSyncedAnimatable(this)
@@ -58,6 +69,30 @@ abstract class GunItem(properties: Properties) : Item(
             get() = if (rps > 0) (20 / rps).coerceAtLeast(1) else 20
         val animationSpeed: Double
             get() = 20.0 / shootTickDelay.toDouble()
+    }
+
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
+        return cache
+    }
+
+    override fun createGeoRenderer(consumer: Consumer<GeoRenderProvider>) {
+        consumer.accept(object : GeoRenderProvider {
+            private var renderer: T? = null
+
+            override fun getGeoItemRenderer(): GeoItemRenderer<*> {
+                return renderer ?: rendererFactory()
+            }
+        })
+    }
+
+    override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar) {
+        val controller =
+            AnimationController("shoot_controller", 0) { state: AnimationTest<GeoAnimatable> -> PlayState.STOP }
+
+        controller.animationSpeed = gunStats.animationSpeed
+        controller.triggerableAnim("fire", RawAnimation.begin().thenPlay("fire"))
+
+        controllers.add(controller)
     }
 
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResult {
@@ -149,10 +184,6 @@ abstract class GunItem(properties: Properties) : Item(
         tooltipAdder.accept(
             Component.literal("item ${data.magazineStack.item.name}").withStyle(ChatFormatting.YELLOW)
         )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return cache
     }
 
     fun canShoot(level: Level, stack: ItemStack): Boolean {

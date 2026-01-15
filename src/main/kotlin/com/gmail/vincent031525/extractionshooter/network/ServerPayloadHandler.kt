@@ -54,7 +54,7 @@ object ServerPayloadHandler {
             val stack = player.mainHandItem
             val item = stack.item
 
-            if (item is GunItem) {
+            if (item is GunItem<*>) {
                 item.tryShoot(player.level(), player, stack)
             }
         }
@@ -64,7 +64,7 @@ object ServerPayloadHandler {
         context.enqueueWork {
             val player = context.player() as? ServerPlayer ?: return@enqueueWork
             val gunStack = player.mainHandItem
-            val gunItem = gunStack.item as? GunItem ?: return@enqueueWork
+            val gunItem = gunStack.item as? GunItem<*> ?: return@enqueueWork
 
             val magazineSlot = (0 until player.inventory.containerSize).find { i ->
                 val magazineStack = player.inventory.getItem(i)

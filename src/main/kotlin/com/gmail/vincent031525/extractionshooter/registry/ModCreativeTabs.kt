@@ -17,8 +17,9 @@ object ModCreativeTabs {
             .title(Component.translatable("itemGroup." + Extractionshooter.ID))
             .icon { ItemStack(ModItems.M4A1_ITEM.get()) }
             .displayItems { parameters, output ->
-                output.accept(ModItems.M4A1_ITEM.get())
-                output.accept(ModItems.M4A1_MAGAZINE_ITEM.get())
+                output.accept(ModItems.M4A1_ITEM)
+                output.accept(ModItems.M4A1_MAGAZINE_ITEM)
+                output.accept(ModItems.AMMO_ITEM)
             }
             .build()
     }
