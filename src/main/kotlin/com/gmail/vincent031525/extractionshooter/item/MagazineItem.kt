@@ -55,37 +55,61 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
         player: Player,
         access: SlotAccess
     ): Boolean {
-        if (action != ClickAction.SECONDARY || other.isEmpty) return false
+        if (action == ClickAction.SECONDARY && !other.isEmpty) {
+            val data = getMagazineData(stack) ?: return false
 
-        val data = getMagazineData(stack) ?: return false
+            val currentCount = data.ammoCount
+            val maxCount = getMagazineStats().maxAmmo
+            val spaceLeft = maxCount - currentCount
 
-        val currentCount = data.ammoCount
-        val maxCount = getMagazineStats().maxAmmo
-        val spaceLeft = maxCount - currentCount
+            if (data.ammoItem != Items.AIR && data.ammoItem != other.item) return false
 
-        if (data.ammoItem != Items.AIR && data.ammoItem != other.item) return false
+            if (spaceLeft > 0) {
+                val amountToAdd = minOf(spaceLeft, other.count)
 
-        if (spaceLeft > 0) {
-            val amountToAdd = 1
+                if (other.count >= amountToAdd) {
+                    stack.set(
+                        ModDataComponents.MAGAZINE_DATA,
+                        data.copy(
+                            ammoCount = currentCount + amountToAdd,
+                            ammoItem = if (currentCount == 0) other.item else data.ammoItem
+                        )
+                    )
 
-            if (other.count >= amountToAdd) {
+                    other.shrink(amountToAdd)
+
+                    player.level().playSound(
+                        null,
+                        player.blockPosition(),
+                        SoundEvents.ARMOR_EQUIP_GENERIC.value(),
+                        SoundSource.PLAYERS,
+                        1.0f, 1.5f
+                    )
+                    return true
+                }
+            }
+        }
+
+        if (action == ClickAction.SECONDARY && other.isEmpty) {
+            val data = getMagazineData(stack) ?: return false
+            val ammoItem = data.ammoItem
+
+            if (data.ammoCount > 0 && ammoItem is AmmoItem) {
+                val amountToRemove = minOf(data.ammoCount, 64)
+                val ammoStack = ItemStack(ammoItem, amountToRemove)
+
+                val newCount = data.ammoCount - amountToRemove
                 stack.set(
-                    ModDataComponents.MAGAZINE_DATA,
-                    data.copy(
-                        ammoCount = currentCount + amountToAdd,
-                        ammoItem = if (currentCount == 0) other.item else data.ammoItem
+                    ModDataComponents.MAGAZINE_DATA, data.copy(
+                        ammoCount = newCount,
+                        ammoItem = if (newCount <= 0) Items.AIR else ammoItem
                     )
                 )
 
-                other.shrink(amountToAdd)
+                access.set(ammoStack)
 
-                player.level().playSound(
-                    null,
-                    player.blockPosition(),
-                    SoundEvents.ARMOR_EQUIP_GENERIC.value(),
-                    SoundSource.PLAYERS,
-                    1.0f, 1.5f
-                )
+                player.level()
+                    .playSound(null, player.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.2f)
                 return true
             }
         }
