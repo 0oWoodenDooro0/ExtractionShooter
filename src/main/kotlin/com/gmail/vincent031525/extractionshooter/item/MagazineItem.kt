@@ -1,7 +1,11 @@
 package com.gmail.vincent031525.extractionshooter.item
 
+import com.gmail.vincent031525.extractionshooter.datacomponent.MagazineData
+import com.gmail.vincent031525.extractionshooter.datamap.MagazineStats
 import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
+import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import net.minecraft.ChatFormatting
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -15,9 +19,14 @@ import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.component.TooltipDisplay
 import java.util.function.Consumer
 
-class MagazineItem(properties: Properties, val magazineStats: MagazineStats) : Item(properties.stacksTo(1)) {
+class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
 
-    data class MagazineStats(val maxAmmo: Int = 30, val reloadTick: Int = 40)
+    companion object {
+
+        fun getMagazineData(stack: ItemStack): MagazineData? {
+            return stack.get(ModDataComponents.MAGAZINE_DATA)
+        }
+    }
 
     @Deprecated("Deprecated in Java")
     override fun appendHoverText(
@@ -43,10 +52,10 @@ class MagazineItem(properties: Properties, val magazineStats: MagazineStats) : I
     ): Boolean {
         if (action != ClickAction.SECONDARY || other.isEmpty) return false
 
-        val data = stack.getMagazineData() ?: return false
+        val data = getMagazineData(stack) ?: return false
 
         val currentCount = data.ammoCount
-        val maxCount = magazineStats.maxAmmo
+        val maxCount = getMagazineStats().maxAmmo
         val spaceLeft = maxCount - currentCount
 
         if (spaceLeft > 0) {
@@ -70,4 +79,8 @@ class MagazineItem(properties: Properties, val magazineStats: MagazineStats) : I
 
         return false
     }
+
+    fun getMagazineStats(): MagazineStats =
+        BuiltInRegistries.ITEM.wrapAsHolder(this).getData(ModDataMaps.MAGAZINE_STATS)!!
+
 }

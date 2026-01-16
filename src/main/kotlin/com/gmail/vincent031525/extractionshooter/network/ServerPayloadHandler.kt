@@ -1,8 +1,6 @@
 package com.gmail.vincent031525.extractionshooter.network
 
 import com.gmail.vincent031525.extractionshooter.item.GunItem
-import com.gmail.vincent031525.extractionshooter.item.getFireMode
-import com.gmail.vincent031525.extractionshooter.item.nextFireMode
 import com.gmail.vincent031525.extractionshooter.network.payload.ReloadPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.ShootPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.SwitchModePayload
@@ -23,9 +21,9 @@ object ServerPayloadHandler {
             val currentData = stack.get(ModDataComponents.GUN_DATA)
             if (currentData != null) {
 
-                val nextFireModeIndex = stack.nextFireMode()
+                val nextFireModeIndex = GunItem.nextFireMode(stack)
                 if (nextFireModeIndex == -1) return@enqueueWork
-                val nextFireMode = stack.getFireMode() ?: return@enqueueWork
+                val nextFireMode = GunItem.getFireMode(stack) ?: return@enqueueWork
 
                 player.level().playSound(
                     null,

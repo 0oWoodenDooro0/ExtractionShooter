@@ -2,8 +2,8 @@ package com.gmail.vincent031525.extractionshooter.client.event
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
 import com.gmail.vincent031525.extractionshooter.client.KeyBindings
+import com.gmail.vincent031525.extractionshooter.datamap.GunStats
 import com.gmail.vincent031525.extractionshooter.item.GunItem
-import com.gmail.vincent031525.extractionshooter.item.getFireMode
 import com.gmail.vincent031525.extractionshooter.network.payload.ReloadPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.ShootPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.SwitchModePayload
@@ -63,14 +63,13 @@ object ClientGameEvents {
             return
         }
 
-        stack.getFireMode()?.let {
-            if (it == GunItem.FireMode.AUTO || !wasShooting) {
+        GunItem.getFireMode(stack)?.let {
+            if (it == GunStats.FireMode.AUTO || !wasShooting) {
                 ClientPacketDistributor.sendToServer(ShootPayload())
-                applyRecoil(player, item.gunStats)
+                applyRecoil(player, item.getGunStats())
             }
             wasShooting = true
         }
-        wasShooting = false
     }
 
     private fun handleClientBurstRecoil() {
@@ -82,11 +81,11 @@ object ClientGameEvents {
         val data = stack.get(ModDataComponents.GUN_DATA.get()) ?: return
 
         if (data.burstRemaining > 0 && data.burstTickDelay <= 0) {
-            applyRecoil(player, item.gunStats)
+            applyRecoil(player, item.getGunStats())
         }
     }
 
-    private fun applyRecoil(player: Player, stats: GunItem.GunStats) {
+    private fun applyRecoil(player: Player, stats: GunStats) {
 
         val randomHorizontal = (Math.random().toFloat() * 2 - 1) * stats.horizontalRecoil
         player.xRot -= stats.verticalRecoil

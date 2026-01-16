@@ -2,10 +2,13 @@ package com.gmail.vincent031525.extractionshooter.item
 
 import com.gmail.vincent031525.extractionshooter.datacomponent.GunData
 import com.gmail.vincent031525.extractionshooter.datacomponent.MagazineData
+import com.gmail.vincent031525.extractionshooter.datamap.GunStats
 import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
+import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
@@ -42,7 +45,6 @@ import java.util.function.Consumer
 
 class GunItem<T : GeoItemRenderer<*>>(
     properties: Properties,
-    val gunStats: GunStats,
     private val rendererFactory: () -> T
 ) : Item(
     properties.stacksTo(1).component(
@@ -68,30 +70,33 @@ class GunItem<T : GeoItemRenderer<*>>(
 
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
+    companion object {
+
+        fun getGunData(stack: ItemStack): GunData? {
+            return stack.get(ModDataComponents.GUN_DATA)
+        }
+
+        fun getMagazineStack(stack: ItemStack): ItemStack {
+            return getGunData(stack)?.magazineStack ?: ItemStack.EMPTY
+        }
+
+        fun getFireMode(stack: ItemStack): GunStats.FireMode? {
+            val data = getGunData(stack) ?: return null
+            val stats = (stack.item as GunItem<*>).getGunStats()
+            return stats.fireModeCycle[data.fireModeIndex]
+        }
+
+        fun nextFireMode(stack: ItemStack): Int {
+            val data = getGunData(stack) ?: return -1
+            val stats = (stack.item as GunItem<*>).getGunStats()
+            val nextFireModeIndex = (data.fireModeIndex + 1) % stats.fireModeCycle.size
+            stack.set(ModDataComponents.GUN_DATA, data.copy(fireModeIndex = nextFireModeIndex))
+            return nextFireModeIndex
+        }
+    }
+
     init {
         GeoItem.registerSyncedAnimatable(this)
-    }
-
-    data class GunStats(
-        val damage: Float,
-        val rps: Int,
-        val range: Double,
-        val verticalRecoil: Float,
-        val horizontalRecoil: Float,
-        val fireModeCycle: List<FireMode>
-    ) {
-        val shootTickDelay: Int
-            get() = if (rps > 0) (20 / rps).coerceAtLeast(1) else 20
-        val animationSpeed: Double
-            get() = 20.0 / shootTickDelay.toDouble()
-    }
-
-    enum class FireMode {
-        SEMI, AUTO, BURST;
-
-        fun getDisplayName(): Component {
-            return Component.translatable("firemode.extractionshooter.${name.lowercase()}")
-        }
     }
 
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
@@ -112,7 +117,7 @@ class GunItem<T : GeoItemRenderer<*>>(
         val controller =
             AnimationController("shoot_controller", 0) { state: AnimationTest<GeoAnimatable> -> PlayState.STOP }
 
-        controller.animationSpeed = gunStats.animationSpeed
+        controller.animationSpeed = getGunStats().animationSpeed
         controller.triggerableAnim("fire", RawAnimation.begin().thenPlay("fire"))
 
         controllers.add(controller)
@@ -164,8 +169,8 @@ class GunItem<T : GeoItemRenderer<*>>(
 
         if (data.burstRemaining > 0) {
             if (data.burstTickDelay <= 0) {
-                val magazineData = stack.getMagazineData() ?: return
-                val magazineStack = stack.getMagazineStack()
+                val magazineStack = getMagazineStack(stack)
+                val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return
                 if (magazineData.ammoCount > 0) {
                     performShoot(level, entity, stack)
                     magazineStack.set(
@@ -175,7 +180,7 @@ class GunItem<T : GeoItemRenderer<*>>(
                     stack.set(
                         ModDataComponents.GUN_DATA, data.copy(
                             burstRemaining = data.burstRemaining - 1,
-                            burstTickDelay = gunStats.shootTickDelay
+                            burstTickDelay = getGunStats().shootTickDelay
                         )
                     )
                 } else {
@@ -195,13 +200,13 @@ class GunItem<T : GeoItemRenderer<*>>(
         tooltipAdder: Consumer<Component>,
         flag: TooltipFlag
     ) {
-        val data = stack.getGunData() ?: GunData()
-        val magazineData = stack.getMagazineData() ?: MagazineData()
+        val data = getGunData(stack) ?: GunData()
+        val magazineData = MagazineItem.getMagazineData(getMagazineStack(stack)) ?: MagazineData()
         tooltipAdder.accept(
             Component.literal("ammoCount ${magazineData.ammoCount}").withStyle(ChatFormatting.GRAY)
         )
         tooltipAdder.accept(
-            Component.literal("FireMode ${gunStats.fireModeCycle[data.fireModeIndex].name}")
+            Component.literal("FireMode ${getGunStats().fireModeCycle[data.fireModeIndex].name}")
                 .withStyle(ChatFormatting.YELLOW)
         )
         tooltipAdder.accept(
@@ -209,9 +214,11 @@ class GunItem<T : GeoItemRenderer<*>>(
         )
     }
 
+    fun getGunStats(): GunStats = BuiltInRegistries.ITEM.wrapAsHolder(this).getData(ModDataMaps.GUN_STATS)!!
+
     fun canShoot(level: Level, stack: ItemStack): Boolean {
-        val gunData = stack.getGunData() ?: return false
-        val magazineData = stack.getMagazineData() ?: return false
+        val gunData = getGunData(stack) ?: return false
+        val magazineData = MagazineItem.getMagazineData(getMagazineStack(stack)) ?: return false
         if (level.gameTime < gunData.nextAttackTick) return false
         if (magazineData.ammoCount <= 0) return false
         return true
@@ -232,7 +239,7 @@ class GunItem<T : GeoItemRenderer<*>>(
 
         val eyePos = player.eyePosition
         val lookVec = player.lookAngle
-        val endPos = eyePos.add(lookVec.scale(gunStats.range))
+        val endPos = eyePos.add(lookVec.scale(getGunStats().range))
         val traceBox = AABB(eyePos, endPos)
 
         val entities = level.getEntities(player, traceBox) { entity ->
@@ -243,7 +250,7 @@ class GunItem<T : GeoItemRenderer<*>>(
             val entityBox = entity.boundingBox
             if (entityBox.clip(eyePos, endPos).isPresent) {
                 entity.invulnerableTime = 0
-                entity.hurtServer(level, player.damageSources().playerAttack(player), gunStats.damage)
+                entity.hurtServer(level, player.damageSources().playerAttack(player), getGunStats().damage)
 
                 level.sendParticles(
                     net.minecraft.core.particles.ParticleTypes.CRIT,
@@ -256,9 +263,9 @@ class GunItem<T : GeoItemRenderer<*>>(
 
     fun tryShoot(level: ServerLevel, player: Player, stack: ItemStack) {
 
-        val gunData = stack.getGunData() ?: return
-        val magazineStack = stack.getMagazineStack()
-        val magazineData = stack.getMagazineData() ?: return
+        val gunData = getGunData(stack) ?: return
+        val magazineStack = getMagazineStack(stack)
+        val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return
 
         if (level.gameTime < gunData.nextAttackTick) return
 
@@ -279,7 +286,8 @@ class GunItem<T : GeoItemRenderer<*>>(
 
         performShoot(level, player, stack)
 
-        val newData = if (gunStats.fireModeCycle[gunData.fireModeIndex] == FireMode.BURST) {
+        val gunStats = getGunStats()
+        val newData = if (gunStats.fireModeCycle[gunData.fireModeIndex] == GunStats.FireMode.BURST) {
             gunData.copy(
                 burstRemaining = 2,
                 burstTickDelay = gunStats.shootTickDelay,
@@ -296,9 +304,9 @@ class GunItem<T : GeoItemRenderer<*>>(
     }
 
     fun unload(player: Player, stack: ItemStack) {
-        val currentData = stack.getGunData() ?: return
-        val magazineStack = stack.getMagazineStack()
-        val magazineData = stack.getMagazineData() ?: return
+        val currentData = getGunData(stack) ?: return
+        val magazineStack = getMagazineStack(stack)
+        val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return
         if (magazineStack.isEmpty) return
 
         magazineStack[ModDataComponents.MAGAZINE_DATA] = MagazineData(ammoCount = magazineData.ammoCount)
@@ -311,9 +319,9 @@ class GunItem<T : GeoItemRenderer<*>>(
     }
 
     fun reload(player: Player, gunStack: ItemStack, magSlot: Int) {
-        val gunData = gunStack.getGunData() ?: return
+        val gunData = getGunData(gunStack) ?: return
         val magazineStack = player.inventory.getItem(magSlot)
-        val magazineStats = (magazineStack.item as MagazineItem).magazineStats
+        val magazineStats = (magazineStack.item as MagazineItem).getMagazineStats()
 
         unload(player, gunStack)
 

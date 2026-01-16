@@ -1,0 +1,9 @@
+{
+  "replace": true,
+  "values": {
+    "extractionshooter:m4a1_magazine": {
+      "maxAmmo": 30,
+      "reloadTick": 40
+    }
+  }
+}

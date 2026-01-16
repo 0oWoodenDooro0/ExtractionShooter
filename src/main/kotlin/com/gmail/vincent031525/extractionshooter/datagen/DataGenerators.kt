@@ -1,8 +1,6 @@
 package com.gmail.vincent031525.extractionshooter.datagen
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
-import net.minecraft.data.DataGenerator
-import net.minecraft.data.PackOutput
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -13,8 +11,9 @@ object DataGenerators {
 
     @SubscribeEvent
     fun gatherData(event: GatherDataEvent.Client) {
-        val generator: DataGenerator = event.generator
-        val packOutput: PackOutput = generator.packOutput
+        val generator = event.generator
+        val packOutput = generator.packOutput
+        val lookupProvider = event.lookupProvider
 
 //        generator.addProvider(
 //            true,
@@ -28,6 +27,11 @@ object DataGenerators {
         generator.addProvider(
             true,
             ModLanguageProviderZhTw(packOutput)
+        )
+
+        generator.addProvider(
+            true,
+            ModDataMapProvider(packOutput, lookupProvider)
         )
     }
 }

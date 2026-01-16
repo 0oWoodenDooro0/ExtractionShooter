@@ -1,0 +1,17 @@
+{
+  "replace": true,
+  "values": {
+    "extractionshooter:m4a1": {
+      "damage": 5.0,
+      "fireModeCycle": [
+        "auto",
+        "burst",
+        "semi"
+      ],
+      "horizontalRecoil": 0.5,
+      "range": 100.0,
+      "rps": 10,
+      "verticalRecoil": 1.2
+    }
+  }
+}
