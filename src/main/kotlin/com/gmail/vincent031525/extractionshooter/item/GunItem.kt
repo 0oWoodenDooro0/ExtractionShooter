@@ -222,6 +222,11 @@ class GunItem<T : GeoItemRenderer<*>>(
     }
 
     private fun performShoot(level: ServerLevel, player: Player, stack: ItemStack) {
+        val magazineStack = getMagazineStack(stack)
+        val ammoItem = MagazineItem.getAmmoItem(magazineStack)
+        if (ammoItem !is AmmoItem) return
+        val ammoStats = ammoItem.getAmmoStats()
+
         triggerAnim(player, GeoItem.getOrAssignId(stack, level), "shoot_controller", "fire")
 
         val pitch = 1.9f + level.random.nextFloat() * 0.2f
@@ -247,7 +252,7 @@ class GunItem<T : GeoItemRenderer<*>>(
             val entityBox = entity.boundingBox
             if (entityBox.clip(eyePos, endPos).isPresent) {
                 entity.invulnerableTime = 0
-                entity.hurtServer(level, player.damageSources().playerAttack(player), getGunStats().damage)
+                entity.hurtServer(level, player.damageSources().playerAttack(player), ammoStats.damage)
 
                 level.sendParticles(
                     net.minecraft.core.particles.ParticleTypes.CRIT,

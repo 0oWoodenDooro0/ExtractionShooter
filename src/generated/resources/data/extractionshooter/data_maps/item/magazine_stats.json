@@ -6,11 +6,11 @@
       "reloadTick": 20
     },
     "extractionshooter:mag_45": {
-      "maxAmmo": 30,
+      "maxAmmo": 45,
       "reloadTick": 32
     },
     "extractionshooter:mag_60": {
-      "maxAmmo": 30,
+      "maxAmmo": 60,
       "reloadTick": 40
     }
   }

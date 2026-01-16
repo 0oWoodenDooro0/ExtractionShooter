@@ -18,12 +18,11 @@ class ModDataMapProvider(output: PackOutput, lookupProvider: CompletableFuture<H
             .replace(true)
             .add(
                 ModItems.M4A1_ITEM, GunStats(
-                    5.0f,
                     10,
                     100.0,
                     1.2f,
                     0.5f,
-                    listOf(GunStats.FireMode.AUTO, GunStats.FireMode.BURST, GunStats.FireMode.SEMI)
+                    listOf(GunStats.FireMode.AUTO, GunStats.FireMode.SEMI)
                 ), false
             )
         this.builder(ModDataMaps.MAGAZINE_STATS)
@@ -35,16 +34,16 @@ class ModDataMapProvider(output: PackOutput, lookupProvider: CompletableFuture<H
             )
             .add(
                 ModItems.MAG_45_ITEM,
-                MagazineStats(30, 32),
+                MagazineStats(45, 32),
                 false
             )
             .add(
                 ModItems.MAG_60_ITEM,
-                MagazineStats(30, 40),
+                MagazineStats(60, 40),
                 false
             )
         this.builder(ModDataMaps.AMMO_STATS)
             .replace(true)
-            .add(ModItems.AMMO_556_ITEM, AmmoStats(5), false)
+            .add(ModItems.AMMO_556_ITEM, AmmoStats(5f), false)
     }
 }

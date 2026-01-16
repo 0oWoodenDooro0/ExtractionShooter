@@ -4,7 +4,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.StringRepresentable
 
 data class GunStats(
-    val damage: Float,
     val rps: Int,
     val range: Double,
     val verticalRecoil: Float,
@@ -15,7 +14,6 @@ data class GunStats(
         val CODEC: com.mojang.serialization.Codec<GunStats> =
             com.mojang.serialization.codecs.RecordCodecBuilder.create { instance ->
                 instance.group(
-                    com.mojang.serialization.Codec.FLOAT.fieldOf("damage").forGetter { it.damage },
                     com.mojang.serialization.Codec.INT.fieldOf("rps").forGetter { it.rps },
                     com.mojang.serialization.Codec.DOUBLE.fieldOf("range").forGetter { it.range },
                     com.mojang.serialization.Codec.FLOAT.fieldOf("verticalRecoil").forGetter { it.verticalRecoil },
