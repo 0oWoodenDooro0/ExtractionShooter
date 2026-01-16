@@ -20,13 +20,27 @@ object ModItems {
         Item.Properties().component(ModDataComponents.GUN_DATA, GunData())
     }
 
-    val M4A1_MAGAZINE_ITEM: DeferredItem<MagazineItem> =
+    val MAG_30_ITEM: DeferredItem<MagazineItem> =
         ITEMS.registerItem(
-            "m4a1_magazine",
+            "mag_30",
             { properties -> MagazineItem(properties) }) { ->
             Item.Properties().component(ModDataComponents.MAGAZINE_DATA, MagazineData())
         }
 
-    val AMMO_ITEM: DeferredItem<AmmoItem> =
-        ITEMS.registerItem("ammo") { properties -> AmmoItem(properties) }
+    val MAG_45_ITEM: DeferredItem<MagazineItem> =
+        ITEMS.registerItem(
+            "mag_45",
+            { properties -> MagazineItem(properties) }) { ->
+            Item.Properties().component(ModDataComponents.MAGAZINE_DATA, MagazineData())
+        }
+
+    val MAG_60_ITEM: DeferredItem<MagazineItem> =
+        ITEMS.registerItem(
+            "mag_60",
+            { properties -> MagazineItem(properties) }) { ->
+            Item.Properties().component(ModDataComponents.MAGAZINE_DATA, MagazineData())
+        }
+
+    val AMMO_556_ITEM: DeferredItem<AmmoItem> =
+        ITEMS.registerItem("ammo_556") { properties -> AmmoItem(properties) }
 }

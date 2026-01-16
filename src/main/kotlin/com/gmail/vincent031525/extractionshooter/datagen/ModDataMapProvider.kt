@@ -29,12 +29,22 @@ class ModDataMapProvider(output: PackOutput, lookupProvider: CompletableFuture<H
         this.builder(ModDataMaps.MAGAZINE_STATS)
             .replace(true)
             .add(
-                ModItems.M4A1_MAGAZINE_ITEM,
+                ModItems.MAG_30_ITEM,
+                MagazineStats(30, 20),
+                false
+            )
+            .add(
+                ModItems.MAG_45_ITEM,
+                MagazineStats(30, 32),
+                false
+            )
+            .add(
+                ModItems.MAG_60_ITEM,
                 MagazineStats(30, 40),
                 false
             )
         this.builder(ModDataMaps.AMMO_STATS)
             .replace(true)
-            .add(ModItems.AMMO_ITEM, AmmoStats(5), false)
+            .add(ModItems.AMMO_556_ITEM, AmmoStats(5), false)
     }
 }

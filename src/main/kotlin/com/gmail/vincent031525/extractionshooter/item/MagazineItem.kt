@@ -15,6 +15,7 @@ import net.minecraft.world.inventory.ClickAction
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.component.TooltipDisplay
 import java.util.function.Consumer
@@ -25,6 +26,10 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
 
         fun getMagazineData(stack: ItemStack): MagazineData? {
             return stack.get(ModDataComponents.MAGAZINE_DATA)
+        }
+
+        fun getAmmoItem(stack: ItemStack): Item {
+            return getMagazineData(stack)?.ammoItem ?: Items.AIR
         }
     }
 
@@ -58,11 +63,19 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
         val maxCount = getMagazineStats().maxAmmo
         val spaceLeft = maxCount - currentCount
 
+        if (data.ammoItem != Items.AIR && data.ammoItem != other.item) return false
+
         if (spaceLeft > 0) {
             val amountToAdd = 1
 
             if (other.count >= amountToAdd) {
-                stack.set(ModDataComponents.MAGAZINE_DATA, data.copy(ammoCount = currentCount + amountToAdd))
+                stack.set(
+                    ModDataComponents.MAGAZINE_DATA,
+                    data.copy(
+                        ammoCount = currentCount + amountToAdd,
+                        ammoItem = if (currentCount == 0) other.item else data.ammoItem
+                    )
+                )
 
                 other.shrink(amountToAdd)
 

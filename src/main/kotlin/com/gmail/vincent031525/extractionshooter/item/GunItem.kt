@@ -19,10 +19,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.ItemUseAnimation
-import net.minecraft.world.item.TooltipFlag
+import net.minecraft.world.item.*
 import net.minecraft.world.item.component.AttackRange
 import net.minecraft.world.item.component.PiercingWeapon
 import net.minecraft.world.item.component.TooltipDisplay
@@ -299,7 +296,13 @@ class GunItem<T : GeoItemRenderer<*>>(
             )
         }
 
-        magazineStack.set(ModDataComponents.MAGAZINE_DATA, magazineData.copy(ammoCount = magazineData.ammoCount - 1))
+        magazineStack.set(
+            ModDataComponents.MAGAZINE_DATA,
+            magazineData.copy(
+                ammoCount = magazineData.ammoCount - 1,
+                ammoItem = if (magazineData.ammoCount - 1 == 0) Items.AIR else magazineData.ammoItem
+            )
+        )
         stack.set(ModDataComponents.GUN_DATA, newData)
     }
 

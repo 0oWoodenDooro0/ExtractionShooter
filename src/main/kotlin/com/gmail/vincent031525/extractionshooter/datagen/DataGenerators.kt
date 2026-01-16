@@ -15,11 +15,11 @@ object DataGenerators {
         val packOutput = generator.packOutput
         val lookupProvider = event.lookupProvider
 
-//        generator.addProvider(
-//            true,
-//            ModItemModelProvider(packOutput)
-//        )
-//
+        generator.addProvider(
+            true,
+            ModItemModelProvider(packOutput)
+        )
+
         generator.addProvider(
             true,
             ModLanguageProviderEnUs(packOutput)

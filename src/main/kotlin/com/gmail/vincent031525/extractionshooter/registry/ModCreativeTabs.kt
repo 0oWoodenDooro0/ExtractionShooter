@@ -18,8 +18,10 @@ object ModCreativeTabs {
             .icon { ItemStack(ModItems.M4A1_ITEM.get()) }
             .displayItems { parameters, output ->
                 output.accept(ModItems.M4A1_ITEM)
-                output.accept(ModItems.M4A1_MAGAZINE_ITEM)
-                output.accept(ModItems.AMMO_ITEM)
+                output.accept(ModItems.MAG_30_ITEM)
+                output.accept(ModItems.MAG_45_ITEM)
+                output.accept(ModItems.MAG_60_ITEM)
+                output.accept(ModItems.AMMO_556_ITEM)
             }
             .build()
     }

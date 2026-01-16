@@ -1,13 +1,60 @@
 package com.gmail.vincent031525.extractionshooter.datagen
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
+import com.gmail.vincent031525.extractionshooter.registry.ModItems
 import net.minecraft.client.data.models.BlockModelGenerators
 import net.minecraft.client.data.models.ItemModelGenerators
 import net.minecraft.client.data.models.ModelProvider
+import net.minecraft.client.data.models.model.ItemModelUtils
+import net.minecraft.client.data.models.model.ModelLocationUtils
+import net.minecraft.client.data.models.model.ModelTemplates
+import net.minecraft.client.data.models.model.TextureMapping
 import net.minecraft.data.PackOutput
+import net.minecraft.resources.Identifier
+import software.bernie.geckolib.renderer.internal.GeckolibItemSpecialRenderer.Unbaked
 
+@Suppress("UnstableApiUsage")
 class ModItemModelProvider(output: PackOutput) : ModelProvider(output, Extractionshooter.ID) {
 
     override fun registerModels(blockModels: BlockModelGenerators, itemModels: ItemModelGenerators) {
+        val m4a1Model =
+            ItemModelUtils.specialModel(ModelLocationUtils.getModelLocation(ModItems.M4A1_ITEM.get()), Unbaked())
+        itemModels.itemModelOutput.accept(ModItems.M4A1_ITEM.get(), m4a1Model)
+        itemModels.itemModelOutput.accept(
+            ModItems.MAG_30_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.MAG_30_ITEM.get(),
+                    TextureMapping.layer0(Identifier.fromNamespaceAndPath(Extractionshooter.ID, "item/mag/30")),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.MAG_45_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.MAG_45_ITEM.get(),
+                    TextureMapping.layer0(Identifier.fromNamespaceAndPath(Extractionshooter.ID, "item/mag/45")),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.MAG_60_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.MAG_60_ITEM.get(),
+                    TextureMapping.layer0(Identifier.fromNamespaceAndPath(Extractionshooter.ID, "item/mag/60")),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.AMMO_556_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.AMMO_556_ITEM.get(),
+                    TextureMapping.layer0(Identifier.fromNamespaceAndPath(Extractionshooter.ID, "item/ammo/556")),
+                    itemModels.modelOutput
+                )
+            )
+        )
     }
 }

@@ -1,7 +1,15 @@
 {
   "replace": true,
   "values": {
-    "extractionshooter:m4a1_magazine": {
+    "extractionshooter:mag_30": {
+      "maxAmmo": 30,
+      "reloadTick": 20
+    },
+    "extractionshooter:mag_45": {
+      "maxAmmo": 30,
+      "reloadTick": 32
+    },
+    "extractionshooter:mag_60": {
       "maxAmmo": 30,
       "reloadTick": 40
     }
