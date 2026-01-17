@@ -1,6 +1,7 @@
 package com.gmail.vincent031525.extractionshooter
 
 import com.gmail.vincent031525.extractionshooter.registry.ModCreativeTabs
+import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
 import com.gmail.vincent031525.extractionshooter.registry.ModItems
 import net.neoforged.bus.api.SubscribeEvent
@@ -28,6 +29,7 @@ object Extractionshooter {
         ModDataComponents.DATA_COMPONENTS.register(MOD_BUS)
         ModItems.ITEMS.register(MOD_BUS)
         ModCreativeTabs.CREATIVE_TABS.register(MOD_BUS)
+        ModDataAttachments.ATTACHMENT_TYPES.register(MOD_BUS)
 
         val obj = runForDist(clientTarget = {
             MOD_BUS.addListener(::onClientSetup)
