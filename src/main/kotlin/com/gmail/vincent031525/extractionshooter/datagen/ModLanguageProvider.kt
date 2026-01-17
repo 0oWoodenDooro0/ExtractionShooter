@@ -31,6 +31,12 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add("bodypart.extractionshooter.head", "Head")
         add("bodypart.extractionshooter.body", "Body")
         add("bodypart.extractionshooter.legs", "Legs")
+
+        add("effect.extractionshooter.fracture", "Fracture")
+        add("effect.extractionshooter.bleeding", "Bleeding")
+
+        add("death.attack.bleeding", $$"%1$s bled out")
+        add("death.attack.bleeding.player", $$"%1$s bled out while fighting %2$s")
     }
 }
 
@@ -59,5 +65,11 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add("bodypart.extractionshooter.head", "頭部")
         add("bodypart.extractionshooter.body", "身體")
         add("bodypart.extractionshooter.legs", "腿部")
+
+        add("effect.extractionshooter.fracture", "骨折")
+        add("effect.extractionshooter.bleeding", "流血")
+
+        add("death.attack.bleeding", $$"%1$s 失血過多身亡")
+        add("death.attack.bleeding.player", $$"%1$s 在與 %2$s 戰鬥後失血過多身亡")
     }
 }

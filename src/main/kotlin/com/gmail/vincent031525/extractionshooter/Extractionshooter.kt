@@ -1,9 +1,6 @@
 package com.gmail.vincent031525.extractionshooter
 
-import com.gmail.vincent031525.extractionshooter.registry.ModCreativeTabs
-import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
-import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
-import com.gmail.vincent031525.extractionshooter.registry.ModItems
+import com.gmail.vincent031525.extractionshooter.registry.*
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.Mod
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
@@ -30,6 +27,7 @@ object Extractionshooter {
         ModItems.ITEMS.register(MOD_BUS)
         ModCreativeTabs.CREATIVE_TABS.register(MOD_BUS)
         ModDataAttachments.ATTACHMENT_TYPES.register(MOD_BUS)
+        ModEffects.MOB_EFFECTS.register(MOD_BUS)
 
         val obj = runForDist(clientTarget = {
             MOD_BUS.addListener(::onClientSetup)
