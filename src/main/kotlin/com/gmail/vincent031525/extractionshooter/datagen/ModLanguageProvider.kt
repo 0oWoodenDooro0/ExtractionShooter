@@ -24,9 +24,13 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
 
         add("tooltip.extractionshooter.ammo", "Remaining Ammo: %s")
 
-        add("firemode.extractionshooter.semi", "SEMI")
-        add("firemode.extractionshooter.burst", "BURST")
-        add("firemode.extractionshooter.auto", "AUTO")
+        add("firemode.extractionshooter.semi", "Semi")
+        add("firemode.extractionshooter.burst", "Burst")
+        add("firemode.extractionshooter.auto", "Auto")
+
+        add("bodypart.extractionshooter.head", "Head")
+        add("bodypart.extractionshooter.body", "Body")
+        add("bodypart.extractionshooter.legs", "Legs")
     }
 }
 
@@ -51,5 +55,9 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add("firemode.extractionshooter.semi", "半自動")
         add("firemode.extractionshooter.burst", "三連發")
         add("firemode.extractionshooter.auto", "自動")
+
+        add("bodypart.extractionshooter.head", "頭部")
+        add("bodypart.extractionshooter.body", "身體")
+        add("bodypart.extractionshooter.legs", "腿部")
     }
 }
