@@ -28,17 +28,13 @@ object DamageHandler {
             source.`is`(DamageTypes.FALL) -> BodyPart.LEGS
             else -> LimbAABBHelper.getTargetPart(entity, hitVec)
         }
-        println("DEBUG: 玩家受到來自 ${source.type()} 的傷害")
-        println("DEBUG: 擊中點向量: $hitVec")
-        println("DEBUG: 系統判定部位: ${part?.displayName}")
+
         applyPartDamage(entity, healthData, part, amount)
 
         if (healthData.head <= 0f || healthData.body <= 0f) {
             event.amount = Float.MAX_VALUE
             return
         }
-
-        println("DEBUG: 當前血量 -> 頭: ${healthData.head}, 身體: ${healthData.body}, 腳: ${healthData.legs}")
 
         event.amount = 0f
     }
@@ -52,7 +48,7 @@ object DamageHandler {
 
             BodyPart.LEGS -> {
                 if (data.legs <= 0f) {
-                    data.damage(BodyPart.LEGS, amount)
+                    data.damage(BodyPart.BODY, amount * 0.8f)
                 } else {
                     data.damage(part, amount)
                 }
