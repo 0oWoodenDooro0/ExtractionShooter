@@ -18,7 +18,10 @@ import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.SlotAccess
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.ClickAction
+import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.*
 import net.minecraft.world.item.component.AttackRange
 import net.minecraft.world.item.component.PiercingWeapon
@@ -211,6 +214,32 @@ class GunItem<T : GeoItemRenderer<*>>(
         )
     }
 
+    override fun overrideOtherStackedOnMe(
+        stack: ItemStack,
+        other: ItemStack,
+        slot: Slot,
+        action: ClickAction,
+        player: Player,
+        access: SlotAccess
+    ): Boolean {
+        if (action == ClickAction.SECONDARY && !other.isEmpty) {
+            return !loadMagazine(player.level(), stack, other).isEmpty
+        }
+
+        if (action == ClickAction.SECONDARY && other.isEmpty) {
+            val magazineStack = unloadMagazine(stack)
+            if (magazineStack.isEmpty) return false
+
+            access.set(magazineStack.copy())
+
+            player.level()
+                .playSound(null, player.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.2f)
+            return true
+        }
+
+        return false
+    }
+
     fun getGunStats(): GunStats = BuiltInRegistries.ITEM.wrapAsHolder(this).getData(ModDataMaps.GUN_STATS)!!
 
     fun canShoot(level: Level, stack: ItemStack): Boolean {
@@ -311,36 +340,45 @@ class GunItem<T : GeoItemRenderer<*>>(
         stack.set(ModDataComponents.GUN_DATA, newData)
     }
 
-    fun unload(player: Player, stack: ItemStack) {
-        val currentData = getGunData(stack) ?: return
-        val magazineStack = getMagazineStack(stack)
-        val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return
-        if (magazineStack.isEmpty) return
-
-        magazineStack[ModDataComponents.MAGAZINE_DATA] = MagazineData(ammoCount = magazineData.ammoCount)
-
-        stack.set(ModDataComponents.GUN_DATA, currentData.copy(magazineStack = ItemStack.EMPTY))
-
-        if (!player.inventory.add(magazineStack)) {
-            player.drop(magazineStack, false)
-        }
-    }
-
-    fun reload(player: Player, gunStack: ItemStack, magSlot: Int) {
-        val gunData = getGunData(gunStack) ?: return
-        val magazineStack = player.inventory.getItem(magSlot)
-        val magazineStats = (magazineStack.item as MagazineItem).getMagazineStats()
-
-        unload(player, gunStack)
-
-        gunStack.set(
-            ModDataComponents.GUN_DATA, gunData.copy(
-                nextAttackTick = player.level().gameTime + magazineStats.reloadTick,
-                magazineStack = magazineStack.copy()
+    fun loadMagazine(level: Level, stack: ItemStack, magazineStack: ItemStack): ItemStack {
+        if (stack.isEmpty) return ItemStack.EMPTY
+        if (magazineStack.isEmpty) return ItemStack.EMPTY
+        val data = getGunData(stack) ?: return ItemStack.EMPTY
+        val magazineStats = (magazineStack.item as? MagazineItem)?.getMagazineStats() ?: return ItemStack.EMPTY
+        val newMagazineStack = magazineStack.copy()
+        stack.set(
+            ModDataComponents.GUN_DATA, data.copy(
+                nextAttackTick = level.gameTime + magazineStats.reloadTick,
+                magazineStack = newMagazineStack
             )
         )
 
         magazineStack.shrink(1)
+        return newMagazineStack
+    }
+
+    fun unloadMagazine(stack: ItemStack): ItemStack {
+        if (stack.isEmpty) return ItemStack.EMPTY
+        val currentData = getGunData(stack) ?: return ItemStack.EMPTY
+        val magazineStack = getMagazineStack(stack)
+        if (magazineStack.isEmpty) return ItemStack.EMPTY
+
+        stack.set(ModDataComponents.GUN_DATA, currentData.copy(magazineStack = ItemStack.EMPTY))
+
+        return magazineStack
+    }
+
+    fun reload(player: Player, stack: ItemStack, magSlot: Int) {
+        val magazineStack = player.inventory.getItem(magSlot)
+
+        unloadMagazine(stack).let {
+            if (it.isEmpty) return@let
+            if (!player.inventory.add(it)) {
+                player.drop(it, false)
+            }
+        }
+
+        loadMagazine(player.level(), stack, magazineStack)
 
         player.level().playSound(
             null,
