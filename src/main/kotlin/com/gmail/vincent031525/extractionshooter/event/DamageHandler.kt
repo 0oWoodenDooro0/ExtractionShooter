@@ -45,20 +45,16 @@ object DamageHandler {
 
     private fun applyPartDamage(player: Player, data: PlayerHealth, part: BodyPart?, amount: Float) {
         when (part) {
-            BodyPart.HEAD -> {
-                data.head = (data.head - amount).coerceAtLeast(0f)
-            }
-
+            BodyPart.HEAD,
             BodyPart.BODY -> {
-                data.body = (data.body - amount).coerceAtLeast(0f)
+                data.damage(part, amount)
             }
 
             BodyPart.LEGS -> {
-                // 如果腳部已經黑了 (0血)，傷害溢出到身體
                 if (data.legs <= 0f) {
-                    data.body = (data.body - amount).coerceAtLeast(0f)
+                    data.damage(BodyPart.LEGS, amount)
                 } else {
-                    data.legs = (data.legs - amount).coerceAtLeast(0f)
+                    data.damage(part, amount)
                 }
             }
 
