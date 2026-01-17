@@ -223,6 +223,9 @@ class GunItem<T : GeoItemRenderer<*>>(
         access: SlotAccess
     ): Boolean {
         if (action == ClickAction.SECONDARY && !other.isEmpty) {
+            val magazineStack = getMagazineStack(stack)
+            if (!magazineStack.isEmpty) return false
+
             return !loadMagazine(player.level(), stack, other).isEmpty
         }
 

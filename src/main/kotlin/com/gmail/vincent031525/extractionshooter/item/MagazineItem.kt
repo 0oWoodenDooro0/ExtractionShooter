@@ -56,6 +56,7 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
         access: SlotAccess
     ): Boolean {
         if (action == ClickAction.SECONDARY && !other.isEmpty) {
+            if (other.item !is AmmoItem) return false
             val data = getMagazineData(stack) ?: return false
 
             val currentCount = data.ammoCount
