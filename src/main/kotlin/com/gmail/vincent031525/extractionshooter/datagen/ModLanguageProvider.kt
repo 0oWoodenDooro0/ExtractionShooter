@@ -16,6 +16,8 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.MAG_45_ITEM.get(), "45-round Magazine")
         add(ModItems.MAG_60_ITEM.get(), "60-round Magazine")
         add(ModItems.AMMO_556_ITEM.get(), "5.56x45mm NATO")
+        add(ModItems.BANDAGE_ITEM.get(), "Bandage")
+        add(ModItems.SPLINT_ITEM.get(), "Splint")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "Switch Fire Mode")
         add(KeyBindings.RELOAD_KEY.name, "Reload")
@@ -50,6 +52,8 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.MAG_45_ITEM.get(), "45發彈匣")
         add(ModItems.MAG_60_ITEM.get(), "60發彈鼓")
         add(ModItems.AMMO_556_ITEM.get(), "5.56x45毫米 NATO")
+        add(ModItems.BANDAGE_ITEM.get(), "繃帶")
+        add(ModItems.SPLINT_ITEM.get(), "夾板")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "切換射擊模式")
         add(KeyBindings.RELOAD_KEY.name, "換彈")

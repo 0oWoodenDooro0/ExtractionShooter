@@ -4,9 +4,7 @@ import com.gmail.vincent031525.extractionshooter.Extractionshooter
 import com.gmail.vincent031525.extractionshooter.client.renderer.M4A1Renderer
 import com.gmail.vincent031525.extractionshooter.datacomponent.GunData
 import com.gmail.vincent031525.extractionshooter.datacomponent.MagazineData
-import com.gmail.vincent031525.extractionshooter.item.AmmoItem
-import com.gmail.vincent031525.extractionshooter.item.GunItem
-import com.gmail.vincent031525.extractionshooter.item.MagazineItem
+import com.gmail.vincent031525.extractionshooter.item.*
 import net.minecraft.world.item.Item
 import net.neoforged.neoforge.registries.DeferredItem
 import net.neoforged.neoforge.registries.DeferredRegister
@@ -43,4 +41,7 @@ object ModItems {
 
     val AMMO_556_ITEM: DeferredItem<AmmoItem> =
         ITEMS.registerItem("ammo_556") { properties -> AmmoItem(properties) }
+
+    val BANDAGE_ITEM = ITEMS.registerItem("bandage") { properties -> BandageItem(properties.durability(2)) }
+    val SPLINT_ITEM = ITEMS.registerItem("splint") { properties -> SplintItem(properties.durability(1)) }
 }

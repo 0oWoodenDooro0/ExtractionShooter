@@ -14,6 +14,6 @@ class Bleeding : MobEffect(MobEffectCategory.HARMFUL, 0x8B0000) {
     }
 
     override fun shouldApplyEffectTickThisTick(tickCount: Int, amplifier: Int): Boolean {
-        return tickCount % 40 == 0
+        return tickCount % 100 == 0
     }
 }

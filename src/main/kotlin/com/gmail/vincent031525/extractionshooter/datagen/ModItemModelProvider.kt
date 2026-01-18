@@ -56,5 +56,28 @@ class ModItemModelProvider(output: PackOutput) : ModelProvider(output, Extractio
                 )
             )
         )
+        itemModels.itemModelOutput.accept(
+            ModItems.BANDAGE_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.BANDAGE_ITEM.get(),
+                    TextureMapping.layer0(
+                        Identifier.fromNamespaceAndPath(
+                            Extractionshooter.ID,
+                            "item/medical/bandage"
+                        )
+                    ),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.SPLINT_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.SPLINT_ITEM.get(),
+                    TextureMapping.layer0(Identifier.fromNamespaceAndPath(Extractionshooter.ID, "item/medical/splint")),
+                    itemModels.modelOutput
+                )
+            )
+        )
     }
 }

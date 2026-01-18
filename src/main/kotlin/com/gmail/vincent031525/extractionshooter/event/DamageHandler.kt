@@ -55,7 +55,7 @@ object DamageHandler {
         player.setData(ModDataAttachments.PLAYER_HEALTH, data)
         tryApplyBleeding(player, damage)
 
-        if (data.legs < 20f) {
+        if (part == BodyPart.LEGS && data.legs < 20f) {
             if (!player.hasEffect(ModEffects.FRACTURE)) {
                 player.addEffect(
                     MobEffectInstance(
