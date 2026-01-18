@@ -44,4 +44,15 @@ object ModItems {
 
     val BANDAGE_ITEM = ITEMS.registerItem("bandage") { properties -> BandageItem(properties.durability(2)) }
     val SPLINT_ITEM = ITEMS.registerItem("splint") { properties -> SplintItem(properties.durability(1)) }
+    val SURGERY_KIT =
+        ITEMS.registerItem("surgery_kit") { properties -> SurgeryKitItem(properties.durability(3)) }
+    val PAINKILLERS_ITEM = ITEMS.registerItem("painkillers") { properties ->
+        PainkillersItem(properties.durability(6))
+    }
+    val MEDKIT_SMALL_ITEM = ITEMS.registerItem("medkit_small") { properties ->
+        HealItem(properties.durability(220), 70f, 60)
+    }
+    val MEDKIT_LARGE_ITEM = ITEMS.registerItem("medkit_large") { properties ->
+        HealItem(properties.durability(400), 85f, 60)
+    }
 }

@@ -6,9 +6,9 @@ import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 
 data class PlayerHealth(
-    var head: Float = 35f,
-    var body: Float = 85f,
-    var legs: Float = 65f
+    var head: Float = BodyPart.HEAD.maxHealth,
+    var body: Float = BodyPart.BODY.maxHealth,
+    var legs: Float = BodyPart.LEGS.maxHealth
 ) {
     companion object {
         val CODEC: MapCodec<PlayerHealth> = RecordCodecBuilder.mapCodec { instance ->
@@ -17,6 +17,24 @@ data class PlayerHealth(
                 Codec.FLOAT.fieldOf("body").forGetter { it.body },
                 Codec.FLOAT.fieldOf("legs").forGetter { it.legs }
             ).apply(instance, ::PlayerHealth)
+        }
+
+        val HEAL_ORDER = listOf(BodyPart.BODY, BodyPart.HEAD, BodyPart.LEGS)
+    }
+
+    fun getHealth(part: BodyPart): Float {
+        return when (part) {
+            BodyPart.HEAD -> head
+            BodyPart.BODY -> body
+            BodyPart.LEGS -> legs
+        }
+    }
+
+    fun heal(part: BodyPart, amount: Float) {
+        when (part) {
+            BodyPart.HEAD -> head = (head + amount).coerceAtMost(BodyPart.HEAD.maxHealth)
+            BodyPart.BODY -> body = (body + amount).coerceAtMost(BodyPart.BODY.maxHealth)
+            BodyPart.LEGS -> legs = (legs + amount).coerceAtMost(BodyPart.LEGS.maxHealth)
         }
     }
 

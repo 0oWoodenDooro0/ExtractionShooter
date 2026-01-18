@@ -7,11 +7,14 @@ import com.gmail.vincent031525.extractionshooter.health.LimbAABBHelper
 import com.gmail.vincent031525.extractionshooter.registry.ModDamageTypes
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModEffects
+import net.minecraft.commands.Commands
+import net.minecraft.network.chat.Component
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.player.Player
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.event.RegisterCommandsEvent
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent
 
 @EventBusSubscriber(modid = Extractionshooter.ID)
@@ -98,5 +101,20 @@ object DamageHandler {
                 )
             }
         }
+    }
+
+    @SubscribeEvent
+    fun registerCommands(event: RegisterCommandsEvent) {
+        event.dispatcher.register(
+            Commands.literal("extdebug")
+                .then(Commands.literal("check").executes { context ->
+                    val player = context.source.playerOrException
+                    val data = player.getData(ModDataAttachments.PLAYER_HEALTH)
+                    context.source.sendSuccess({
+                        Component.literal("當前部位血量 -> 頭: ${data.head}, 身: ${data.body}, 腳: ${data.legs}")
+                    }, false)
+                    1
+                })
+        )
     }
 }

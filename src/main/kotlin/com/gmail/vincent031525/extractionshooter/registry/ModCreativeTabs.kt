@@ -24,6 +24,9 @@ object ModCreativeTabs {
                 output.accept(ModItems.AMMO_556_ITEM)
                 output.accept(ModItems.BANDAGE_ITEM)
                 output.accept(ModItems.SPLINT_ITEM)
+                output.accept(ModItems.PAINKILLERS_ITEM)
+                output.accept(ModItems.MEDKIT_SMALL_ITEM)
+                output.accept(ModItems.MEDKIT_LARGE_ITEM)
             }
             .build()
     }

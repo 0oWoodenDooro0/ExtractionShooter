@@ -18,6 +18,10 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.AMMO_556_ITEM.get(), "5.56x45mm NATO")
         add(ModItems.BANDAGE_ITEM.get(), "Bandage")
         add(ModItems.SPLINT_ITEM.get(), "Splint")
+        add(ModItems.SURGERY_KIT.get(), "Surgery Kit")
+        add(ModItems.PAINKILLERS_ITEM.get(), "Painkillers")
+        add(ModItems.MEDKIT_SMALL_ITEM.get(), "Small Medkit")
+        add(ModItems.MEDKIT_LARGE_ITEM.get(), "Tactical First Aid Kit")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "Switch Fire Mode")
         add(KeyBindings.RELOAD_KEY.name, "Reload")
@@ -36,6 +40,7 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
 
         add("effect.extractionshooter.fracture", "Fracture")
         add("effect.extractionshooter.bleeding", "Bleeding")
+        add("effect.extractionshooter.on_painkillers", "On Painkillers")
 
         add("death.attack.bleeding", $$"%1$s bled out")
         add("death.attack.bleeding.player", $$"%1$s bled out while fighting %2$s")
@@ -54,6 +59,10 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.AMMO_556_ITEM.get(), "5.56x45毫米 NATO")
         add(ModItems.BANDAGE_ITEM.get(), "繃帶")
         add(ModItems.SPLINT_ITEM.get(), "夾板")
+        add(ModItems.SURGERY_KIT.get(), "手術包")
+        add(ModItems.PAINKILLERS_ITEM.get(), "止痛藥")
+        add(ModItems.MEDKIT_SMALL_ITEM.get(), "小型急救包")
+        add(ModItems.MEDKIT_LARGE_ITEM.get(), "戰術急救箱")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "切換射擊模式")
         add(KeyBindings.RELOAD_KEY.name, "換彈")
@@ -72,6 +81,7 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
 
         add("effect.extractionshooter.fracture", "骨折")
         add("effect.extractionshooter.bleeding", "流血")
+        add("effect.extractionshooter.on_painkillers", "止痛")
 
         add("death.attack.bleeding", $$"%1$s 失血過多身亡")
         add("death.attack.bleeding.player", $$"%1$s 在與 %2$s 戰鬥後失血過多身亡")

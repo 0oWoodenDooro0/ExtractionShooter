@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.ItemUseAnimation
 import net.minecraft.world.level.Level
 
-abstract class MedicalItem(properties: Properties) : Item(properties) {
+abstract class MedicalItem(properties: Properties) : Item(properties.stacksTo(1)) {
 
     abstract fun getUsageDuration(): Int
 
