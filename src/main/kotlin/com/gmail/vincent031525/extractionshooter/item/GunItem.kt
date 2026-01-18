@@ -1,5 +1,6 @@
 package com.gmail.vincent031525.extractionshooter.item
 
+import com.gmail.vincent031525.extractionshooter.damagesource.BulletDamageSource
 import com.gmail.vincent031525.extractionshooter.datacomponent.GunData
 import com.gmail.vincent031525.extractionshooter.datacomponent.MagazineData
 import com.gmail.vincent031525.extractionshooter.datamap.GunStats
@@ -15,6 +16,7 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
@@ -284,7 +286,15 @@ class GunItem<T : GeoItemRenderer<*>>(
             val entityBox = entity.boundingBox
             if (entityBox.clip(eyePos, endPos).isPresent) {
                 entity.invulnerableTime = 0
-                entity.hurtServer(level, player.damageSources().playerAttack(player), ammoStats.damage)
+                entity.hurtServer(
+                    level,
+                    BulletDamageSource(
+                        entity.damageSources().damageTypes.getOrThrow(DamageTypes.PLAYER_ATTACK),
+                        ammoStats,
+                        player
+                    ),
+                    ammoStats.damage
+                )
 
                 level.sendParticles(
                     net.minecraft.core.particles.ParticleTypes.CRIT,

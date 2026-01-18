@@ -44,7 +44,7 @@ object ModItems {
 
     val BANDAGE_ITEM = ITEMS.registerItem("bandage") { properties -> BandageItem(properties.durability(2)) }
     val SPLINT_ITEM = ITEMS.registerItem("splint") { properties -> SplintItem(properties.durability(1)) }
-    val SURGERY_KIT =
+    val SURGERY_KIT_ITEM =
         ITEMS.registerItem("surgery_kit") { properties -> SurgeryKitItem(properties.durability(3)) }
     val PAINKILLERS_ITEM = ITEMS.registerItem("painkillers") { properties ->
         PainkillersItem(properties.durability(6))

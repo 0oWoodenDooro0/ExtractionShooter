@@ -2,7 +2,8 @@
   "replace": true,
   "values": {
     "extractionshooter:ammo_556": {
-      "damage": 5.0
+      "damage": 12.0,
+      "penetration": 35.0
     }
   }
 }

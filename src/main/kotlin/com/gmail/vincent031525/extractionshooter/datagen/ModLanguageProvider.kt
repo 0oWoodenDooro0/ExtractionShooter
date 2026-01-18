@@ -18,8 +18,8 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.AMMO_556_ITEM.get(), "5.56x45mm NATO")
         add(ModItems.BANDAGE_ITEM.get(), "Bandage")
         add(ModItems.SPLINT_ITEM.get(), "Splint")
-        add(ModItems.SURGERY_KIT.get(), "Surgery Kit")
         add(ModItems.PAINKILLERS_ITEM.get(), "Painkillers")
+        add(ModItems.SURGERY_KIT_ITEM.get(), "Surgery Kit")
         add(ModItems.MEDKIT_SMALL_ITEM.get(), "Small Medkit")
         add(ModItems.MEDKIT_LARGE_ITEM.get(), "Tactical First Aid Kit")
 
@@ -59,8 +59,8 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.AMMO_556_ITEM.get(), "5.56x45毫米 NATO")
         add(ModItems.BANDAGE_ITEM.get(), "繃帶")
         add(ModItems.SPLINT_ITEM.get(), "夾板")
-        add(ModItems.SURGERY_KIT.get(), "手術包")
         add(ModItems.PAINKILLERS_ITEM.get(), "止痛藥")
+        add(ModItems.SURGERY_KIT_ITEM.get(), "手術包")
         add(ModItems.MEDKIT_SMALL_ITEM.get(), "小型急救包")
         add(ModItems.MEDKIT_LARGE_ITEM.get(), "戰術急救箱")
 

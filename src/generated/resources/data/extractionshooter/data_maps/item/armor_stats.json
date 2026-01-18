@@ -1,0 +1,64 @@
+{
+  "values": {
+    "minecraft:chainmail_chestplate": {
+      "armorClass": 2,
+      "bluntThroughput": 0.2,
+      "maxDurability": 80.0
+    },
+    "minecraft:chainmail_helmet": {
+      "armorClass": 2,
+      "bluntThroughput": 0.2,
+      "maxDurability": 50.0
+    },
+    "minecraft:diamond_chestplate": {
+      "armorClass": 5,
+      "bluntThroughput": 0.08,
+      "maxDurability": 180.0
+    },
+    "minecraft:diamond_helmet": {
+      "armorClass": 5,
+      "bluntThroughput": 0.08,
+      "maxDurability": 120.0
+    },
+    "minecraft:golden_chestplate": {
+      "armorClass": 4,
+      "bluntThroughput": 0.12,
+      "maxDurability": 70.0
+    },
+    "minecraft:golden_helmet": {
+      "armorClass": 4,
+      "bluntThroughput": 0.12,
+      "maxDurability": 50.0
+    },
+    "minecraft:iron_chestplate": {
+      "armorClass": 3,
+      "bluntThroughput": 0.15,
+      "maxDurability": 100.0
+    },
+    "minecraft:iron_helmet": {
+      "armorClass": 3,
+      "bluntThroughput": 0.15,
+      "maxDurability": 60.0
+    },
+    "minecraft:leather_chestplate": {
+      "armorClass": 1,
+      "bluntThroughput": 0.25,
+      "maxDurability": 60.0
+    },
+    "minecraft:leather_helmet": {
+      "armorClass": 1,
+      "bluntThroughput": 0.25,
+      "maxDurability": 40.0
+    },
+    "minecraft:netherite_chestplate": {
+      "armorClass": 6,
+      "bluntThroughput": 0.05,
+      "maxDurability": 220.0
+    },
+    "minecraft:netherite_helmet": {
+      "armorClass": 6,
+      "bluntThroughput": 0.05,
+      "maxDurability": 150.0
+    }
+  }
+}

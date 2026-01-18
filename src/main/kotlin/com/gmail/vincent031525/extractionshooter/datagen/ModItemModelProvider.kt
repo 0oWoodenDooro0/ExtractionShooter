@@ -79,5 +79,61 @@ class ModItemModelProvider(output: PackOutput) : ModelProvider(output, Extractio
                 )
             )
         )
+        itemModels.itemModelOutput.accept(
+            ModItems.PAINKILLERS_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.PAINKILLERS_ITEM.get(),
+                    TextureMapping.layer0(
+                        Identifier.fromNamespaceAndPath(
+                            Extractionshooter.ID,
+                            "item/medical/painkillers"
+                        )
+                    ),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.SURGERY_KIT_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.SURGERY_KIT_ITEM.get(),
+                    TextureMapping.layer0(
+                        Identifier.fromNamespaceAndPath(
+                            Extractionshooter.ID,
+                            "item/medical/surger_kit"
+                        )
+                    ),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.MEDKIT_SMALL_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.MEDKIT_SMALL_ITEM.get(),
+                    TextureMapping.layer0(
+                        Identifier.fromNamespaceAndPath(
+                            Extractionshooter.ID,
+                            "item/medical/medkit_small"
+                        )
+                    ),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.MEDKIT_LARGE_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.MEDKIT_LARGE_ITEM.get(),
+                    TextureMapping.layer0(
+                        Identifier.fromNamespaceAndPath(
+                            Extractionshooter.ID,
+                            "item/medical/medkit_large"
+                        )
+                    ),
+                    itemModels.modelOutput
+                )
+            )
+        )
     }
 }

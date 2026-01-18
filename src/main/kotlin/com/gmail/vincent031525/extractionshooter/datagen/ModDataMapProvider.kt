@@ -1,12 +1,15 @@
 package com.gmail.vincent031525.extractionshooter.datagen
 
 import com.gmail.vincent031525.extractionshooter.datamap.AmmoStats
+import com.gmail.vincent031525.extractionshooter.datamap.ArmorStats
 import com.gmail.vincent031525.extractionshooter.datamap.GunStats
 import com.gmail.vincent031525.extractionshooter.datamap.MagazineStats
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import com.gmail.vincent031525.extractionshooter.registry.ModItems
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.PackOutput
+import net.minecraft.world.item.Items
 import net.neoforged.neoforge.common.data.DataMapProvider
 import java.util.concurrent.CompletableFuture
 
@@ -14,7 +17,7 @@ class ModDataMapProvider(output: PackOutput, lookupProvider: CompletableFuture<H
     DataMapProvider(output, lookupProvider) {
 
     override fun gather(p0: HolderLookup.Provider) {
-        this.builder(ModDataMaps.GUN_STATS)
+        builder(ModDataMaps.GUN_STATS)
             .replace(true)
             .add(
                 ModItems.M4A1_ITEM, GunStats(
@@ -25,7 +28,7 @@ class ModDataMapProvider(output: PackOutput, lookupProvider: CompletableFuture<H
                     listOf(GunStats.FireMode.AUTO, GunStats.FireMode.SEMI)
                 ), false
             )
-        this.builder(ModDataMaps.MAGAZINE_STATS)
+        builder(ModDataMaps.MAGAZINE_STATS)
             .replace(true)
             .add(
                 ModItems.MAG_30_ITEM,
@@ -42,8 +45,21 @@ class ModDataMapProvider(output: PackOutput, lookupProvider: CompletableFuture<H
                 MagazineStats(60, 40),
                 false
             )
-        this.builder(ModDataMaps.AMMO_STATS)
+        builder(ModDataMaps.AMMO_STATS)
             .replace(true)
-            .add(ModItems.AMMO_556_ITEM, AmmoStats(5f), false)
+            .add(ModItems.AMMO_556_ITEM, AmmoStats(12f, 35f), false)
+        builder(ModDataMaps.ARMOR_STATS)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.LEATHER_HELMET), ArmorStats(1, 40f, 0.25f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.LEATHER_CHESTPLATE), ArmorStats(1, 60f, 0.25f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.CHAINMAIL_HELMET), ArmorStats(2, 50f, 0.20f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.CHAINMAIL_CHESTPLATE), ArmorStats(2, 80f, 0.20f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.IRON_HELMET), ArmorStats(3, 60f, 0.15f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.IRON_CHESTPLATE), ArmorStats(3, 100f, 0.15f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.GOLDEN_HELMET), ArmorStats(4, 50f, 0.12f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.GOLDEN_CHESTPLATE), ArmorStats(4, 70f, 0.12f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.DIAMOND_HELMET), ArmorStats(5, 120f, 0.08f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.DIAMOND_CHESTPLATE), ArmorStats(5, 180f, 0.08f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.NETHERITE_HELMET), ArmorStats(6, 150f, 0.05f), false)
+            .add(BuiltInRegistries.ITEM.wrapAsHolder(Items.NETHERITE_CHESTPLATE), ArmorStats(6, 220f, 0.05f), false)
     }
 }

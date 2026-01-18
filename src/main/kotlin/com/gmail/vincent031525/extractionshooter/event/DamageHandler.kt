@@ -1,17 +1,21 @@
 package com.gmail.vincent031525.extractionshooter.event
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
-import com.gmail.vincent031525.extractionshooter.dataattachment.PlayerHealth
+import com.gmail.vincent031525.extractionshooter.damagesource.BulletDamageSource
+import com.gmail.vincent031525.extractionshooter.datamap.AmmoStats
 import com.gmail.vincent031525.extractionshooter.health.BodyPart
 import com.gmail.vincent031525.extractionshooter.health.LimbAABBHelper
 import com.gmail.vincent031525.extractionshooter.registry.ModDamageTypes
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
+import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import com.gmail.vincent031525.extractionshooter.registry.ModEffects
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.RegisterCommandsEvent
@@ -26,7 +30,7 @@ object DamageHandler {
         if (entity !is Player || entity.level().isClientSide) return
 
         val source = event.source
-        val amount = event.amount
+        val damage = event.amount
         val healthData = entity.getData(ModDataAttachments.PLAYER_HEALTH)
 
         val hitVec = source.sourcePosition
@@ -36,26 +40,76 @@ object DamageHandler {
             else -> LimbAABBHelper.getTargetPart(entity, hitVec)
         }
 
-        applyPartDamage(entity, healthData, part, amount)
+        event.amount = 0f
+
+        if (part == null) return
+
+        if (source is BulletDamageSource) {
+            handleArmorAndDamage(entity, part, source.stats, damage)
+        } else {
+            applyFinalDamage(entity, part, damage)
+        }
 
         if (healthData.head <= 0f || healthData.body <= 0f) {
             event.amount = Float.MAX_VALUE
             return
         }
 
-        event.amount = 0f
     }
 
-    private fun applyPartDamage(player: Player, data: PlayerHealth, part: BodyPart?, amount: Float) {
-        if (part == null) return
-        val damage = if (part == BodyPart.LEGS && data.legs < 20f) {
-            data.damage(BodyPart.BODY, amount * 0.8f)
-            amount * 0.8f
-        } else {
-            data.damage(part, amount)
-            amount
+    private fun handleArmorAndDamage(player: Player, part: BodyPart, ammo: AmmoStats, rawDamage: Float) {
+        val slot = when (part) {
+            BodyPart.HEAD -> EquipmentSlot.HEAD
+            BodyPart.BODY -> EquipmentSlot.CHEST
+            else -> null
         }
+
+        val armorStack = slot?.let { player.getItemBySlot(it) } ?: ItemStack.EMPTY
+        val armorStats = if (armorStack.isEmpty) null else armorStack.itemHolder.getData(ModDataMaps.ARMOR_STATS)
+
+        if (armorStats == null) {
+            applyFinalDamage(player, part, rawDamage)
+            return
+        }
+
+        val durabilityPercent = 1.0f - (armorStack.damageValue.toFloat() / armorStack.maxDamage.toFloat())
+
+        val armorPotential = armorStats.armorClass * 10f
+        val penPower = ammo.penetration
+
+        val chance = calculatePenetrationChance(penPower, armorPotential, durabilityPercent)
+        val isPenetrated = player.random.nextFloat() < chance
+
+        if (isPenetrated) {
+            val reduction = 0.8f
+            val finalDamage = rawDamage * reduction
+
+            damageArmor(armorStack, player, slot!!, 1)
+
+            applyFinalDamage(player, part, finalDamage)
+        } else {
+            val bluntDamage = rawDamage * armorStats.bluntThroughput
+
+            damageArmor(armorStack, player, slot!!, 2)
+
+            applyFinalDamage(player, part, bluntDamage)
+        }
+    }
+
+    private fun calculatePenetrationChance(pen: Float, armor: Float, durability: Float): Float {
+        val diff = pen - (armor * durability)
+        return when {
+            diff >= 10f -> 1.0f
+            diff <= -10f -> 0.02f
+            else -> (diff + 10f) / 20f
+        }
+    }
+
+    private fun applyFinalDamage(player: Player, part: BodyPart, damage: Float) {
+        val data = player.getData(ModDataAttachments.PLAYER_HEALTH)
+        data.damage(part, damage)
         player.setData(ModDataAttachments.PLAYER_HEALTH, data)
+
         tryApplyBleeding(player, damage)
 
         if (part == BodyPart.LEGS && data.legs < 20f) {
@@ -71,6 +125,12 @@ object DamageHandler {
                     )
                 )
             }
+        }
+    }
+
+    private fun damageArmor(stack: ItemStack, player: Player, slot: EquipmentSlot, amount: Int) {
+        if (!player.abilities.instabuild) {
+            stack.hurtAndBreak(amount, player, slot)
         }
     }
 

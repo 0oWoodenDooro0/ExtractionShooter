@@ -3,7 +3,6 @@ package com.gmail.vincent031525.extractionshooter.item
 import com.gmail.vincent031525.extractionshooter.dataattachment.PlayerHealth
 import com.gmail.vincent031525.extractionshooter.health.BodyPart
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
-import com.gmail.vincent031525.extractionshooter.registry.ModEffects
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -20,7 +19,6 @@ class HealItem(properties: Properties, val maxHealAmount: Float, val duration: I
 
     override fun finishUsingItem(stack: ItemStack, level: Level, entity: LivingEntity): ItemStack {
         if (!level.isClientSide && entity is Player) {
-            entity.removeEffect(ModEffects.BLEEDING)
             val health = entity.getData(ModDataAttachments.PLAYER_HEALTH)
             var pool = maxHealAmount
 
