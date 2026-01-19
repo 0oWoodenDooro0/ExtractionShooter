@@ -284,21 +284,24 @@ class GunItem<T : GeoItemRenderer<*>>(
 
         for (entity in entities) {
             val entityBox = entity.boundingBox
-            if (entityBox.clip(eyePos, endPos).isPresent) {
+            val hitResult = entityBox.clip(eyePos, endPos)
+            if (hitResult.isPresent) {
+                val hitPos = hitResult.get()
                 entity.invulnerableTime = 0
                 entity.hurtServer(
                     level,
                     BulletDamageSource(
                         entity.damageSources().damageTypes.getOrThrow(DamageTypes.PLAYER_ATTACK),
                         ammoStats,
-                        player
+                        player,
+                        hitPos
                     ),
                     ammoStats.damage
                 )
 
                 level.sendParticles(
                     net.minecraft.core.particles.ParticleTypes.CRIT,
-                    entity.x, entity.y + entity.eyeHeight, entity.z, 5, 0.2, 0.2, 0.2, 0.0
+                    hitPos.x, hitPos.y, hitPos.z, 5, 0.2, 0.2, 0.2, 0.0
                 )
                 break
             }
@@ -343,6 +346,7 @@ class GunItem<T : GeoItemRenderer<*>>(
             )
         }
 
+        if (player.abilities.instabuild) return
         magazineStack.set(
             ModDataComponents.MAGAZINE_DATA,
             magazineData.copy(

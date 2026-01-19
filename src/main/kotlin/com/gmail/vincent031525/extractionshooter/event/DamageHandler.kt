@@ -9,13 +9,17 @@ import com.gmail.vincent031525.extractionshooter.registry.ModDamageTypes
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import com.gmail.vincent031525.extractionshooter.registry.ModEffects
+import com.mojang.brigadier.arguments.FloatArgumentType
 import net.minecraft.commands.Commands
+import net.minecraft.commands.arguments.coordinates.Vec3Argument
 import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.phys.Vec3
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.RegisterCommandsEvent
@@ -26,18 +30,18 @@ object DamageHandler {
 
     @SubscribeEvent
     fun onLivingDamage(event: LivingIncomingDamageEvent) {
-        val entity = event.entity
-        if (entity !is Player || entity.level().isClientSide) return
+        val player = event.entity
+        if (player !is Player || player.level().isClientSide) return
 
         val source = event.source
         val damage = event.amount
-        val healthData = entity.getData(ModDataAttachments.PLAYER_HEALTH)
+        val healthData = player.getData(ModDataAttachments.PLAYER_HEALTH)
 
-        val hitVec = source.sourcePosition
+        val hitVec = if (source is BulletDamageSource) source.hitPos else source.sourcePosition
         val part = when {
             source.`is`(DamageTypes.FALL) -> BodyPart.LEGS
             source.`is`(ModDamageTypes.BLEEDING) -> BodyPart.BODY
-            else -> LimbAABBHelper.getTargetPart(entity, hitVec)
+            else -> LimbAABBHelper.getTargetPart(player, hitVec)
         }
 
         event.amount = 0f
@@ -45,9 +49,9 @@ object DamageHandler {
         if (part == null) return
 
         if (source is BulletDamageSource) {
-            handleArmorAndDamage(entity, part, source.stats, damage)
+            handleArmorAndDamage(player, part, source.stats, damage)
         } else {
-            applyFinalDamage(entity, part, damage)
+            applyFinalDamage(player, BodyPart.BODY, damage)
         }
 
         if (healthData.head <= 0f || healthData.body <= 0f) {
@@ -67,7 +71,7 @@ object DamageHandler {
         val armorStack = slot?.let { player.getItemBySlot(it) } ?: ItemStack.EMPTY
         val armorStats = if (armorStack.isEmpty) null else armorStack.itemHolder.getData(ModDataMaps.ARMOR_STATS)
 
-        if (armorStats == null) {
+        if (armorStats == null || slot == null) {
             applyFinalDamage(player, part, rawDamage)
             return
         }
@@ -84,13 +88,13 @@ object DamageHandler {
             val reduction = 0.8f
             val finalDamage = rawDamage * reduction
 
-            damageArmor(armorStack, player, slot!!, 1)
+            damageArmor(armorStack, player, slot, 1)
 
             applyFinalDamage(player, part, finalDamage)
         } else {
             val bluntDamage = rawDamage * armorStats.bluntThroughput
 
-            damageArmor(armorStack, player, slot!!, 2)
+            damageArmor(armorStack, player, slot, 2)
 
             applyFinalDamage(player, part, bluntDamage)
         }
@@ -129,7 +133,7 @@ object DamageHandler {
     }
 
     private fun damageArmor(stack: ItemStack, player: Player, slot: EquipmentSlot, amount: Int) {
-        if (!player.abilities.instabuild) {
+        if (player !is Player || !player.abilities.instabuild) {
             stack.hurtAndBreak(amount, player, slot)
         }
     }
@@ -175,6 +179,50 @@ object DamageHandler {
                     }, false)
                     1
                 })
+        )
+        event.dispatcher.register(
+            Commands.literal("testdamage")
+                .then(
+                    Commands.argument("pos", Vec3Argument.vec3())
+                        .then(
+                            Commands.argument("penetration", FloatArgumentType.floatArg(0f, 100f))
+                                .then(
+                                    Commands.argument("damage", FloatArgumentType.floatArg(0f, 100f))
+                                        .executes { context ->
+                                            val pos = Vec3Argument.getVec3(context, "pos")
+                                            val pen = FloatArgumentType.getFloat(context, "penetration")
+                                            val dmg = FloatArgumentType.getFloat(context, "damage")
+
+                                            val player = context.source.player ?: return@executes 0
+
+                                            executeBulletDamage(player, pos, pen, dmg)
+                                            1
+                                        }
+                                )
+                        )
+                )
+        )
+    }
+
+    private fun executeBulletDamage(
+        player: Player,
+        hitPos: Vec3,
+        pen: Float,
+        dmg: Float
+    ) {
+        val level = player.level()
+        val ammoStats = AmmoStats(dmg, pen)
+
+        player.invulnerableTime = 0
+        player.hurtServer(
+            level as ServerLevel,
+            BulletDamageSource(
+                player.damageSources().damageTypes.getOrThrow(DamageTypes.PLAYER_ATTACK),
+                ammoStats,
+                player,
+                hitPos
+            ),
+            ammoStats.damage
         )
     }
 }
