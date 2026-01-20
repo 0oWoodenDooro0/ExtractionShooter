@@ -3,6 +3,7 @@ package com.gmail.vincent031525.extractionshooter.registry
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
 import com.gmail.vincent031525.extractionshooter.datacomponent.GunData
 import com.gmail.vincent031525.extractionshooter.datacomponent.MagazineData
+import com.gmail.vincent031525.extractionshooter.inventory.GridInventory
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.Registries
 import net.neoforged.neoforge.registries.DeferredHolder
@@ -25,4 +26,8 @@ object ModDataComponents {
                 .networkSynchronized(MagazineData.STREAM_CODEC).build()
         }
 
+    val GRID_INVENTORY = DATA_COMPONENTS.register("grid_inventory") { ->
+        DataComponentType.builder<GridInventory>().persistent(GridInventory.CODEC)
+            .networkSynchronized(GridInventory.STREAM_CODEC).build()
+    }
 }

@@ -4,6 +4,8 @@ import com.gmail.vincent031525.extractionshooter.item.GunItem
 import com.gmail.vincent031525.extractionshooter.network.payload.ReloadPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.ShootPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.SwitchModePayload
+import com.gmail.vincent031525.extractionshooter.network.payload.SyncEquipmentPayload
+import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
@@ -67,6 +69,12 @@ object ServerPayloadHandler {
             } ?: return@enqueueWork
 
             gunItem.reload(player, gunStack, magazineSlot)
+        }
+    }
+
+    fun handleSyncEquipment(payload: SyncEquipmentPayload, context: IPayloadContext) {
+        context.enqueueWork {
+            context.player().setData(ModDataAttachments.PLAYER_EQUIPMENT, payload.equipment)
         }
     }
 }

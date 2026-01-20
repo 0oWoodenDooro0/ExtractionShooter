@@ -1,4 +1,5 @@
 {
+  "replace": true,
   "values": {
     "minecraft:chainmail_chestplate": {
       "armorClass": 2,

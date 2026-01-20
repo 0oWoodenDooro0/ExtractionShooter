@@ -1,10 +1,7 @@
 package com.gmail.vincent031525.extractionshooter.registry
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
-import com.gmail.vincent031525.extractionshooter.datamap.AmmoStats
-import com.gmail.vincent031525.extractionshooter.datamap.ArmorStats
-import com.gmail.vincent031525.extractionshooter.datamap.GunStats
-import com.gmail.vincent031525.extractionshooter.datamap.MagazineStats
+import com.gmail.vincent031525.extractionshooter.datamap.*
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.Identifier
 import net.neoforged.bus.api.SubscribeEvent
@@ -35,11 +32,17 @@ object ModDataMaps {
         Registries.ITEM, ArmorStats.CODEC
     ).synced(ArmorStats.CODEC, true).build()
 
+    val ITEM_SIZE = DataMapType.builder(
+        Identifier.fromNamespaceAndPath(Extractionshooter.ID, "item_size"),
+        Registries.ITEM, ItemSize.CODEC
+    ).synced(ItemSize.CODEC, true).build()
+
     @SubscribeEvent
     fun registerDataMapTypes(event: RegisterDataMapTypesEvent) {
         event.register(GUN_STATS)
         event.register(MAGAZINE_STATS)
         event.register(AMMO_STATS)
         event.register(ARMOR_STATS)
+        event.register(ITEM_SIZE)
     }
 }

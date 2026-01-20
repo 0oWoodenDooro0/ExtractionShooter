@@ -133,7 +133,7 @@ object DamageHandler {
     }
 
     private fun damageArmor(stack: ItemStack, player: Player, slot: EquipmentSlot, amount: Int) {
-        if (player !is Player || !player.abilities.instabuild) {
+        if (!player.abilities.instabuild) {
             stack.hurtAndBreak(amount, player, slot)
         }
     }

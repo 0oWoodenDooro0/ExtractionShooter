@@ -1,0 +1,49 @@
+{
+  "replace": true,
+  "values": {
+    "extractionshooter:ammo_556": {
+      "height": 1,
+      "width": 1
+    },
+    "extractionshooter:bandage": {
+      "height": 1,
+      "width": 1
+    },
+    "extractionshooter:m4a1": {
+      "height": 2,
+      "width": 5
+    },
+    "extractionshooter:mag_30": {
+      "height": 2,
+      "width": 1
+    },
+    "extractionshooter:mag_45": {
+      "height": 3,
+      "width": 1
+    },
+    "extractionshooter:mag_60": {
+      "height": 2,
+      "width": 1
+    },
+    "extractionshooter:medkit_large": {
+      "height": 2,
+      "width": 1
+    },
+    "extractionshooter:medkit_small": {
+      "height": 1,
+      "width": 2
+    },
+    "extractionshooter:painkillers": {
+      "height": 1,
+      "width": 1
+    },
+    "extractionshooter:splint": {
+      "height": 1,
+      "width": 1
+    },
+    "extractionshooter:surgery_kit": {
+      "height": 1,
+      "width": 2
+    }
+  }
+}
