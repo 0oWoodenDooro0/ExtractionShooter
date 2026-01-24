@@ -22,14 +22,23 @@ object Extractionshooter {
     // the logger for our mod
     val LOGGER: Logger = LogManager.getLogger(ID)
 
-    init {
-        ModDataComponents.DATA_COMPONENTS.register(MOD_BUS)
-        ModItems.ITEMS.register(MOD_BUS)
-        ModCreativeTabs.CREATIVE_TABS.register(MOD_BUS)
-        ModDataAttachments.ATTACHMENT_TYPES.register(MOD_BUS)
-        ModEffects.MOB_EFFECTS.register(MOD_BUS)
+        init {
 
-        val obj = runForDist(clientTarget = {
+            ModDataComponents.DATA_COMPONENTS.register(MOD_BUS)
+
+            ModItems.ITEMS.register(MOD_BUS)
+
+            ModMenus.MENUS.register(MOD_BUS)
+
+            ModCreativeTabs.CREATIVE_TABS.register(MOD_BUS)
+
+            ModDataAttachments.ATTACHMENT_TYPES.register(MOD_BUS)
+
+            ModEffects.MOB_EFFECTS.register(MOD_BUS)
+
+    
+
+            val obj = runForDist(clientTarget = {
             MOD_BUS.addListener(::onClientSetup)
         }, serverTarget = {
             MOD_BUS.addListener(::onServerSetup)

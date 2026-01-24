@@ -55,4 +55,11 @@ object ModItems {
     val MEDKIT_LARGE_ITEM = ITEMS.registerItem("medkit_large") { properties ->
         HealItem(properties.durability(400), 85f, 60)
     }
+
+    val RIG_ITEM = ITEMS.registerItem("rig") { properties ->
+        Item(properties.stacksTo(1).component(ModDataComponents.GRID_INVENTORY, com.gmail.vincent031525.extractionshooter.inventory.GridInventory(3, 3)))
+    }
+    val BACKPACK_ITEM = ITEMS.registerItem("backpack") { properties ->
+        Item(properties.stacksTo(1).component(ModDataComponents.GRID_INVENTORY, com.gmail.vincent031525.extractionshooter.inventory.GridInventory(5, 5)))
+    }
 }

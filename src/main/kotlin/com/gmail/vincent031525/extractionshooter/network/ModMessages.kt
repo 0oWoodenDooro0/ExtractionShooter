@@ -32,10 +32,25 @@ object ModMessages {
             ReloadPayload.STREAM_CODEC,
             ServerPayloadHandler::handleReload
         )
-        registrar.playToServer(
+        registrar.playToClient(
             SyncEquipmentPayload.ID,
             SyncEquipmentPayload.STREAM_CODEC,
-            ServerPayloadHandler::handleSyncEquipment
+            ClientPayloadHandler::handleSyncEquipment
+        )
+        registrar.playToServer(
+            com.gmail.vincent031525.extractionshooter.network.payload.OpenInventoryPayload.ID,
+            com.gmail.vincent031525.extractionshooter.network.payload.OpenInventoryPayload.STREAM_CODEC,
+            ServerPayloadHandler::handleOpenInventory
+        )
+        registrar.playToServer(
+            com.gmail.vincent031525.extractionshooter.network.payload.PickFromGridPayload.ID,
+            com.gmail.vincent031525.extractionshooter.network.payload.PickFromGridPayload.STREAM_CODEC,
+            ServerPayloadHandler::handlePickFromGrid
+        )
+        registrar.playToServer(
+            com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload.ID,
+            com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload.STREAM_CODEC,
+            ServerPayloadHandler::handlePlaceToGrid
         )
     }
 }

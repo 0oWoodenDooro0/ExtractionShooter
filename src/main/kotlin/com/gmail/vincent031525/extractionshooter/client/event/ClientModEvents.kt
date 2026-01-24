@@ -17,6 +17,11 @@ import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent
 import net.neoforged.neoforge.client.network.ClientPacketDistributor
 
+import com.gmail.vincent031525.extractionshooter.client.screen.GridInventoryScreen
+import com.gmail.vincent031525.extractionshooter.registry.ModMenus
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent
+import net.neoforged.neoforge.client.event.ScreenEvent
+
 @EventBusSubscriber(modid = Extractionshooter.ID, value = [Dist.CLIENT])
 object ClientModEvents {
 
@@ -24,6 +29,32 @@ object ClientModEvents {
     fun onRegisterKeyMappings(event: RegisterKeyMappingsEvent) {
         event.register(KeyBindings.SWITCH_MODE_KEY)
         event.register(KeyBindings.RELOAD_KEY)
+        event.register(KeyBindings.TOGGLE_INVENTORY_KEY)
+    }
+
+    @SubscribeEvent
+    fun onRegisterMenuScreens(event: RegisterMenuScreensEvent) {
+        event.register(ModMenus.GRID_INVENTORY_MENU.get(), ::GridInventoryScreen)
+    }
+
+    @SubscribeEvent
+    fun onScreenMousePressed(event: ScreenEvent.MouseButtonPressed.Pre) {
+        val screen = event.screen
+        if (screen is GridInventoryScreen) {
+            if (screen.onMouseClick(event.mouseX, event.mouseY, event.button)) {
+                event.isCanceled = true
+            }
+        }
+    }
+
+    @SubscribeEvent
+    fun onScreenKeyPressed(event: ScreenEvent.KeyPressed.Pre) {
+        val screen = event.screen
+        if (screen is GridInventoryScreen) {
+            if (screen.onKeyPress(event.keyCode, event.scanCode, event.modifiers)) {
+                event.isCanceled = true
+            }
+        }
     }
 }
 
@@ -40,6 +71,10 @@ object ClientGameEvents {
 
         while (KeyBindings.RELOAD_KEY.consumeClick()) {
             ClientPacketDistributor.sendToServer(ReloadPayload())
+        }
+
+        while (KeyBindings.TOGGLE_INVENTORY_KEY.consumeClick()) {
+            ClientPacketDistributor.sendToServer(com.gmail.vincent031525.extractionshooter.network.payload.OpenInventoryPayload.INSTANCE)
         }
 
         handleShoot()

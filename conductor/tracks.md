@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Implement Grid-Based Inventory System**
-  *Link: [./tracks/inventory_system_20260121/](./tracks/inventory_system_20260121/)*
+- [x] **Track: GridInventoryMenu Refactor**
+  *Link: [./tracks/grid_menu_refactor_20260124/](./tracks/grid_menu_refactor_20260124/)*

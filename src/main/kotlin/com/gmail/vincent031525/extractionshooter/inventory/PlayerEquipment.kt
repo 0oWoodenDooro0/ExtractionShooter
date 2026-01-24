@@ -11,33 +11,25 @@ import net.minecraft.world.item.ItemStack
 
 class PlayerEquipment {
 
-    val equipmentSlots = mutableMapOf<String, ItemStack>()
-
     val persistentGrids = mutableMapOf<String, GridInventory>()
 
     companion object {
         val CODEC: MapCodec<PlayerEquipment> = RecordCodecBuilder.mapCodec { instance ->
             instance.group(
-                Codec.unboundedMap(Codec.STRING, ItemStack.CODEC).fieldOf("equipmentSlots")
-                    .forGetter { it.equipmentSlots },
                 Codec.unboundedMap(Codec.STRING, GridInventory.CODEC).fieldOf("persistentGrids")
                     .forGetter { it.persistentGrids }
-            ).apply(instance) { slots, grids ->
+            ).apply(instance) { grids ->
                 PlayerEquipment().apply {
-                    equipmentSlots.putAll(slots)
                     persistentGrids.putAll(grids)
                 }
             }
         }
 
         val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, PlayerEquipment> = StreamCodec.composite(
-            ByteBufCodecs.map({ mutableMapOf() }, ByteBufCodecs.STRING_UTF8, ItemStack.OPTIONAL_STREAM_CODEC),
-            { it.equipmentSlots },
             ByteBufCodecs.map({ mutableMapOf() }, ByteBufCodecs.STRING_UTF8, GridInventory.STREAM_CODEC),
             { it.persistentGrids },
-            { slots, grids ->
+            { grids ->
                 PlayerEquipment().apply {
-                    equipmentSlots.putAll(slots)
                     persistentGrids.putAll(grids)
                 }
             }
@@ -46,7 +38,7 @@ class PlayerEquipment {
 
     init {
         listOf("helmet", "armor", "tactical_rig", "backpack", "primary_1", "primary_2", "pistol").forEach {
-            equipmentSlots[it] = ItemStack.EMPTY
+            persistentGrids[it] = GridInventory(1, 1, filter = it)
         }
 
         persistentGrids["pockets_1"] = GridInventory(1, 1)
@@ -61,17 +53,28 @@ class PlayerEquipment {
 
         all.putAll(persistentGrids)
 
-        val rig = equipmentSlots["tactical_rig"]
-        if (!rig!!.isEmpty) {
-            getGridFromItem(rig)?.let { all["rig_grid"] = it }
-        }
-
-        val backpack = equipmentSlots["backpack"]
-        if (!backpack!!.isEmpty) {
-            getGridFromItem(backpack)?.let { all["backpack_grid"] = it }
+        listOf("helmet", "armor", "tactical_rig", "backpack", "primary_1", "primary_2", "pistol").forEach { slotName ->
+            val grid = persistentGrids[slotName]
+            val stack = grid?.getItemInstance(0, 0)?.stack
+            if (stack != null && !stack.isEmpty) {
+                getGridFromItem(stack)?.let { all["${slotName}_grid"] = it }
+            }
         }
 
         return all
+    }
+
+    fun updateGrid(name: String, newGrid: GridInventory) {
+        if (persistentGrids.containsKey(name)) {
+            persistentGrids[name] = newGrid
+        } else if (name.endsWith("_grid")) {
+            val slotName = name.removeSuffix("_grid")
+            val grid = persistentGrids[slotName]
+            val stack = grid?.getItemInstance(0, 0)?.stack
+            if (stack != null && !stack.isEmpty) {
+                stack.set(ModDataComponents.GRID_INVENTORY, newGrid)
+            }
+        }
     }
 
     private fun getGridFromItem(stack: ItemStack): GridInventory? {

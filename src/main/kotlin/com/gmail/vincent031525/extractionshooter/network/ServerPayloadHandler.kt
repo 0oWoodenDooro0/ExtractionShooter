@@ -1,16 +1,17 @@
 package com.gmail.vincent031525.extractionshooter.network
 
 import com.gmail.vincent031525.extractionshooter.item.GunItem
-import com.gmail.vincent031525.extractionshooter.network.payload.ReloadPayload
-import com.gmail.vincent031525.extractionshooter.network.payload.ShootPayload
-import com.gmail.vincent031525.extractionshooter.network.payload.SwitchModePayload
-import com.gmail.vincent031525.extractionshooter.network.payload.SyncEquipmentPayload
+import com.gmail.vincent031525.extractionshooter.network.payload.*
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.MenuProvider
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.AbstractContainerMenu
 import net.neoforged.neoforge.network.handling.IPayloadContext
 
 object ServerPayloadHandler {
@@ -72,9 +73,59 @@ object ServerPayloadHandler {
         }
     }
 
-    fun handleSyncEquipment(payload: SyncEquipmentPayload, context: IPayloadContext) {
+    fun handleOpenInventory(payload: com.gmail.vincent031525.extractionshooter.network.payload.OpenInventoryPayload, context: IPayloadContext) {
         context.enqueueWork {
-            context.player().setData(ModDataAttachments.PLAYER_EQUIPMENT, payload.equipment)
+            val player = context.player() as? ServerPlayer ?: return@enqueueWork
+            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
+            player.openMenu(object : MenuProvider {
+                override fun getDisplayName(): Component = Component.literal("Inventory")
+                override fun createMenu(id: Int, inv: Inventory, p: Player): AbstractContainerMenu {
+                    return com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu(id, inv, equipment)
+                }
+            })
+        }
+    }
+
+    fun handlePickFromGrid(payload: PickFromGridPayload, context: IPayloadContext) {
+        context.enqueueWork {
+            val player = context.player() as? ServerPlayer ?: return@enqueueWork
+            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
+            val allGrids = equipment.getAllActiveGrids()
+            val grid = allGrids[payload.gridName] ?: return@enqueueWork
+
+            if (!player.containerMenu.carried.isEmpty) return@enqueueWork // Already holding something
+
+            val result = grid.removeItem(payload.x, payload.y)
+            if (result != null) {
+                val (newGrid, stack) = result
+                equipment.updateGrid(payload.gridName, newGrid)
+                player.containerMenu.setCarried(stack)
+                val syncPacket = SyncEquipmentPayload(equipment)
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, syncPacket)
+            }
+        }
+    }
+
+    fun handlePlaceToGrid(
+        payload: com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload,
+        context: IPayloadContext
+    ) {
+        context.enqueueWork {
+            val player = context.player() as? ServerPlayer ?: return@enqueueWork
+            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
+            val allGrids = equipment.getAllActiveGrids()
+            val grid = allGrids[payload.gridName] ?: return@enqueueWork
+
+            val carried = player.containerMenu.carried
+            if (carried.isEmpty) return@enqueueWork
+
+            val newGrid = grid.addItem(carried, payload.x, payload.y, payload.rotated)
+            if (newGrid != null) {
+                equipment.updateGrid(payload.gridName, newGrid)
+                player.containerMenu.setCarried(net.minecraft.world.item.ItemStack.EMPTY)
+                val syncPacket = SyncEquipmentPayload(equipment)
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, syncPacket)
+            }
         }
     }
 }

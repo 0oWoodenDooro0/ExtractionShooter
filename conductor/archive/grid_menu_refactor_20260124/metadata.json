@@ -1,0 +1,8 @@
+{
+  "track_id": "grid_menu_refactor_20260124",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-24T12:00:00Z",
+  "updated_at": "2026-01-24T12:00:00Z",
+  "description": "Refactor GridInventoryMenu to use grid-only slots and remove vanilla hotbar integration."
+}

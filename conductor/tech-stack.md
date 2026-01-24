@@ -12,3 +12,4 @@
 ## Development Tools
 - **Mappings:** [Parchment](https://parchmentmc.org/) - Utilized to provide high-quality, human-readable names for Minecraft's internal methods and fields, improving code clarity.
 - **Data Generation:** Built-in NeoForge data generation system is used to programmatically create JSON resources (assets and data maps), ensuring consistency and reducing manual error.
+- **Testing:** [JUnit 5](https://junit.org/junit5/) - Used for unit testing core logic independently of the Minecraft environment.

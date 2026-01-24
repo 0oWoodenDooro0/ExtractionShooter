@@ -135,5 +135,33 @@ class ModItemModelProvider(output: PackOutput) : ModelProvider(output, Extractio
                 )
             )
         )
+        itemModels.itemModelOutput.accept(
+            ModItems.BACKPACK_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.BACKPACK_ITEM.get(),
+                    TextureMapping.layer0(
+                        Identifier.fromNamespaceAndPath(
+                            Extractionshooter.ID,
+                            "item/equipment/backpack"
+                        )
+                    ),
+                    itemModels.modelOutput
+                )
+            )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.RIG_ITEM.get(), ItemModelUtils.plainModel(
+                ModelTemplates.FLAT_ITEM.create(
+                    ModItems.RIG_ITEM.get(),
+                    TextureMapping.layer0(
+                        Identifier.fromNamespaceAndPath(
+                            Extractionshooter.ID,
+                            "item/equipment/rig"
+                        )
+                    ),
+                    itemModels.modelOutput
+                )
+            )
+        )
     }
 }

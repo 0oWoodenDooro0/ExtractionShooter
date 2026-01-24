@@ -1,43 +1,49 @@
 package com.gmail.vincent031525.extractionshooter.inventory
 
+import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
+import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
+import com.gmail.vincent031525.extractionshooter.util.EquipmentValidator
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.world.item.ItemStack
+import java.util.*
 
-class GridInventory(val columns: Int, val rows: Int) {
-    private val items = mutableListOf<GridItemInstance>()
+data class GridInventory(
+    val columns: Int,
+    val rows: Int,
+    val items: List<GridItemInstance> = emptyList(),
+    val filter: String? = null
+) {
+    @Transient
+    var sizeProvider: (ItemStack) -> ItemSize = { InventoryUtils.getItemSize(it) }
 
     companion object {
         val CODEC: Codec<GridInventory> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Codec.INT.fieldOf("columns").forGetter(GridInventory::columns),
                 Codec.INT.fieldOf("rows").forGetter(GridInventory::rows),
-                GridItemInstance.CODEC.listOf().fieldOf("items").forGetter { it.items }
-            ).apply(instance) { cols, rws, itemsList ->
-                val inv = GridInventory(cols, rws)
-                inv.items.addAll(itemsList)
-                inv
-            }
+                GridItemInstance.CODEC.listOf().fieldOf("items").forGetter(GridInventory::items),
+                Codec.STRING.optionalFieldOf("filter").forGetter { Optional.ofNullable(it.filter) }
+            ).apply(instance) { c, r, i, f -> GridInventory(c, r, i, f.orElse(null)) }
         }
 
         val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, GridInventory> = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, { it.columns },
             ByteBufCodecs.VAR_INT, { it.rows },
-            GridItemInstance.STREAM_CODEC.apply(ByteBufCodecs.list()), { it.items },
-            { cols, rws, itemsList ->
-                val inv = GridInventory(cols, rws)
-                inv.items.addAll(itemsList)
-                inv
-            }
+            ByteBufCodecs.collection({ java.util.ArrayList() }, GridItemInstance.STREAM_CODEC), { it.items },
+            ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), { Optional.ofNullable(it.filter) },
+            { c, r, i, f -> GridInventory(c, r, i, f.orElse(null)) }
         )
     }
 
     fun canPlace(itemStack: ItemStack, targetX: Int, targetY: Int, rotated: Boolean): Boolean {
+        if (!isValidForItem(itemStack)) return false
+        
         val tempInstance = GridItemInstance(itemStack, targetX, targetY, rotated)
-        val size = tempInstance.actualSize
+        val size = tempInstance.getActualSize(sizeProvider)
 
         if (targetX < 0 || targetY < 0 || targetX + size.width > columns || targetY + size.height > rows) {
             return false
@@ -49,22 +55,27 @@ class GridInventory(val columns: Int, val rows: Int) {
         return true
     }
 
-    fun addItem(itemStack: ItemStack, targetX: Int, targetY: Int, rotated: Boolean): Boolean {
-        if (canPlace(itemStack, targetX, targetY, rotated)) {
-            items.add(GridItemInstance(itemStack, targetX, targetY, rotated))
-            return true
-        }
-        return false
+    fun isValidForItem(itemStack: ItemStack): Boolean {
+        if (filter == null) return true
+        return EquipmentValidator.isValid(filter, itemStack)
     }
 
-    fun removeItem(targetX: Int, targetY: Int): ItemStack? {
-        val iterator = items.iterator()
-        while (iterator.hasNext()) {
-            val item = iterator.next()
-            if (item.occupies(targetX, targetY)) {
-                iterator.remove()
-                return item.stack
-            }
+    fun addItem(itemStack: ItemStack, targetX: Int, targetY: Int, rotated: Boolean): GridInventory? {
+        if (canPlace(itemStack, targetX, targetY, rotated)) {
+            val newItems = items.toMutableList()
+            newItems.add(GridItemInstance(itemStack, targetX, targetY, rotated))
+            return copy(items = newItems)
+        }
+        return null
+    }
+
+    fun removeItem(targetX: Int, targetY: Int): Pair<GridInventory, ItemStack>? {
+        val itemToRemove = items.firstOrNull { it.occupies(targetX, targetY, sizeProvider) }
+        
+        if (itemToRemove != null) {
+            val newItems = items.toMutableList()
+            newItems.remove(itemToRemove)
+            return Pair(copy(items = newItems), itemToRemove.stack)
         }
         return null
     }
@@ -80,14 +91,16 @@ class GridInventory(val columns: Int, val rows: Int) {
         return null
     }
 
+    fun getItemInstance(x: Int, y: Int): GridItemInstance? {
+        return items.firstOrNull { it.occupies(x, y, sizeProvider) }
+    }
+
     private fun isOverlapping(a: GridItemInstance, b: GridItemInstance): Boolean {
-        val sizeA = a.actualSize
-        val sizeB = b.actualSize
+        val sizeA = a.getActualSize(sizeProvider)
+        val sizeB = b.getActualSize(sizeProvider)
         return a.x < b.x + sizeB.width &&
                 a.x + sizeA.width > b.x &&
                 a.y < b.y + sizeB.height &&
                 a.y + sizeA.height > b.y
     }
-
-    fun getItems(): List<GridItemInstance> = items
 }

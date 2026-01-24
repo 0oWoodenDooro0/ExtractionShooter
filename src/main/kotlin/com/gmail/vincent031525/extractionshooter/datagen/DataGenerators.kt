@@ -56,9 +56,10 @@ object DataGenerators {
             DatapackBuiltinEntriesProvider(packOutput, lookupProvider, builder, setOf(Extractionshooter.ID))
         )
 
-        generator.addProvider(
-            true,
-            ModDamageTypeTagsProvider(packOutput, lookupProvider)
-        )
+        generator.addProvider(true, ModBlockTagProvider(packOutput, lookupProvider))
+
+        generator.addProvider(true, ModItemTagProvider(packOutput, lookupProvider))
+
+        generator.addProvider(true, ModDamageTypeTagsProvider(packOutput, lookupProvider))
     }
 }

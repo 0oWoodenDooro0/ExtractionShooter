@@ -1,7 +1,7 @@
 package com.gmail.vincent031525.extractionshooter.inventory
 
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
-import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
+import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.registries.BuiltInRegistries
@@ -19,7 +19,7 @@ data class GridItemInstance(
     companion object {
         val CODEC: Codec<GridItemInstance> = RecordCodecBuilder.create { instance ->
             instance.group(
-                ItemStack.CODEC.fieldOf("stack").forGetter(GridItemInstance::stack),
+                ItemStack.OPTIONAL_CODEC.fieldOf("stack").forGetter(GridItemInstance::stack),
                 Codec.INT.fieldOf("x").forGetter(GridItemInstance::x),
                 Codec.INT.fieldOf("y").forGetter(GridItemInstance::y),
                 Codec.BOOL.fieldOf("rotated").forGetter(GridItemInstance::rotated)
@@ -35,15 +35,13 @@ data class GridItemInstance(
         )
     }
 
-    val actualSize: ItemSize
-        get() {
-            val baseSize =
-                BuiltInRegistries.ITEM.wrapAsHolder(stack.item).getData(ModDataMaps.ITEM_SIZE) ?: ItemSize.DEFAULT
-            return if (rotated) ItemSize(baseSize.height, baseSize.width) else baseSize
-        }
+    fun getActualSize(sizeProvider: (ItemStack) -> ItemSize): ItemSize {
+        val baseSize = sizeProvider(stack)
+        return if (rotated) ItemSize(baseSize.height, baseSize.width) else baseSize
+    }
 
-    fun occupies(checkX: Int, checkY: Int): Boolean {
-        val size = actualSize
+    fun occupies(checkX: Int, checkY: Int, sizeProvider: (ItemStack) -> ItemSize): Boolean {
+        val size = getActualSize(sizeProvider)
         return checkX in x until (x + size.width) && checkY in y until (y + size.height)
     }
 }
