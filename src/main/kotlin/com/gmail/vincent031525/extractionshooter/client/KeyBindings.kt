@@ -18,11 +18,4 @@ object KeyBindings {
         GLFW.GLFW_KEY_R,
         KeyMapping.Category.MISC
     )
-
-    val TOGGLE_INVENTORY_KEY = KeyMapping(
-        "key.extractionshooter.toggle_inventory",
-        InputConstants.Type.KEYSYM,
-        GLFW.GLFW_KEY_TAB,
-        KeyMapping.Category.MISC
-    )
 }

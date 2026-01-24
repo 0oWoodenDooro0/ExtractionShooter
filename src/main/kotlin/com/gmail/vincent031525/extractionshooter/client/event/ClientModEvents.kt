@@ -29,7 +29,6 @@ object ClientModEvents {
     fun onRegisterKeyMappings(event: RegisterKeyMappingsEvent) {
         event.register(KeyBindings.SWITCH_MODE_KEY)
         event.register(KeyBindings.RELOAD_KEY)
-        event.register(KeyBindings.TOGGLE_INVENTORY_KEY)
     }
 
     @SubscribeEvent
@@ -71,10 +70,6 @@ object ClientGameEvents {
 
         while (KeyBindings.RELOAD_KEY.consumeClick()) {
             ClientPacketDistributor.sendToServer(ReloadPayload())
-        }
-
-        while (KeyBindings.TOGGLE_INVENTORY_KEY.consumeClick()) {
-            ClientPacketDistributor.sendToServer(com.gmail.vincent031525.extractionshooter.network.payload.OpenInventoryPayload.INSTANCE)
         }
 
         handleShoot()
