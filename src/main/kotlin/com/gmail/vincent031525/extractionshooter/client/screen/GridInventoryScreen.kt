@@ -32,31 +32,32 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
         
         // Render Active Grids
         val activeGrids = menu.equipment.getAllActiveGrids()
-        var gridY = y + 20 // Start higher since vanilla slots are removed
         activeGrids.forEach { (name, grid) ->
-            guiGraphics.drawString(font, name, x + 8, gridY, 0xFFFFFF)
-            gridY += 10
+            val pos = MenuLayout.getPos(name)
+            val gridX = x + pos.x
+            val gridY = y + pos.y
+            
+            guiGraphics.drawString(font, name, gridX, gridY, 0xFFFFFF)
+            val slotsStartY = gridY + 10
             
             // Draw grid lines and items
             for (row in 0 until grid.rows) {
                 for (col in 0 until grid.columns) {
-                    val slotX = x + 8 + col * 18
-                    val slotY = gridY + row * 18
+                    val slotX = gridX + col * 18
+                    val slotY = slotsStartY + row * 18
                     guiGraphics.fill(slotX, slotY, slotX + 17, slotY + 17, -0xbbbbbc)
                 }
             }
 
             // Draw items
             grid.items.forEach { instance ->
-                val itemX = x + 8 + instance.x * 18
-                val itemY = gridY + instance.y * 18
+                val itemX = gridX + instance.x * 18
+                val itemY = slotsStartY + instance.y * 18
                 val size = instance.getActualSize(grid.sizeProvider)
                 
                 guiGraphics.fill(itemX, itemY, itemX + size.width * 18 - 1, itemY + size.height * 18 - 1, -0x555556)
                 guiGraphics.renderItem(instance.stack, itemX + (size.width * 18 - 16) / 2, itemY + (size.height * 18 - 16) / 2)
             }
-            
-            gridY += grid.rows * 18 + 10
         }
     }
 
@@ -75,17 +76,19 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             val x = (width - imageWidth) / 2
             val y = (height - imageHeight) / 2
             val activeGrids = menu.equipment.getAllActiveGrids()
-            var gridY = y + 20
 
-            for ((_, grid) in activeGrids) {
+            for ((name, grid) in activeGrids) {
+                val pos = MenuLayout.getPos(name)
+                val gridX = x + pos.x
+                val gridY = y + pos.y
                 val gridHeaderHeight = 10
                 val gridHeight = grid.rows * 18
                 val gridStartY = gridY + gridHeaderHeight
                 
-                if (mouseX >= x + 8 && mouseX < x + 8 + grid.columns * 18 &&
+                if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 &&
                     mouseY >= gridStartY && mouseY < gridStartY + gridHeight) {
                     
-                    val col = ((mouseX - (x + 8)) / 18).toInt()
+                    val col = ((mouseX - gridX) / 18).toInt()
                     val row = ((mouseY - gridStartY) / 18).toInt()
                     
                     tint = if (grid.canPlace(carried, col, row, heldItemRotated)) {
@@ -95,7 +98,6 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     }
                     break
                 }
-                gridY += gridHeaderHeight + gridHeight + 10
             }
 
             guiGraphics.fill(mouseX, mouseY, mouseX + renderSize.width * 18, mouseY + renderSize.height * 18, tint)
@@ -110,18 +112,20 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
         val activeGrids = menu.equipment.getAllActiveGrids()
-        var gridY = y + 20
 
         // Iterate grids to find click
         for ((name, grid) in activeGrids) {
+            val pos = MenuLayout.getPos(name)
+            val gridX = x + pos.x
+            val gridY = y + pos.y
             val gridHeaderHeight = 10
             val gridHeight = grid.rows * 18
             val gridStartY = gridY + gridHeaderHeight
             
-            if (mouseX >= x + 8 && mouseX < x + 8 + grid.columns * 18 &&
+            if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 &&
                 mouseY >= gridStartY && mouseY < gridStartY + gridHeight) {
                 
-                val col = ((mouseX - (x + 8)) / 18).toInt()
+                val col = ((mouseX - gridX) / 18).toInt()
                 val row = ((mouseY - gridStartY) / 18).toInt()
 
                 if (menu.carried.isEmpty) {
@@ -167,7 +171,6 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     }
                 }
             }
-            gridY += gridHeaderHeight + gridHeight + 10
         }
         return false
     }
