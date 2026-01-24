@@ -18,12 +18,23 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent
 import net.neoforged.neoforge.client.network.ClientPacketDistributor
 
 import com.gmail.vincent031525.extractionshooter.client.screen.GridInventoryScreen
+import com.gmail.vincent031525.extractionshooter.client.util.InventoryInterceptor
+import com.gmail.vincent031525.extractionshooter.network.payload.OpenInventoryPayload
 import com.gmail.vincent031525.extractionshooter.registry.ModMenus
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent
 import net.neoforged.neoforge.client.event.ScreenEvent
 
 @EventBusSubscriber(modid = Extractionshooter.ID, value = [Dist.CLIENT])
 object ClientModEvents {
+
+    @SubscribeEvent
+    fun onScreenOpening(event: ScreenEvent.Opening) {
+        val screen = event.newScreen
+        if (screen != null && InventoryInterceptor.shouldIntercept(screen)) {
+            event.isCanceled = true
+            ClientPacketDistributor.sendToServer(OpenInventoryPayload.INSTANCE)
+        }
+    }
 
     @SubscribeEvent
     fun onRegisterKeyMappings(event: RegisterKeyMappingsEvent) {
