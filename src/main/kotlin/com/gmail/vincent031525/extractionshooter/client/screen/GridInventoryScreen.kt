@@ -23,6 +23,10 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
         this.inventoryLabelY = this.imageHeight - 94
     }
 
+    override fun renderLabels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+        // Remove default labels
+    }
+
     override fun renderBg(guiGraphics: GuiGraphics, partialTick: Float, mouseX: Int, mouseY: Int) {
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
@@ -37,14 +41,11 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             val gridX = x + pos.x
             val gridY = y + pos.y
             
-            guiGraphics.drawString(font, name, gridX, gridY, 0xFFFFFF)
-            val slotsStartY = gridY + 10
-            
             // Draw grid lines and items
             for (row in 0 until grid.rows) {
                 for (col in 0 until grid.columns) {
                     val slotX = gridX + col * 18
-                    val slotY = slotsStartY + row * 18
+                    val slotY = gridY + row * 18
                     guiGraphics.fill(slotX, slotY, slotX + 17, slotY + 17, -0xbbbbbc)
                 }
             }
@@ -52,7 +53,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             // Draw items
             grid.items.forEach { instance ->
                 val itemX = gridX + instance.x * 18
-                val itemY = slotsStartY + instance.y * 18
+                val itemY = gridY + instance.y * 18
                 val size = instance.getActualSize(grid.sizeProvider)
                 
                 guiGraphics.fill(itemX, itemY, itemX + size.width * 18 - 1, itemY + size.height * 18 - 1, -0x555556)
@@ -81,15 +82,13 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 val pos = MenuLayout.getPos(name)
                 val gridX = x + pos.x
                 val gridY = y + pos.y
-                val gridHeaderHeight = 10
                 val gridHeight = grid.rows * 18
-                val gridStartY = gridY + gridHeaderHeight
                 
                 if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 &&
-                    mouseY >= gridStartY && mouseY < gridStartY + gridHeight) {
+                    mouseY >= gridY && mouseY < gridY + gridHeight) {
                     
                     val col = ((mouseX - gridX) / 18).toInt()
-                    val row = ((mouseY - gridStartY) / 18).toInt()
+                    val row = ((mouseY - gridY) / 18).toInt()
                     
                     tint = if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         0x8000FF00.toInt() // Valid: Green
@@ -118,15 +117,13 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             val pos = MenuLayout.getPos(name)
             val gridX = x + pos.x
             val gridY = y + pos.y
-            val gridHeaderHeight = 10
             val gridHeight = grid.rows * 18
-            val gridStartY = gridY + gridHeaderHeight
             
             if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 &&
-                mouseY >= gridStartY && mouseY < gridStartY + gridHeight) {
+                mouseY >= gridY && mouseY < gridY + gridHeight) {
                 
                 val col = ((mouseX - gridX) / 18).toInt()
-                val row = ((mouseY - gridStartY) / 18).toInt()
+                val row = ((mouseY - gridY) / 18).toInt()
 
                 if (menu.carried.isEmpty) {
                     // Try pickup
