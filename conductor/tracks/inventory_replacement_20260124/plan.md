@@ -5,11 +5,11 @@
     - [ ] Remove `TOGGLE_INVENTORY_KEY` from `src/main/kotlin/com/gmail/vincent031525/extractionshooter/client/KeyBindings.kt`
     - [ ] Unregister `TOGGLE_INVENTORY_KEY` in `src/main/kotlin/com/gmail/vincent031525/extractionshooter/client/event/ClientModEvents.kt`
     - [ ] Remove consumption logic for `TOGGLE_INVENTORY_KEY` in `ClientModEvents.kt`
-- [~] Task: Intercept vanilla inventory screen opening
+- [x] Task: Intercept vanilla inventory screen opening [4f67a7e]
     - [ ] Register a client-side event handler for `ScreenEvent.Opening` in `ClientModEvents.kt`
     - [ ] Implement logic to detect `InventoryScreen` or `CreativeModeInventoryScreen` (for all game modes)
     - [ ] Cancel the event if detected and send `OpenInventoryPayload.INSTANCE` to the server
-- [ ] Task: Verify compilation
+- [x] Task: Verify compilation [4f67a7e]
     - [ ] Run `./gradlew classes` to ensure no syntax errors or broken references
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Keybinding Cleanup and Inventory Interception' (Protocol in workflow.md)
 
