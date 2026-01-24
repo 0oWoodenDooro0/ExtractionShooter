@@ -18,9 +18,9 @@ This plan transitions the grid inventory UI from a vertical stack to a manual co
 
 - [ ] **Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)**
 
-## Phase 3: Finalization & Verification
-- [ ] **Task: Build Verification**
+## Phase 3: Finalization & Verification [checkpoint: 4673411]
+- [x] **Task: Build Verification** [4673411]
     - Run `./gradlew classes` to ensure everything compiles and integrates correctly.
-- [ ] **Task: Git Commitment**
+- [x] **Task: Git Commitment** [4673411]
     - Follow Git protocol to commit changes and attach task summaries via git notes.
 - [ ] **Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)**
