@@ -9,12 +9,13 @@ This plan transitions the grid inventory UI from a vertical stack to a manual co
 - [ ] **Task: Conductor - User Manual Verification 'Infrastructure' (Protocol in workflow.md)**
 
 ## Phase 2: UI Implementation (Manual Positioning)
-- [ ] **Task: Refactor `GridInventoryScreen.renderBg`**
+- [x] **Task: Refactor `GridInventoryScreen.renderBg`** [2354e24]
     - Replace the `gridY` increment logic with a lookup in `MenuLayout`.
     - Ensure both grid headers and slots use the manual coordinates.
-- [ ] **Task: Refactor `GridInventoryScreen` interactions**
+- [x] **Task: Refactor `GridInventoryScreen` interactions** [2354e24]
     - Update `render` (phantom shape) and `onMouseClick` to use the same coordinate lookup logic.
     - Eliminate all vertical stacking offsets.
+
 - [ ] **Task: Conductor - User Manual Verification 'UI Implementation' (Protocol in workflow.md)**
 
 ## Phase 3: Finalization & Verification
