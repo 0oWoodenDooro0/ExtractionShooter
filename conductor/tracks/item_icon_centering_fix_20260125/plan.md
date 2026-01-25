@@ -22,7 +22,7 @@
 - [x] Task: Conductor - User Manual Verification 'Held Item Rendering' (Protocol in workflow.md)
 
 ## Phase 4: Verification and Polish
-- [~] Task: Final compilation check and code cleanup.
-    - [ ] Run `./gradlew classes` to ensure no build errors.
-    - [ ] Verify that items of various sizes (1x1, 1x2, 2x2) render correctly centered and scaled in backpacks/rigs and the player inventory grid.
-- [ ] Task: Conductor - User Manual Verification 'Verification and Polish' (Protocol in workflow.md)
+- [x] Task: Final compilation check and code cleanup.
+    - [x] Run `./gradlew classes` to ensure no build errors.
+    - [x] Verify that items of various sizes (1x1, 1x2, 2x2) render correctly centered and scaled in backpacks/rigs and the player inventory grid.
+- [x] Task: Conductor - User Manual Verification 'Verification and Polish' (Protocol in workflow.md)
