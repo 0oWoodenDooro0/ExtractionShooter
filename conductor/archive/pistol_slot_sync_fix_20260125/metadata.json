@@ -1,0 +1,8 @@
+{
+  "track_id": "pistol_slot_sync_fix_20260125",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-01-25T14:30:00Z",
+  "updated_at": "2026-01-25T14:30:00Z",
+  "description": "bug fix 我的pistol 欄位的ghost image 是rig 的修正一下 並且我有時候自定義物品欄裡面有物品但是打開來沒有 我/es give 才會全部出現"
+}
