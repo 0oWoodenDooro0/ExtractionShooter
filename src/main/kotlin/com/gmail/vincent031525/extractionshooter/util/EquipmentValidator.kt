@@ -10,11 +10,10 @@ object EquipmentValidator {
         return when (slot) {
             "helmet" -> stack.`is`(ModTags.HELMETS)
             "armor" -> stack.`is`(ModTags.ARMORS)
-            // For now, we allow others, but we can refine this
-            "tactical_rig" -> true 
-            "backpack" -> true
-            "primary_1", "primary_2" -> true
-            "pistol" -> true
+            "tactical_rig" -> stack.`is`(ModTags.RIGS)
+            "backpack" -> stack.`is`(ModTags.BACKPACKS)
+            "primary_1", "primary_2" -> stack.`is`(ModTags.PRIMARY_WEAPONS)
+            "pistol" -> stack.`is`(ModTags.PISTOLS)
             else -> true
         }
     }
