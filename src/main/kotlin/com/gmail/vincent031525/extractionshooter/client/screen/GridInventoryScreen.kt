@@ -126,16 +126,23 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
     }
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        val carried = menu.carried
+        if (!carried.isEmpty) {
+            menu.carried = ItemStack.EMPTY
+        }
+
         super.render(guiGraphics, mouseX, mouseY, partialTick)
 
-        // Render phantom shape if holding item
-        if (!menu.carried.isEmpty) {
-            val carried = menu.carried
+        if (!carried.isEmpty) {
+            menu.carried = carried
+            
+            // Render phantom shape if holding item
             val size = InventoryUtils.getItemSize(carried)
             val renderSize = if (heldItemRotated) ItemSize(size.height, size.width) else size
 
             var tint = 0x80FFFFFF.toInt() // Default: Semi-transparent white
 
+            var snapped = false
             // Check if hovering over a grid to show valid/invalid placement
             val x = (width - imageWidth) / 2
             val y = (height - imageHeight) / 2
@@ -156,11 +163,11 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         tint = 0x8000FF00.toInt() // Valid: Green
                         if (grid.singleItem) {
-                            // Show phantom as the whole slot or 1x1?
-                            // For equipment, it's better to show it fills the whole slot or just a 1x1 highlight.
-                            // Requirement says "scale item icons to fit", so the item effectively occupies the whole slot.
+                            // Snap to slot
                             guiGraphics.fill(gridX, gridY, gridX + gridWidth, gridY + gridHeight, tint)
-                            return
+                            renderScaledItem(guiGraphics, carried, gridX, gridY, gridWidth, gridHeight)
+                            snapped = true
+                            break
                         }
                     } else {
                         tint = 0x80FF0000.toInt() // Invalid: Red
@@ -169,7 +176,16 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 }
             }
 
-            guiGraphics.fill(mouseX, mouseY, mouseX + renderSize.width * 18, mouseY + renderSize.height * 18, tint)
+            if (!snapped) {
+                // Draw phantom background
+                guiGraphics.fill(mouseX, mouseY, mouseX + renderSize.width * 18, mouseY + renderSize.height * 18, tint)
+
+                // Draw the actual scaled item
+                // The item should be centered in the phantom area
+                val targetW = renderSize.width * 18
+                val targetH = renderSize.height * 18
+                renderScaledItem(guiGraphics, carried, mouseX, mouseY, targetW, targetH)
+            }
         }
 
         renderTooltip(guiGraphics, mouseX, mouseY)
