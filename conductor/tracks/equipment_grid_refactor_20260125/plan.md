@@ -9,12 +9,7 @@
 - [x] Task: Update Menu Layout 1c4b727
 - [x] Task: Conductor - User Manual Verification 'Logic Implementation' (Protocol in workflow.md) 1c4b727
 
-## Phase 3: UI & Rendering
-- [ ] Task: Implement Slot Rendering
-    - [ ] Update `ExtractionShooterScreen` to render the background of these custom slots using the new ghost textures instead of tiling 1x1 squares.
-- [ ] Task: Implement Item Scaling Logic
-    - [ ] Override or hook into the item rendering (e.g., `renderItem`) specifically for these slots.
-    - [ ] Calculate the scale factor: `min(slotWidth / itemWidth, slotHeight / itemHeight)` (in pixels).
-    - [ ] Apply scaling transformation before rendering the item model/texture.
-    - [ ] Center the item within the slot boundaries.
-- [ ] Task: Conductor - User Manual Verification 'UI & Rendering' (Protocol in workflow.md)
+## Phase 3: UI & Rendering [checkpoint: 709a95c]
+- [x] Task: Implement Slot Rendering ac0396f
+- [x] Task: Implement Item Scaling Logic ac0396f
+- [x] Task: Conductor - User Manual Verification 'UI & Rendering' (Protocol in workflow.md) c5b57d8
