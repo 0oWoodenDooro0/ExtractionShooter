@@ -114,10 +114,12 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     renderScaledItem(guiGraphics, instance.stack, gridX, gridY, slotW, slotH)
                 } else {
                     val size = instance.getActualSize(grid.sizeProvider)
-                    guiGraphics.fill(itemX, itemY, itemX + size.width * 18 - 1, itemY + size.height * 18 - 1, -0x555556)
-                    guiGraphics.renderItem(
-                        instance.stack, itemX + (size.width * 18 - 16) / 2, itemY + (size.height * 18 - 16) / 2
-                    )
+                    val targetW = size.width * 18
+                    val targetH = size.height * 18
+                    
+                    guiGraphics.fill(itemX, itemY, itemX + targetW - 1, itemY + targetH - 1, -0x555556)
+                    
+                    renderScaledItem(guiGraphics, instance.stack, itemX, itemY, targetW, targetH)
                 }
             }
         }
