@@ -49,7 +49,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     name == "armor" -> "chest"
                     name == "tactical_rig" -> "rig"
                     name == "backpack" -> "backpack"
-                    name == "pistol" -> "rig" // Fallback to rig for pistol for now
+                    name == "pistol" -> "pistol"
                     else -> null
                 }
 
