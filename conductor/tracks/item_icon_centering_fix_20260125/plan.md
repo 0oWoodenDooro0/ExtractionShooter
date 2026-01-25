@@ -15,14 +15,14 @@
     - [x] Ensure special equipment slots (Helmet, Armor, etc.) are NOT affected by this logic (verify if they use the same renderer or a separate one).
 - [x] Task: Conductor - User Manual Verification 'Grid Item Rendering' (Protocol in workflow.md)
 
-## Phase 3: Implementation - Held Item Rendering
+## Phase 3: Implementation - Held Item Rendering [checkpoint: e29118d]
 - [x] Task: Update the "Held Item" (Cursor) rendering in `GridInventoryScreen`. 951af20
     - [x] Locate the logic for rendering the item currently being dragged (often called after the main background rendering).
     - [x] Apply the same aspect-fit scaling and centering logic relative to the mouse cursor position.
-- [ ] Task: Conductor - User Manual Verification 'Held Item Rendering' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Held Item Rendering' (Protocol in workflow.md)
 
 ## Phase 4: Verification and Polish
-- [ ] Task: Final compilation check and code cleanup.
+- [~] Task: Final compilation check and code cleanup.
     - [ ] Run `./gradlew classes` to ensure no build errors.
     - [ ] Verify that items of various sizes (1x1, 1x2, 2x2) render correctly centered and scaled in backpacks/rigs and the player inventory grid.
 - [ ] Task: Conductor - User Manual Verification 'Verification and Polish' (Protocol in workflow.md)
