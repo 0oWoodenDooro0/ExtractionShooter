@@ -14,5 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Replace vanilla inventory with GridInventoryScreen and add a debug give command**
+- [x] **Track: Replace vanilla inventory with GridInventoryScreen and add a debug give command**
   *Link: [./tracks/inventory_replacement_20260124/](./tracks/inventory_replacement_20260124/)*
