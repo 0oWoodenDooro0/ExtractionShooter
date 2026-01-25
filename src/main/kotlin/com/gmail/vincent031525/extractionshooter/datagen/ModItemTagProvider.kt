@@ -1,6 +1,7 @@
 package com.gmail.vincent031525.extractionshooter.datagen
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
+import com.gmail.vincent031525.extractionshooter.registry.ModItems
 import com.gmail.vincent031525.extractionshooter.registry.ModTags
 import net.minecraft.core.HolderLookup
 import net.minecraft.data.PackOutput
@@ -49,5 +50,14 @@ class ModItemTagProvider(
 
             )
 
+            tag(ModTags.BACKPACKS).add(ModItems.BACKPACK_ITEM.get())
+            tag(ModTags.RIGS).add(ModItems.RIG_ITEM.get())
+
+            tag(ModTags.PRIMARY_WEAPONS).add(ModItems.M4A1_ITEM.get())
+            tag(ModTags.PISTOLS) // Empty for now
+
+            tag(ModTags.GUNS)
+                .addTag(ModTags.PRIMARY_WEAPONS)
+                .addTag(ModTags.PISTOLS)
         }
 }
