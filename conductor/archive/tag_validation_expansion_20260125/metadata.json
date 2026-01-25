@@ -1,0 +1,8 @@
+{
+  "track_id": "tag_validation_expansion_20260125",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-25T00:00:00Z",
+  "updated_at": "2026-01-25T00:00:00Z",
+  "description": "自定義裝備欄位目前只有頭盔跟胸甲有限制物品tag 我現在需要把backpack rig primary 以及pistol 也加上限制物品的tag 因為還沒完成所有的物品所以先把backpack rig 以及m4a1 加進去就好"
+}
