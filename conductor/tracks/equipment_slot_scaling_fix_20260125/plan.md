@@ -6,5 +6,5 @@
 - [x] Task: Update `GridInventoryScreen.renderBg` to apply the calculated scale and translation when rendering items in `singleItem` slots. 223b59b
     - [x] Sub-task: Ensure the scale preserves the item's aspect ratio.
     - [x] Sub-task: Ensure the item is centered within the slot.
-- [ ] Task: Verify the fix visually in the client.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Rendering Logic Update' (Protocol in workflow.md)
+- [x] Task: Verify the fix visually in the client. 8bab090
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Rendering Logic Update' (Protocol in workflow.md)
