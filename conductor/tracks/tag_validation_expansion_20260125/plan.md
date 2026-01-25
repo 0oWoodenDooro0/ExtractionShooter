@@ -1,8 +1,8 @@
 # Implementation Plan: Tag-based Equipment Validation Expansion
 
-## Phase 1: Tag Registry and Data Generation
+## Phase 1: Tag Registry and Data Generation [checkpoint: 5fa4478]
 - [x] Task: Define new TagKeys in `ModTags.kt` 18e5959
-    - [ ] Add `BACKPACKS`, `RIGS`, `PRIMARY_WEAPONS`, `PISTOLS`, and `GUNS` to `ModTags.kt`
+    - [x] Add `BACKPACKS`, `RIGS`, `PRIMARY_WEAPONS`, `PISTOLS`, and `GUNS` to `ModTags.kt`
 - [x] Task: Update `ModItemTagProvider` for data generation 9a4e27c
     - [x] Add `extractionshooter:m4a1` to `GUNS` and `PRIMARY_WEAPONS`
     - [x] Add `extractionshooter:backpack` to `BACKPACKS`
@@ -12,7 +12,7 @@
     - [x] Execute `./gradlew runData` and verify JSON files in `src/generated/resources`
 - [x] Task: Verify compilation 9a4e27c
     - [x] Run `./gradlew classes`
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Tag Registry and Data Generation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Tag Registry and Data Generation' (Protocol in workflow.md) 5fa4478
 
 ## Phase 2: Refactor EquipmentValidator
 - [ ] Task: Update `EquipmentValidator.kt` logic
