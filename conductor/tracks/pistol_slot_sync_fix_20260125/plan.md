@@ -1,10 +1,10 @@
 # Implementation Plan - Pistol Slot Ghost Image & Inventory Sync Fixes
 
-## Phase 1: Pistol Slot Ghost Image Fix
-- [x] Task: Create "Pistol" ghost image texture at src/main/resources/assets/extractionshooter/textures/gui/slots/pistol.png. [7d6eb8e]
+## Phase 1: Pistol Slot Ghost Image Fix [checkpoint: d0c25d2]
+- [x] Task: Create "Pistol" ghost image texture at `src/main/resources/assets/extractionshooter/textures/gui/slots/pistol.png`. [9a130b6]
 - [x] Task: Locate and update the Inventory Screen logic to use the new `pistol.png` for the pistol slot background. [7d6eb8e]
-- [ ] Task: Verify the visual fix by running the client and checking the inventory UI.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Pistol Slot Ghost Image Fix' (Protocol in workflow.md)
+- [x] Task: Verify the visual fix by running the client and checking the inventory UI. [d0c25d2]
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Pistol Slot Ghost Image Fix' (Protocol in workflow.md) [d0c25d2]
 
 ## Phase 2: Inventory Synchronization Fix
 - [ ] Task: Investigate current packet handling for initial inventory sync on player join.
