@@ -2,7 +2,6 @@ package com.gmail.vincent031525.extractionshooter.client.screen
 
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
-import com.gmail.vincent031525.extractionshooter.network.payload.MoveGridItemPayload
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -30,17 +29,17 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
     override fun renderBg(guiGraphics: GuiGraphics, partialTick: Float, mouseX: Int, mouseY: Int) {
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        
+
         // Draw background
         guiGraphics.fill(x, y, x + imageWidth, y + imageHeight, -0x333334)
-        
+
         // Render Active Grids
         val activeGrids = menu.equipment.getAllActiveGrids()
         activeGrids.forEach { (name, grid) ->
             val pos = MenuLayout.getPos(name)
             val gridX = x + pos.x
             val gridY = y + pos.y
-            
+
             // Draw grid lines and items
             for (row in 0 until grid.rows) {
                 for (col in 0 until grid.columns) {
@@ -55,24 +54,26 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 val itemX = gridX + instance.x * 18
                 val itemY = gridY + instance.y * 18
                 val size = instance.getActualSize(grid.sizeProvider)
-                
+
                 guiGraphics.fill(itemX, itemY, itemX + size.width * 18 - 1, itemY + size.height * 18 - 1, -0x555556)
-                guiGraphics.renderItem(instance.stack, itemX + (size.width * 18 - 16) / 2, itemY + (size.height * 18 - 16) / 2)
+                guiGraphics.renderItem(
+                    instance.stack, itemX + (size.width * 18 - 16) / 2, itemY + (size.height * 18 - 16) / 2
+                )
             }
         }
     }
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         super.render(guiGraphics, mouseX, mouseY, partialTick)
-        
+
         // Render phantom shape if holding item
         if (!menu.carried.isEmpty) {
             val carried = menu.carried
             val size = InventoryUtils.getItemSize(carried)
             val renderSize = if (heldItemRotated) ItemSize(size.height, size.width) else size
-            
+
             var tint = 0x80FFFFFF.toInt() // Default: Semi-transparent white
-            
+
             // Check if hovering over a grid to show valid/invalid placement
             val x = (width - imageWidth) / 2
             val y = (height - imageHeight) / 2
@@ -83,13 +84,12 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 val gridX = x + pos.x
                 val gridY = y + pos.y
                 val gridHeight = grid.rows * 18
-                
-                if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 &&
-                    mouseY >= gridY && mouseY < gridY + gridHeight) {
-                    
-                    val col = ((mouseX - gridX) / 18).toInt()
-                    val row = ((mouseY - gridY) / 18).toInt()
-                    
+
+                if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 && mouseY >= gridY && mouseY < gridY + gridHeight) {
+
+                    val col = ((mouseX - gridX) / 18)
+                    val row = ((mouseY - gridY) / 18)
+
                     tint = if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         0x8000FF00.toInt() // Valid: Green
                     } else {
@@ -101,13 +101,13 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
             guiGraphics.fill(mouseX, mouseY, mouseX + renderSize.width * 18, mouseY + renderSize.height * 18, tint)
         }
-        
+
         renderTooltip(guiGraphics, mouseX, mouseY)
     }
 
     fun onMouseClick(mouseX: Double, mouseY: Double, button: Int): Boolean {
         // We don't call super here because we are handling it externally via event
-        
+
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
         val activeGrids = menu.equipment.getAllActiveGrids()
@@ -118,10 +118,9 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             val gridX = x + pos.x
             val gridY = y + pos.y
             val gridHeight = grid.rows * 18
-            
-            if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 &&
-                mouseY >= gridY && mouseY < gridY + gridHeight) {
-                
+
+            if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 && mouseY >= gridY && mouseY < gridY + gridHeight) {
+
                 val col = ((mouseX - gridX) / 18).toInt()
                 val row = ((mouseY - gridY) / 18).toInt()
 
@@ -136,19 +135,21 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                             menu.equipment.updateGrid(name, newGrid)
                             menu.carried = stack
                         }
-                        
+
                         heldItemRotated = instance.rotated
-                        
+
                         // Send Packet
                         ClientPacketDistributor.sendToServer(
-                            com.gmail.vincent031525.extractionshooter.network.payload.PickFromGridPayload(name, instance.x, instance.y)
+                            com.gmail.vincent031525.extractionshooter.network.payload.PickFromGridPayload(
+                                name, instance.x, instance.y
+                            )
                         )
                         return true
                     }
                 } else {
                     // Try place
                     val carried = menu.carried
-                    
+
                     // We need to check locally if it fits to avoid desync flickering
                     // Use a temp instance to check fit with current rotation
                     if (grid.canPlace(carried, col, row, heldItemRotated)) {
@@ -158,12 +159,14 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                             menu.equipment.updateGrid(name, newGrid)
                             menu.carried = ItemStack.EMPTY
                         }
-                        
+
                         ClientPacketDistributor.sendToServer(
-                            com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload(name, col, row, heldItemRotated)
+                            com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload(
+                                name, col, row, heldItemRotated
+                            )
                         )
                         // Reset rotation after placing? Or keep it? Usually keep for multi-place, but here we place whole stack.
-                        heldItemRotated = false 
+                        heldItemRotated = false
                         return true
                     }
                 }

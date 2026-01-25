@@ -11,3 +11,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Refactor custom menu UI to use manual coordinate-based positioning**
   *Link: [./tracks/grid_layout_refactor_20260124/](./tracks/grid_layout_refactor_20260124/)*
+
+---
+
+- [~] **Track: Replace vanilla inventory with GridInventoryScreen and add a debug give command**
+  *Link: [./tracks/inventory_replacement_20260124/](./tracks/inventory_replacement_20260124/)*
