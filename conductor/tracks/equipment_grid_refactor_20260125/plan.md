@@ -4,15 +4,10 @@
 - [x] Task: Create placeholder textures for large slots 8b3c3ea
 - [x] Task: Conductor - User Manual Verification 'Asset Preparation' (Protocol in workflow.md) 8b3c3ea
 
-## Phase 2: Logic Implementation
-- [ ] Task: Define Custom Slot Classes
-    - [ ] Create or modify a `CustomSizeSlot` class that supports defining width and height (in grid units).
-    - [ ] Implement `isItemValid` to enforce Tag checks but bypass strict 1x1 size checks (allow any item that matches the tag, assuming it fits the logic of "one item per slot").
-- [ ] Task: Update Menu Layout
-    - [ ] Refactor `ExtractionShooterMenu` to replace standard equipment slots with the new `CustomSizeSlot` instances.
-    - [ ] Configure the Primary Weapon slot as 4x2.
-    - [ ] Configure Armor/Rig/Backpack slots as 2x2.
-- [ ] Task: Conductor - User Manual Verification 'Logic Implementation' (Protocol in workflow.md)
+## Phase 2: Logic Implementation [checkpoint: 04ba1f4]
+- [x] Task: Define Custom Slot Classes 1c4b727
+- [x] Task: Update Menu Layout 1c4b727
+- [x] Task: Conductor - User Manual Verification 'Logic Implementation' (Protocol in workflow.md) 1c4b727
 
 ## Phase 3: UI & Rendering
 - [ ] Task: Implement Slot Rendering
