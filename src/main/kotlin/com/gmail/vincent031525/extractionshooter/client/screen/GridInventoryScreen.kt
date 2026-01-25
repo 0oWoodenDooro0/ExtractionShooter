@@ -3,7 +3,6 @@ package com.gmail.vincent031525.extractionshooter.client.screen
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
-import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
@@ -53,14 +52,24 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     name == "pistol" -> "rig" // Fallback to rig for pistol for now
                     else -> null
                 }
-                
+
                 if (texture != null) {
                     val resource = Identifier.fromNamespaceAndPath(
                         "extractionshooter", "textures/gui/slots/$texture.png"
                     )
                     // Image sizes: Primary is 64x32, others are 32x32
                     // Use normalized UVs (0f, 0f, 1f, 1f) to stretch the full texture to the target width/height
-                    guiGraphics.blit(resource, gridX, gridY, grid.columns * 18, grid.rows * 18, 0f, 0f, 1f, 1f)
+                    guiGraphics.blit(
+                        resource,
+                        gridX,
+                        gridY,
+                        gridX + grid.columns * 18,
+                        gridY + grid.rows * 18,
+                        0f,
+                        1f,
+                        0f,
+                        1f
+                    )
                 } else {
                     // Fallback to fill
                     guiGraphics.fill(gridX, gridY, gridX + grid.columns * 18, gridY + grid.rows * 18, -0xbbbbbc)
@@ -80,17 +89,17 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             grid.items.forEach { instance ->
                 val itemX = gridX + instance.x * 18
                 val itemY = gridY + instance.y * 18
-                
+
                 if (grid.singleItem) {
                     // Scale item to fit the entire slot
                     val slotW = grid.columns * 18
                     val slotH = grid.rows * 18
-                    
+
                     // Temporarily disable scaling due to PoseStack API issues.
                     // Just center the item for now.
                     val offsetX = (slotW - 16) / 2
                     val offsetY = (slotH - 16) / 2
-                    
+
                     guiGraphics.renderItem(instance.stack, gridX + offsetX, gridY + offsetY)
                 } else {
                     val size = instance.getActualSize(grid.sizeProvider)
