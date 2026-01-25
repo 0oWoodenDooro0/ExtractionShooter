@@ -3,15 +3,15 @@
 ## Phase 1: Tag Registry and Data Generation
 - [x] Task: Define new TagKeys in `ModTags.kt` 18e5959
     - [ ] Add `BACKPACKS`, `RIGS`, `PRIMARY_WEAPONS`, `PISTOLS`, and `GUNS` to `ModTags.kt`
-- [ ] Task: Update `ModItemTagProvider` for data generation
-    - [ ] Add `extractionshooter:m4a1` to `GUNS` and `PRIMARY_WEAPONS`
-    - [ ] Add `extractionshooter:backpack` to `BACKPACKS`
-    - [ ] Add `extractionshooter:rig" to `RIGS`
-    - [ ] Set up hierarchical relationship (e.g., `PRIMARY_WEAPONS` and `PISTOLS` include `GUNS`)
-- [ ] Task: Run Data Generation
-    - [ ] Execute `./gradlew runData` and verify JSON files in `src/generated/resources`
-- [ ] Task: Verify compilation
-    - [ ] Run `./gradlew classes`
+- [x] Task: Update `ModItemTagProvider` for data generation 9a4e27c
+    - [x] Add `extractionshooter:m4a1` to `GUNS` and `PRIMARY_WEAPONS`
+    - [x] Add `extractionshooter:backpack` to `BACKPACKS`
+    - [x] Add `extractionshooter:rig" to `RIGS`
+    - [x] Set up hierarchical relationship (e.g., `PRIMARY_WEAPONS` and `PISTOLS` include `GUNS`)
+- [x] Task: Run Data Generation 9a4e27c
+    - [x] Execute `./gradlew runData` and verify JSON files in `src/generated/resources`
+- [x] Task: Verify compilation 9a4e27c
+    - [x] Run `./gradlew classes`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Tag Registry and Data Generation' (Protocol in workflow.md)
 
 ## Phase 2: Refactor EquipmentValidator
