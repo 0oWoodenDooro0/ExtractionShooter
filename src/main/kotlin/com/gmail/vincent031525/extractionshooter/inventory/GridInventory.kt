@@ -67,16 +67,18 @@ data class GridInventory(
     }
 
     fun addItem(itemStack: ItemStack, targetX: Int, targetY: Int, rotated: Boolean): GridInventory? {
-        if (canPlace(itemStack, targetX, targetY, rotated)) {
+        val actualX = if (singleItem) 0 else targetX
+        val actualY = if (singleItem) 0 else targetY
+        if (canPlace(itemStack, actualX, actualY, rotated)) {
             val newItems = items.toMutableList()
-            newItems.add(GridItemInstance(itemStack, targetX, targetY, rotated))
+            newItems.add(GridItemInstance(itemStack, actualX, actualY, rotated))
             return copy(items = newItems)
         }
         return null
     }
 
     fun removeItem(targetX: Int, targetY: Int): Pair<GridInventory, ItemStack>? {
-        val itemToRemove = items.firstOrNull { it.occupies(targetX, targetY, sizeProvider) }
+        val itemToRemove = if (singleItem) items.firstOrNull() else items.firstOrNull { it.occupies(targetX, targetY, sizeProvider) }
         
         if (itemToRemove != null) {
             val newItems = items.toMutableList()
@@ -87,6 +89,9 @@ data class GridInventory(
     }
 
     fun findSpaceForItem(itemStack: ItemStack): Pair<Int, Int>? {
+        if (singleItem) {
+            return if (canPlace(itemStack, 0, 0, false)) Pair(0, 0) else null
+        }
         for (rot in listOf(false, true)) {
             for (y in 0 until rows) {
                 for (x in 0 until columns) {
@@ -98,6 +103,7 @@ data class GridInventory(
     }
 
     fun getItemInstance(x: Int, y: Int): GridItemInstance? {
+        if (singleItem) return items.firstOrNull()
         return items.firstOrNull { it.occupies(x, y, sizeProvider) }
     }
 

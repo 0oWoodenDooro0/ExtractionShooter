@@ -156,27 +156,6 @@ Before marking any task complete, verify:
 # e.g., for a Go project: make check (if a Makefile exists)
 ```
 
-## Testing Requirements
-
-### Unit Testing
-- Every module must have corresponding tests.
-- Use appropriate test setup/teardown mechanisms (e.g., fixtures, beforeEach/afterEach).
-- Mock external dependencies.
-- Test both success and failure cases.
-
-### Integration Testing
-- Test complete user flows
-- Verify database transactions
-- Test authentication and authorization
-- Check form submissions
-
-### Mobile Testing
-- Test on actual iPhone when possible
-- Use Safari developer tools
-- Test touch interactions
-- Verify responsive layouts
-- Check performance on 3G/4G
-
 ## Code Review Process
 
 ### Self-Review Checklist
@@ -193,23 +172,18 @@ Before requesting review:
    - Clear variable/function names
    - Appropriate comments
 
-3. **Testing**
-   - Unit tests comprehensive
-   - Integration tests pass
-   - Coverage adequate (>80%)
-
-4. **Security**
+3. **Security**
    - No hardcoded secrets
    - Input validation present
    - SQL injection prevented
    - XSS protection in place
 
-5. **Performance**
+4. **Performance**
    - Database queries optimized
    - Images optimized
    - Caching implemented where needed
 
-6. **Mobile Experience**
+5. **Mobile Experience**
    - Touch targets adequate (44x44px)
    - Text readable without zooming
    - Performance acceptable on mobile
@@ -248,22 +222,20 @@ git commit -m "style(mobile): Improve button touch targets"
 A task is complete when:
 
 1. All code implemented to specification
-2. Unit tests written and passing
-3. Code coverage meets project requirements
-4. Documentation complete (if applicable)
-5. Code passes all configured linting and static analysis checks
-6. Works beautifully on mobile (if applicable)
-7. Implementation notes added to `plan.md`
-8. Changes committed with proper message
-9. Git note with task summary attached to the commit
+2. Documentation complete (if applicable)
+3. Code passes all configured linting and static analysis checks
+4. Works beautifully on mobile (if applicable)
+5. Implementation notes added to `plan.md`
+6. Changes committed with proper message
+7. Git note with task summary attached to the commit
 
 ## Emergency Procedures
 
 ### Critical Bug in Production
 1. Create hotfix branch from main
-2. Write failing test for bug
+2. Reproduce bug locally
 3. Implement minimal fix
-4. Test thoroughly including mobile
+4. Test thoroughly (manually) including mobile
 5. Deploy immediately
 6. Document in plan.md
 
@@ -284,8 +256,6 @@ A task is complete when:
 ## Deployment Workflow
 
 ### Pre-Deployment Checklist
-- [ ] All tests passing
-- [ ] Coverage >80%
 - [ ] No linting errors
 - [ ] Mobile testing complete
 - [ ] Environment variables configured
