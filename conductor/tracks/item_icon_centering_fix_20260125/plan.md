@@ -7,12 +7,12 @@
     - [x] Confirm how `item_size` (width/height) is currently retrieved in this context.
 
 ## Phase 2: Implementation - Grid Item Rendering
-- [~] Task: Implement Aspect Fit scaling and centering in `GridInventoryScreen`.
-    - [ ] Modify the slot rendering logic to calculate the total pixel dimensions of the item's occupied grid cells.
-    - [ ] Apply `PoseStack` transformations (scale and translate) to:
+- [x] Task: Implement Aspect Fit scaling and centering in `GridInventoryScreen`. 5dd5501
+    - [x] Modify the slot rendering logic to calculate the total pixel dimensions of the item's occupied grid cells.
+    - [x] Apply `PoseStack` transformations (scale and translate) to:
         1. Scale the item icon to fit within the occupied area while maintaining aspect ratio.
         2. Center the item icon within that area.
-    - [ ] Ensure special equipment slots (Helmet, Armor, etc.) are NOT affected by this logic (verify if they use the same renderer or a separate one).
+    - [x] Ensure special equipment slots (Helmet, Armor, etc.) are NOT affected by this logic (verify if they use the same renderer or a separate one).
 - [ ] Task: Conductor - User Manual Verification 'Grid Item Rendering' (Protocol in workflow.md)
 
 ## Phase 3: Implementation - Held Item Rendering
