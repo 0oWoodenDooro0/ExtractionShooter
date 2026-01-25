@@ -16,9 +16,9 @@
 - [x] Task: Conductor - User Manual Verification 'Grid Item Rendering' (Protocol in workflow.md)
 
 ## Phase 3: Implementation - Held Item Rendering
-- [~] Task: Update the "Held Item" (Cursor) rendering in `GridInventoryScreen`.
-    - [ ] Locate the logic for rendering the item currently being dragged (often called after the main background rendering).
-    - [ ] Apply the same aspect-fit scaling and centering logic relative to the mouse cursor position.
+- [x] Task: Update the "Held Item" (Cursor) rendering in `GridInventoryScreen`. 951af20
+    - [x] Locate the logic for rendering the item currently being dragged (often called after the main background rendering).
+    - [x] Apply the same aspect-fit scaling and centering logic relative to the mouse cursor position.
 - [ ] Task: Conductor - User Manual Verification 'Held Item Rendering' (Protocol in workflow.md)
 
 ## Phase 4: Verification and Polish
