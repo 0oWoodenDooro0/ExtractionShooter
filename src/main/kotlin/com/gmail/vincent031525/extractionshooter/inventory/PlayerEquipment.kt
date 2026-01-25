@@ -37,9 +37,13 @@ class PlayerEquipment {
     }
 
     init {
-        listOf("helmet", "armor", "tactical_rig", "backpack", "primary_1", "primary_2", "pistol").forEach {
-            persistentGrids[it] = GridInventory(1, 1, filter = it)
-        }
+        persistentGrids["helmet"] = GridInventory(2, 2, filter = "helmet", singleItem = true)
+        persistentGrids["armor"] = GridInventory(2, 2, filter = "armor", singleItem = true)
+        persistentGrids["tactical_rig"] = GridInventory(2, 2, filter = "tactical_rig", singleItem = true)
+        persistentGrids["backpack"] = GridInventory(2, 2, filter = "backpack", singleItem = true)
+        persistentGrids["primary_1"] = GridInventory(4, 2, filter = "primary_1", singleItem = true)
+        persistentGrids["primary_2"] = GridInventory(4, 2, filter = "primary_2", singleItem = true)
+        persistentGrids["pistol"] = GridInventory(2, 2, filter = "pistol", singleItem = true)
 
         persistentGrids["pockets_1"] = GridInventory(1, 1)
         persistentGrids["pockets_2"] = GridInventory(1, 1)

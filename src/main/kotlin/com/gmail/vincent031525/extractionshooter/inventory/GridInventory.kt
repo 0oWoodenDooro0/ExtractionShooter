@@ -15,7 +15,8 @@ data class GridInventory(
     val columns: Int,
     val rows: Int,
     val items: List<GridItemInstance> = emptyList(),
-    val filter: String? = null
+    val filter: String? = null,
+    val singleItem: Boolean = false
 ) {
     @Transient
     var sizeProvider: (ItemStack) -> ItemSize = { InventoryUtils.getItemSize(it) }
@@ -26,8 +27,9 @@ data class GridInventory(
                 Codec.INT.fieldOf("columns").forGetter(GridInventory::columns),
                 Codec.INT.fieldOf("rows").forGetter(GridInventory::rows),
                 GridItemInstance.CODEC.listOf().fieldOf("items").forGetter(GridInventory::items),
-                Codec.STRING.optionalFieldOf("filter").forGetter { Optional.ofNullable(it.filter) }
-            ).apply(instance) { c, r, i, f -> GridInventory(c, r, i, f.orElse(null)) }
+                Codec.STRING.optionalFieldOf("filter").forGetter { Optional.ofNullable(it.filter) },
+                Codec.BOOL.optionalFieldOf("singleItem", false).forGetter(GridInventory::singleItem)
+            ).apply(instance) { c, r, i, f, s -> GridInventory(c, r, i, f.orElse(null), s) }
         }
 
         val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, GridInventory> = StreamCodec.composite(
@@ -35,22 +37,26 @@ data class GridInventory(
             ByteBufCodecs.VAR_INT, { it.rows },
             ByteBufCodecs.collection({ java.util.ArrayList() }, GridItemInstance.STREAM_CODEC), { it.items },
             ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), { Optional.ofNullable(it.filter) },
-            { c, r, i, f -> GridInventory(c, r, i, f.orElse(null)) }
+            ByteBufCodecs.BOOL, { it.singleItem },
+            { c, r, i, f, s -> GridInventory(c, r, i, f.orElse(null), s) }
         )
     }
 
     fun canPlace(itemStack: ItemStack, targetX: Int, targetY: Int, rotated: Boolean): Boolean {
         if (!isValidForItem(itemStack)) return false
-        
+        if (singleItem && items.isNotEmpty()) return false
+
         val tempInstance = GridItemInstance(itemStack, targetX, targetY, rotated)
-        val size = tempInstance.getActualSize(sizeProvider)
+        val size = if (singleItem) ItemSize(1, 1) else tempInstance.getActualSize(sizeProvider)
 
         if (targetX < 0 || targetY < 0 || targetX + size.width > columns || targetY + size.height > rows) {
             return false
         }
 
-        for (item in items) {
-            if (isOverlapping(tempInstance, item)) return false
+        if (!singleItem) {
+            for (item in items) {
+                if (isOverlapping(tempInstance, item)) return false
+            }
         }
         return true
     }
