@@ -1,6 +1,6 @@
 # Plan: Equipment Slot Grid Refactor
 
-## Phase 1: Asset Preparation
+## Phase 1: Asset Preparation [checkpoint: 71bd562]
 - [x] Task: Create placeholder textures for large slots 8b3c3ea
 - [x] Task: Conductor - User Manual Verification 'Asset Preparation' (Protocol in workflow.md) 8b3c3ea
 
