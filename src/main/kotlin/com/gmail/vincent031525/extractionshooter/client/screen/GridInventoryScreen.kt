@@ -1,5 +1,6 @@
 package com.gmail.vincent031525.extractionshooter.client.screen
 
+import com.mojang.blaze3d.vertex.PoseStack
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
@@ -25,6 +26,21 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
     override fun renderLabels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         // Remove default labels
+    }
+
+    private fun renderScaledItem(guiGraphics: GuiGraphics, stack: ItemStack, x: Int, y: Int, targetW: Int, targetH: Int) {
+        val scale = minOf(targetW.toFloat() / 16f, targetH.toFloat() / 16f)
+        val scaledSize = 16f * scale
+
+        val offsetX = (targetW - scaledSize) / 2f
+        val offsetY = (targetH - scaledSize) / 2f
+
+        val poseStack = guiGraphics.pose()
+        poseStack.pushMatrix()
+        poseStack.translate(x.toFloat() + offsetX, y.toFloat() + offsetY)
+        poseStack.scale(scale, scale)
+        guiGraphics.renderItem(stack, 0, 0)
+        poseStack.popMatrix()
     }
 
     override fun renderBg(guiGraphics: GuiGraphics, partialTick: Float, mouseX: Int, mouseY: Int) {
@@ -95,12 +111,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val slotW = grid.columns * 18
                     val slotH = grid.rows * 18
 
-                    // Temporarily disable scaling due to PoseStack API issues.
-                    // Just center the item for now.
-                    val offsetX = (slotW - 16) / 2
-                    val offsetY = (slotH - 16) / 2
-
-                    guiGraphics.renderItem(instance.stack, gridX + offsetX, gridY + offsetY)
+                    renderScaledItem(guiGraphics, instance.stack, gridX, gridY, slotW, slotH)
                 } else {
                     val size = instance.getActualSize(grid.sizeProvider)
                     guiGraphics.fill(itemX, itemY, itemX + size.width * 18 - 1, itemY + size.height * 18 - 1, -0x555556)
