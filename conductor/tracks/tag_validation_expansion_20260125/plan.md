@@ -14,12 +14,12 @@
     - [x] Run `./gradlew classes`
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Tag Registry and Data Generation' (Protocol in workflow.md) 5fa4478
 
-## Phase 2: Refactor EquipmentValidator
+## Phase 2: Refactor EquipmentValidator [checkpoint: 655509a]
 - [x] Task: Update `EquipmentValidator.kt` logic 2185393
     - [x] Replace `true` defaults with `stack.is(ModTags.TAG_NAME)` for `backpack`, `tactical_rig`, `primary_1`, `primary_2`, and `pistol`
 - [x] Task: Verify compilation 2185393
     - [x] Run `./gradlew classes`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Refactor EquipmentValidator' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Refactor EquipmentValidator' (Protocol in workflow.md) 655509a
 
 ## Phase 3: Final Verification
 - [ ] Task: Final compilation and data check
