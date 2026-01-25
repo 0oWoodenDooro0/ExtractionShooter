@@ -3,6 +3,7 @@ package com.gmail.vincent031525.extractionshooter.client.screen
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
+import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
@@ -57,7 +58,9 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val resource = Identifier.fromNamespaceAndPath(
                         "extractionshooter", "textures/gui/slots/$texture.png"
                     )
-                    guiGraphics.blit(resource, gridX, gridY, grid.columns * 18, grid.rows * 18, 0f, 0f, (grid.columns * 18).toFloat(), (grid.rows * 18).toFloat())
+                    // Image sizes: Primary is 64x32, others are 32x32
+                    // Use normalized UVs (0f, 0f, 1f, 1f) to stretch the full texture to the target width/height
+                    guiGraphics.blit(resource, gridX, gridY, grid.columns * 18, grid.rows * 18, 0f, 0f, 1f, 1f)
                 } else {
                     // Fallback to fill
                     guiGraphics.fill(gridX, gridY, gridX + grid.columns * 18, gridY + grid.rows * 18, -0xbbbbbc)
@@ -83,25 +86,12 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val slotW = grid.columns * 18
                     val slotH = grid.rows * 18
                     
-                    val pose = guiGraphics.pose()
-                    // If we can't use push/pop, let's try to just use translate if it works
-                    // But we really need push/pop. 
-                    // Let's try to use guiGraphics.pose().push() again but check if there's any other method.
-                    // Actually, let's try to avoid scaling for a moment to see if it compiles.
+                    // Temporarily disable scaling due to PoseStack API issues.
+                    // Just center the item for now.
+                    val offsetX = (slotW - 16) / 2
+                    val offsetY = (slotH - 16) / 2
                     
-                    // guiGraphics.renderItem(instance.stack, itemX, itemY) 
-                    
-                    // Re-attempting push/pop with possible correct names
-                    // If everything fails, I'll use a simple translate if available.
-                    
-                    val scale = Math.min(slotW.toFloat() / 16f, slotH.toFloat() / 16f)
-                    val offsetX = (slotW / scale - 16f) / 2f
-                    val offsetY = (slotH / scale - 16f) / 2f
-                    
-                    // Attempting to use the Matrix3x2f if it's what it wants
-                    // pose.translate(org.joml.Matrix3x2f().translate(gridX.toFloat(), gridY.toFloat()))
-                    
-                    guiGraphics.renderItem(instance.stack, gridX + (offsetX * scale).toInt(), gridY + (offsetY * scale).toInt())
+                    guiGraphics.renderItem(instance.stack, gridX + offsetX, gridY + offsetY)
                 } else {
                     val size = instance.getActualSize(grid.sizeProvider)
                     guiGraphics.fill(itemX, itemY, itemX + size.width * 18 - 1, itemY + size.height * 18 - 1, -0x555556)
