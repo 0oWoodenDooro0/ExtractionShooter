@@ -1,6 +1,5 @@
 package com.gmail.vincent031525.extractionshooter.client.screen
 
-import com.mojang.blaze3d.vertex.PoseStack
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
@@ -28,7 +27,14 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
         // Remove default labels
     }
 
-    private fun renderScaledItem(guiGraphics: GuiGraphics, stack: ItemStack, x: Int, y: Int, targetW: Int, targetH: Int) {
+    private fun renderScaledItem(
+        guiGraphics: GuiGraphics,
+        stack: ItemStack,
+        x: Int,
+        y: Int,
+        targetW: Int,
+        targetH: Int
+    ) {
         val scale = minOf(targetW.toFloat() / 16f, targetH.toFloat() / 16f)
         val scaledSize = 16f * scale
 
@@ -116,9 +122,9 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val size = instance.getActualSize(grid.sizeProvider)
                     val targetW = size.width * 18
                     val targetH = size.height * 18
-                    
+
                     guiGraphics.fill(itemX, itemY, itemX + targetW - 1, itemY + targetH - 1, -0x555556)
-                    
+
                     renderScaledItem(guiGraphics, instance.stack, itemX, itemY, targetW, targetH)
                 }
             }
@@ -135,10 +141,17 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
         if (!carried.isEmpty) {
             menu.carried = carried
-            
+
             // Render phantom shape if holding item
             val size = InventoryUtils.getItemSize(carried)
             val renderSize = if (heldItemRotated) ItemSize(size.height, size.width) else size
+
+            val targetW = renderSize.width * 18
+            val targetH = renderSize.height * 18
+
+            // Center the item on the mouse cursor
+            val renderX = mouseX - (targetW / 2)
+            val renderY = mouseY - (targetH / 2)
 
             var tint = 0x80FFFFFF.toInt() // Default: Semi-transparent white
 
@@ -157,8 +170,8 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
                 if (mouseX >= gridX && mouseX < gridX + gridWidth && mouseY >= gridY && mouseY < gridY + gridHeight) {
 
-                    val col = ((mouseX - gridX) / 18)
-                    val row = ((mouseY - gridY) / 18)
+                    val col = ((renderX - gridX) / 18)
+                    val row = ((renderY - gridY) / 18)
 
                     if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         tint = 0x8000FF00.toInt() // Valid: Green
@@ -178,13 +191,11 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
             if (!snapped) {
                 // Draw phantom background
-                guiGraphics.fill(mouseX, mouseY, mouseX + renderSize.width * 18, mouseY + renderSize.height * 18, tint)
+                guiGraphics.fill(renderX, renderY, renderX + targetW, renderY + targetH, tint)
 
                 // Draw the actual scaled item
                 // The item should be centered in the phantom area
-                val targetW = renderSize.width * 18
-                val targetH = renderSize.height * 18
-                renderScaledItem(guiGraphics, carried, mouseX, mouseY, targetW, targetH)
+                renderScaledItem(guiGraphics, carried, renderX, renderY, targetW, targetH)
             }
         }
 
@@ -207,10 +218,10 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
             if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 && mouseY >= gridY && mouseY < gridY + gridHeight) {
 
-                val col = ((mouseX - gridX) / 18).toInt()
-                val row = ((mouseY - gridY) / 18).toInt()
-
                 if (menu.carried.isEmpty) {
+                    val col = ((mouseX - gridX) / 18).toInt()
+                    val row = ((mouseY - gridY) / 18).toInt()
+
                     // Try pickup
                     val instance = grid.getItemInstance(col, row)
                     if (instance != null) {
@@ -235,6 +246,17 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 } else {
                     // Try place
                     val carried = menu.carried
+
+                    val size = InventoryUtils.getItemSize(carried)
+                    val renderSize = if (heldItemRotated) ItemSize(size.height, size.width) else size
+                    val targetW = renderSize.width * 18
+                    val targetH = renderSize.height * 18
+
+                    val renderX = mouseX - (targetW / 2)
+                    val renderY = mouseY - (targetH / 2)
+
+                    val col = ((renderX - gridX) / 18).toInt()
+                    val row = ((renderY - gridY) / 18).toInt()
 
                     // We need to check locally if it fits to avoid desync flickering
                     // Use a temp instance to check fit with current rotation
