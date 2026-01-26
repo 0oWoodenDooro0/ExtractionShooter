@@ -12,6 +12,7 @@ Centering the held item icon on the mouse cursor in `GridInventoryScreen` to imp
 - [x] Task: Modify the rendering code to use the calculated offset 48013f7
 - [x] Task: Verify that the offset accounts for the GUI scale and cell size 48013f7
 - [x] Task: Snap placement highlight to grid to resolve visual ambiguity b12156e
+- [x] Task: Refine placement logic to use mouse position instead of render offset 871b993
 - [~] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Verification and Polishing
