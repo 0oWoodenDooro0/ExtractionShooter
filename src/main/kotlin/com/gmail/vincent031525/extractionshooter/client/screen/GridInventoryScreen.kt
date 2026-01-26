@@ -154,6 +154,10 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             val renderY = mouseY - (targetH / 2)
 
             var tint = 0x80FFFFFF.toInt() // Default: Semi-transparent white
+            
+            // Where to draw the background tint (default to floating with mouse)
+            var tintX = renderX
+            var tintY = renderY
 
             var snapped = false
             // Check if hovering over a grid to show valid/invalid placement
@@ -172,6 +176,10 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
                     val col = ((renderX - gridX) / 18)
                     val row = ((renderY - gridY) / 18)
+                    
+                    // Snap the tint to the grid slot
+                    tintX = gridX + col * 18
+                    tintY = gridY + row * 18
 
                     if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         tint = 0x8000FF00.toInt() // Valid: Green
@@ -190,11 +198,10 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             }
 
             if (!snapped) {
-                // Draw phantom background
-                guiGraphics.fill(renderX, renderY, renderX + targetW, renderY + targetH, tint)
+                // Draw phantom background (at snapped position if hovering grid, or floating if not)
+                guiGraphics.fill(tintX, tintY, tintX + targetW, tintY + targetH, tint)
 
-                // Draw the actual scaled item
-                // The item should be centered in the phantom area
+                // Draw the actual scaled item (always floating with mouse)
                 renderScaledItem(guiGraphics, carried, renderX, renderY, targetW, targetH)
             }
         }
