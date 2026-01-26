@@ -14,7 +14,7 @@ Reverting the visual snapping of the placement highlight to provide a smoother "
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md) 6767a65
 
 ## Phase 3: Verification and Polishing
-- [ ] Task: Run `./gradlew classes` to ensure compilation
-- [ ] Task: Verify smooth movement of green/red highlight for various item sizes
-- [ ] Task: Confirm item still drops in the expected (closest) grid slot
+- [~] Task: Run `./gradlew classes` to ensure compilation
+- [~] Task: Verify smooth movement of green/red highlight for various item sizes
+- [~] Task: Confirm item still drops in the expected (closest) grid slot
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification and Polishing' (Protocol in workflow.md)
