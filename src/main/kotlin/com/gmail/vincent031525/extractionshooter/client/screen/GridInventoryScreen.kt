@@ -182,10 +182,8 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 if (mouseX >= gridX && mouseX < gridX + gridWidth && mouseY >= gridY && mouseY < gridY + gridHeight) {
 
                     // Calculate col/row based on mouse position relative to item center
-                    val col = ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
-                    val row = ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
-                    
-                    // tintX and tintY remain at renderX/renderY (floating)
+                    val col = if (grid.singleItem) 0 else ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
+                    val row = if (grid.singleItem) 0 else ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
                     
                     if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         tint = 0x8000FF00.toInt() // Valid: Green
@@ -268,8 +266,8 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val renderY = mouseY - (targetH / 2)
 
                     // Calculate col/row based on mouse position relative to item center
-                    val col = ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
-                    val row = ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
+                    val col = if (grid.singleItem) 0 else ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
+                    val row = if (grid.singleItem) 0 else ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
 
                     // We need to check locally if it fits to avoid desync flickering
                     // Use a temp instance to check fit with current rotation
