@@ -13,8 +13,8 @@ Reverting the visual snapping of the placement highlight to provide a smoother "
 - [x] Task: Verify that placement logic (col/row calculation) remains mouse-centric for validation 1476076
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md) 6767a65
 
-## Phase 3: Verification and Polishing
-- [~] Task: Run `./gradlew classes` to ensure compilation
-- [~] Task: Verify smooth movement of green/red highlight for various item sizes
-- [~] Task: Confirm item still drops in the expected (closest) grid slot
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification and Polishing' (Protocol in workflow.md)
+## Phase 3: Verification and Polishing [checkpoint: 3a21a45]
+- [x] Task: Run `./gradlew classes` to ensure compilation b97b6ab
+- [x] Task: Verify smooth movement of green/red highlight for various item sizes b97b6ab
+- [x] Task: Confirm item still drops in the expected (closest) grid slot b97b6ab
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Verification and Polishing' (Protocol in workflow.md) 3a21a45
