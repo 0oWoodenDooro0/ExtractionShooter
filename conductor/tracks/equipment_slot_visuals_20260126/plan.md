@@ -7,14 +7,14 @@ Refining the drag-and-drop visuals for equipment slots to prevent item icon snap
 - [x] Task: Verify interaction between `snapped` state and the final floating item draw
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Investigation' (Protocol in workflow.md)
 
-## Phase 2: Implementation
+## Phase 2: Implementation [checkpoint: 67638e2]
 - [x] Task: Update `render` loop for equipment slots (`singleItem` grids)
 - [x] Task: Decouple the green/red slot tint from the item icon rendering in equipment slots
 - [x] Task: Ensure the held item icon remains in the floating pass even when hovering over equipment slots
 - [x] Task: Implement global slot hints for compatible equipment slots when dragging
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md)
 
-## Phase 3: Verification and Polishing
+## Phase 3: Verification and Polishing [checkpoint: 67638e2]
 - [x] Task: Run `./gradlew classes` to ensure compilation
 - [x] Task: Verify that ghost icons remain visible behind the slot highlight
 - [x] Task: Verify no icon snapping/scaling occurs for all equipment slots
