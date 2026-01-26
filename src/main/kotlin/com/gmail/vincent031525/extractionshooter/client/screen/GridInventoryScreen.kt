@@ -173,6 +173,12 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 val gridHeight = grid.rows * 18
                 val gridWidth = grid.columns * 18
 
+                // Draw global hint for equipment slots
+                if (grid.singleItem && grid.canPlace(carried, 0, 0, false)) {
+                    // Slightly fainter green for hint
+                    guiGraphics.fill(gridX, gridY, gridX + gridWidth, gridY + gridHeight, 0x4000FF00.toInt())
+                }
+
                 if (mouseX >= gridX && mouseX < gridX + gridWidth && mouseY >= gridY && mouseY < gridY + gridHeight) {
 
                     // Calculate col/row based on mouse position relative to item center
@@ -184,10 +190,9 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         tint = 0x8000FF00.toInt() // Valid: Green
                         if (grid.singleItem) {
-                            // Snap to slot
+                            // Brighter highlight for the hovered slot
                             guiGraphics.fill(gridX, gridY, gridX + gridWidth, gridY + gridHeight, tint)
-                            renderScaledItem(guiGraphics, carried, gridX, gridY, gridWidth, gridHeight)
-                            snapped = true
+                            // Do NOT snap or scale. Let it fall through to floating render.
                             break
                         }
                     } else {

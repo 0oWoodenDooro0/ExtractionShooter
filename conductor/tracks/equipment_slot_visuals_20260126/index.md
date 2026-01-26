@@ -1,4 +1,4 @@
-# Track item_icon_centering_fix_20260125 Context
+# Track equipment_slot_visuals_20260126 Context
 
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)
