@@ -179,10 +179,8 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val col = ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
                     val row = ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
                     
-                    // Snap the tint to the grid slot
-                    tintX = gridX + col * 18
-                    tintY = gridY + row * 18
-
+                    // tintX and tintY remain at renderX/renderY (floating)
+                    
                     if (grid.canPlace(carried, col, row, heldItemRotated)) {
                         tint = 0x8000FF00.toInt() // Valid: Green
                         if (grid.singleItem) {
