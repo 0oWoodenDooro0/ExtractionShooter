@@ -10,7 +10,7 @@
     - [x] Cancel the event if the condition matches
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure & Event Handling' (Protocol in workflow.md)
 
-## Phase 2: Verification
+## Phase 2: Verification [checkpoint: cd6dbc3]
 - [x] Task: Manual verification in-game 4b616d1
     - [x] Launch the game client
     - [x] Verify that only the crosshair is visible
