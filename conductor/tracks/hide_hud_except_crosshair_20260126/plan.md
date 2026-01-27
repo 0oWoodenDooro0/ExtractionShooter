@@ -2,12 +2,12 @@
 
 ## Phase 1: Infrastructure & Event Handling
 - [x] Task: Create HUD event handler class 4b616d1
-    - [ ] Create `com.gmail.vincent031525.extractionshooter.client.event.HudEventHandler`
-    - [ ] Add `@EventBusSubscriber` annotation with `Dist.CLIENT`
-- [ ] Task: Implement layer cancellation logic
-    - [ ] Create a method listening to `RenderGuiLayerEvent.Pre`
-    - [ ] Implement conditional check: `if (event.getName() != VanillaGuiLayers.CROSSHAIR)`
-    - [ ] Cancel the event if the condition matches
+    - [x] Create `com.gmail.vincent031525.extractionshooter.client.event.HudEventHandler`
+    - [x] Add `@EventBusSubscriber` annotation with `Dist.CLIENT`
+- [x] Task: Implement layer cancellation logic 4b616d1
+    - [x] Create a method listening to `RenderGuiLayerEvent.Pre`
+    - [x] Implement conditional check: `if (event.getName() != VanillaGuiLayers.CROSSHAIR)`
+    - [x] Cancel the event if the condition matches
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure & Event Handling' (Protocol in workflow.md)
 
 ## Phase 2: Verification
