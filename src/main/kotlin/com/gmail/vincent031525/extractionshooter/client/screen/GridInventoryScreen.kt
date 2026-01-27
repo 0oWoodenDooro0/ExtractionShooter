@@ -191,12 +191,10 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                             // Brighter highlight for the hovered slot
                             guiGraphics.fill(gridX, gridY, gridX + gridWidth, gridY + gridHeight, tint)
                             // Do NOT snap or scale. Let it fall through to floating render.
-                            break
                         }
                     } else {
                         tint = 0x80FF0000.toInt() // Invalid: Red
                     }
-                    break
                 }
             }
 
