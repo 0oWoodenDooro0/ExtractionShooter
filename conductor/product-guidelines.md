@@ -11,6 +11,7 @@
 
 ## UI/UX Principles
 - **Information-Rich HUD:** The user interface should prioritize clarity. Essential data—including current health status of body parts, remaining ammunition, and raid time—must be clearly visible to the player to support tactical decision-making.
+- **Custom HUD:** To ensure maximum control over the tactical experience, all vanilla Minecraft HUD elements (except for the crosshair) are hidden by default, providing a clean slate for the custom, high-fidelity UI.
 
 ## Quality Standards
 - **Modular Code:** Prioritize writing clean, independent modules. Use events and data components to facilitate communication between systems rather than tight coupling.
