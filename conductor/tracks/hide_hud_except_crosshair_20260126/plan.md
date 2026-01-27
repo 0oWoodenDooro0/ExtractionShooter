@@ -11,8 +11,8 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure & Event Handling' (Protocol in workflow.md)
 
 ## Phase 2: Verification
-- [ ] Task: Manual verification in-game
-    - [ ] Launch the game client
-    - [ ] Verify that only the crosshair is visible
-    - [ ] Verify that hotbar, health, food, etc., are all hidden
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)
+- [x] Task: Manual verification in-game 4b616d1
+    - [x] Launch the game client
+    - [x] Verify that only the crosshair is visible
+    - [x] Verify that hotbar, health, food, etc., are all hidden
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md) 4b616d1
