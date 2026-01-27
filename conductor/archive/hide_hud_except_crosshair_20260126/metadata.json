@@ -1,0 +1,8 @@
+{
+  "track_id": "hide_hud_except_crosshair_20260126",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-26T15:40:39Z",
+  "updated_at": "2026-01-26T15:40:39Z",
+  "description": "Hide all vanilla HUD elements except for the crosshair using RenderGuiLayerEvent.Pre."
+}
