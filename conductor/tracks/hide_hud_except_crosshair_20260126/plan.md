@@ -1,6 +1,6 @@
 # Plan: Hide All Vanilla HUD Elements Except Crosshair
 
-## Phase 1: Infrastructure & Event Handling
+## Phase 1: Infrastructure & Event Handling [checkpoint: b88d310]
 - [x] Task: Create HUD event handler class 4b616d1
     - [x] Create `com.gmail.vincent031525.extractionshooter.client.event.HudEventHandler`
     - [x] Add `@EventBusSubscriber` annotation with `Dist.CLIENT`
