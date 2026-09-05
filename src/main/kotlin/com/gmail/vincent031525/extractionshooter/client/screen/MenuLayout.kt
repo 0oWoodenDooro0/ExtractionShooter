@@ -14,7 +14,7 @@ object MenuLayout {
         
         layout["primary_1"] = GridPos(50, 50)      // 4x2
         layout["primary_2"] = GridPos(50, 90)      // 4x2
-        layout["pistol"] = GridPos(50, 130)        // 2x2 (Assuming 2x2 for consistency)
+        layout["pistol"] = GridPos(50, 130)        // 2x2
 
         // Pockets & Special (various sizes)
         layout["pockets_1"] = GridPos(130, 10)
@@ -24,16 +24,19 @@ object MenuLayout {
         layout["secure_container"] = GridPos(130, 40) // 3x3
 
         // Grids (from items) - These are dynamically named as slotName_grid
-        layout["helmet_grid"] = GridPos(200, 130) // Moved away for now
+        layout["helmet_grid"] = GridPos(200, 130)
         layout["armor_grid"] = GridPos(50, 10)
         layout["tactical_rig_grid"] = GridPos(130, 100)
         layout["backpack_grid"] = GridPos(10, 180)
         layout["primary_1_grid"] = GridPos(130, 140)
         layout["primary_2_grid"] = GridPos(130, 180)
         layout["pistol_grid"] = GridPos(130, 220)
+
+        // World Loot Container Grid (Right side panel in looting mode)
+        layout["container"] = GridPos(236, 26)
     }
 
     fun getPos(name: String): GridPos {
-        return layout[name] ?: GridPos(8, 20) // Default fallback position
+        return layout[name] ?: GridPos(8, 20)
     }
 }

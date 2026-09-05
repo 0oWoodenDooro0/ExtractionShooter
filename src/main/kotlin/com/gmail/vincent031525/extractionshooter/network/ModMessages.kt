@@ -59,5 +59,25 @@ object ModMessages {
             InteractGridItemPayload.STREAM_CODEC,
             ServerPayloadHandler::handleInteractGridItem
         )
+        registrar.playToServer(
+            DropGridItemPayload.ID,
+            DropGridItemPayload.STREAM_CODEC,
+            ServerPayloadHandler::handleDropGridItem
+        )
+        registrar.playToServer(
+            DropCarriedPayload.ID,
+            DropCarriedPayload.STREAM_CODEC,
+            ServerPayloadHandler::handleDropCarried
+        )
+        registrar.playToServer(
+            QuickMoveGridItemPayload.ID,
+            QuickMoveGridItemPayload.STREAM_CODEC,
+            ServerPayloadHandler::handleQuickMoveGridItem
+        )
+        registrar.playToClient(
+            SyncContainerPayload.ID,
+            SyncContainerPayload.STREAM_CODEC,
+            ClientPayloadHandler::handleSyncContainer
+        )
     }
 }

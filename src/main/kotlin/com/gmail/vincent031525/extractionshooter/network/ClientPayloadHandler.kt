@@ -1,5 +1,7 @@
 package com.gmail.vincent031525.extractionshooter.network
 
+import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
+import com.gmail.vincent031525.extractionshooter.network.payload.SyncContainerPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.SyncEquipmentPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.SyncHealthPayload
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
@@ -18,6 +20,14 @@ object ClientPayloadHandler {
         context.enqueueWork {
             val player = Minecraft.getInstance().player ?: return@enqueueWork
             player.setData(ModDataAttachments.PLAYER_HEALTH, payload.health)
+        }
+    }
+
+    fun handleSyncContainer(payload: SyncContainerPayload, context: IPayloadContext) {
+        context.enqueueWork {
+            val player = Minecraft.getInstance().player ?: return@enqueueWork
+            val menu = player.containerMenu as? GridInventoryMenu ?: return@enqueueWork
+            menu.containerGrid = payload.containerGrid
         }
     }
 }

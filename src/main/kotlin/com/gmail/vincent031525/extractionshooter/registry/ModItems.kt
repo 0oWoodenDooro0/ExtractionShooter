@@ -62,4 +62,6 @@ object ModItems {
     val BACKPACK_ITEM = ITEMS.registerItem("backpack") { properties ->
         Item(properties.stacksTo(1).component(ModDataComponents.GRID_INVENTORY, com.gmail.vincent031525.extractionshooter.inventory.GridInventory(5, 5)))
     }
+
+    val LOOT_CRATE_ITEM = ITEMS.registerSimpleBlockItem(ModBlocks.LOOT_CRATE)
 }

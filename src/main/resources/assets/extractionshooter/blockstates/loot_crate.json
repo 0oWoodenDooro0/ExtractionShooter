@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "extractionshooter:block/loot_crate"
+    }
+  }
+}

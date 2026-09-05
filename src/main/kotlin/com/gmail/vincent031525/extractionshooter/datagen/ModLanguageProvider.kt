@@ -22,6 +22,7 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.SURGERY_KIT_ITEM.get(), "Surgery Kit")
         add(ModItems.MEDKIT_SMALL_ITEM.get(), "Small Medkit")
         add(ModItems.MEDKIT_LARGE_ITEM.get(), "Tactical First Aid Kit")
+        add(ModItems.LOOT_CRATE_ITEM.get(), "Tactical Loot Crate")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "Switch Fire Mode")
         add(KeyBindings.RELOAD_KEY.name, "Reload")
@@ -44,6 +45,8 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
 
         add("death.attack.bleeding", $$"%1$s bled out")
         add("death.attack.bleeding.player", $$"%1$s bled out while fighting %2$s")
+
+        add("container.extractionshooter.loot_crate", "Tactical Loot Crate")
     }
 }
 
@@ -63,6 +66,7 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.SURGERY_KIT_ITEM.get(), "手術包")
         add(ModItems.MEDKIT_SMALL_ITEM.get(), "小型急救包")
         add(ModItems.MEDKIT_LARGE_ITEM.get(), "戰術急救箱")
+        add(ModItems.LOOT_CRATE_ITEM.get(), "戰術物資箱")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "切換射擊模式")
         add(KeyBindings.RELOAD_KEY.name, "換彈")
@@ -85,5 +89,7 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
 
         add("death.attack.bleeding", $$"%1$s 失血過多身亡")
         add("death.attack.bleeding.player", $$"%1$s 在與 %2$s 戰鬥後失血過多身亡")
+
+        add("container.extractionshooter.loot_crate", "戰術物資箱")
     }
 }

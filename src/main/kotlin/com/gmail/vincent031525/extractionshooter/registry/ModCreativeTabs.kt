@@ -28,6 +28,7 @@ object ModCreativeTabs {
                 output.accept(ModItems.SURGERY_KIT_ITEM)
                 output.accept(ModItems.MEDKIT_SMALL_ITEM)
                 output.accept(ModItems.MEDKIT_LARGE_ITEM)
+                output.accept(ModItems.LOOT_CRATE_ITEM)
             }
             .build()
     }

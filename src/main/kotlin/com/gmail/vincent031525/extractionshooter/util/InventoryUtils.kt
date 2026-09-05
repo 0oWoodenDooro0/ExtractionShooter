@@ -4,14 +4,15 @@ import com.gmail.vincent031525.extractionshooter.datamap.ContainerStats
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
 import com.gmail.vincent031525.extractionshooter.inventory.GridInventory
 import com.gmail.vincent031525.extractionshooter.inventory.GridItemInstance
-import com.gmail.vincent031525.extractionshooter.inventory.PlayerEquipment
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.NbtOps
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.entity.player.Player
+import net.minecraft.world.Container
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.entity.BlockEntity
 
 object InventoryUtils {
     const val PRIMARY_1_SLOT = 0
@@ -53,6 +54,71 @@ object InventoryUtils {
         val stack = player.inventory.getItem(slot)
         player.connection.send(ClientboundContainerSetSlotPacket(0, player.inventoryMenu.stateId, 36 + slot, stack))
         player.connection.send(ClientboundContainerSetSlotPacket(-2, 0, slot, stack))
+    }
+
+    fun containerToGrid(container: Container, blockEntity: BlockEntity?): GridInventory {
+        if (blockEntity != null && blockEntity.persistentData.contains("GridInventory")) {
+            val optTag = blockEntity.persistentData.getCompound("GridInventory")
+            if (optTag.isPresent) {
+                val result = GridInventory.CODEC.parse(NbtOps.INSTANCE, optTag.get())
+                if (result.isSuccess) {
+                    val grid = result.orThrow
+                    if (isGridConsistentWithContainer(grid, container)) {
+                        return grid
+                    }
+                }
+            }
+        }
+
+        val size = container.containerSize
+        val cols = 9
+        val rows = maxOf(3, (size + cols - 1) / cols)
+        var grid = GridInventory(cols, rows)
+
+        for (i in 0 until size) {
+            val stack = container.getItem(i)
+            if (!stack.isEmpty) {
+                val col = i % cols
+                val row = i / cols
+                if (grid.canPlace(stack, col, row, false)) {
+                    grid = grid.addItem(stack, col, row, false) ?: grid
+                } else {
+                    val space = grid.findSpaceForItem(stack)
+                    if (space != null) {
+                        grid = grid.addItem(stack, space.first, space.second, false) ?: grid
+                    }
+                }
+            }
+        }
+        return grid
+    }
+
+    private fun isGridConsistentWithContainer(grid: GridInventory, container: Container): Boolean {
+        var containerItemCount = 0
+        for (i in 0 until container.containerSize) {
+            if (!container.getItem(i).isEmpty) containerItemCount++
+        }
+        return containerItemCount == grid.items.size
+    }
+
+    fun gridToContainer(grid: GridInventory, container: Container, blockEntity: BlockEntity?) {
+        container.clearContent()
+        var slot = 0
+        for (item in grid.items) {
+            if (slot < container.containerSize) {
+                container.setItem(slot, item.stack.copy())
+                slot++
+            }
+        }
+        container.setChanged()
+
+        if (blockEntity != null) {
+            val tagResult = GridInventory.CODEC.encodeStart(NbtOps.INSTANCE, grid)
+            if (tagResult.isSuccess) {
+                blockEntity.persistentData.put("GridInventory", tagResult.orThrow)
+                blockEntity.setChanged()
+            }
+        }
     }
 
     /**
