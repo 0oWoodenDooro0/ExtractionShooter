@@ -31,6 +31,7 @@ import net.minecraft.world.item.component.TooltipDisplay
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
 import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.animatable.GeoItem
 import software.bernie.geckolib.animatable.client.GeoRenderProvider
@@ -255,7 +256,13 @@ class GunItem<T : GeoItemRenderer<*>>(
         return true
     }
 
-    private fun performShoot(level: ServerLevel, player: Player, stack: ItemStack) {
+    private fun performShoot(
+        level: ServerLevel,
+        player: Player,
+        stack: ItemStack,
+        clientOrigin: Vec3? = null,
+        clientDir: Vec3? = null
+    ) {
         val magazineStack = getMagazineStack(stack)
         val ammoItem = MagazineItem.getAmmoItem(magazineStack)
         if (ammoItem !is AmmoItem) return
@@ -264,8 +271,9 @@ class GunItem<T : GeoItemRenderer<*>>(
         triggerAnim(player, GeoItem.getOrAssignId(stack, level), "shoot_controller", "fire")
 
         val pitch = 1.9f + level.random.nextFloat() * 0.2f
+        // Pass player to only play sound to surrounding players (shooter already played it locally)
         level.playSound(
-            null,
+            player,
             player.blockPosition(),
             SoundEvents.GENERIC_EXPLODE.value(),
             SoundSource.PLAYERS,
@@ -273,8 +281,13 @@ class GunItem<T : GeoItemRenderer<*>>(
             pitch
         )
 
-        val eyePos = player.eyePosition
-        val lookVec = player.lookAngle
+        val eyePos = clientOrigin?.let {
+            if (it.distanceToSqr(player.eyePosition) < 9.0) it else player.eyePosition
+        } ?: player.eyePosition
+
+        val lookVec = clientDir?.let {
+            if (it.lengthSqr() > 0.001 && it.normalize().dot(player.lookAngle.normalize()) > 0.2) it.normalize() else player.lookAngle
+        } ?: player.lookAngle
         val endPos = eyePos.add(lookVec.scale(getGunStats().range))
         val traceBox = AABB(eyePos, endPos)
 
@@ -308,8 +321,13 @@ class GunItem<T : GeoItemRenderer<*>>(
         }
     }
 
-    fun tryShoot(level: ServerLevel, player: Player, stack: ItemStack) {
-
+    fun tryShoot(
+        level: ServerLevel,
+        player: Player,
+        stack: ItemStack,
+        clientOrigin: Vec3? = null,
+        clientDir: Vec3? = null
+    ) {
         val gunData = getGunData(stack) ?: return
         val magazineStack = getMagazineStack(stack)
         val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return
@@ -318,7 +336,7 @@ class GunItem<T : GeoItemRenderer<*>>(
 
         if (magazineData.ammoCount <= 0) {
             level.playSound(
-                null,
+                player,
                 player.blockPosition(),
                 SoundEvents.DISPENSER_FAIL,
                 SoundSource.PLAYERS,
@@ -331,7 +349,7 @@ class GunItem<T : GeoItemRenderer<*>>(
             return
         }
 
-        performShoot(level, player, stack)
+        performShoot(level, player, stack, clientOrigin, clientDir)
 
         val gunStats = getGunStats()
         val newData = if (gunStats.fireModeCycle[gunData.fireModeIndex] == GunStats.FireMode.BURST) {

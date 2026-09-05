@@ -52,7 +52,7 @@ object ServerPayloadHandler {
             val item = stack.item
 
             if (item is GunItem<*>) {
-                item.tryShoot(player.level(), player, stack)
+                item.tryShoot(player.level(), player, stack, payload.origin, payload.direction)
             }
         }
     }
