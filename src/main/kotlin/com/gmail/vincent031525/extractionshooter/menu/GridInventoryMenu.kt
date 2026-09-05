@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
 
-class GridInventoryMenu(windowId: Int, val playerInventory: Inventory, val equipment: PlayerEquipment) :
+class GridInventoryMenu(windowId: Int, val playerInventory: Inventory, initialEquipment: PlayerEquipment? = null) :
     AbstractContainerMenu(ModMenus.GRID_INVENTORY_MENU.get(), windowId) {
 
     // For opening on client
@@ -18,6 +18,9 @@ class GridInventoryMenu(windowId: Int, val playerInventory: Inventory, val equip
         playerInventory,
         playerInventory.player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
     )
+
+    val equipment: PlayerEquipment
+        get() = playerInventory.player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
 
     init {
         // Vanilla slots and hotbar removed as per GridInventory refactor.

@@ -88,6 +88,16 @@ data class GridInventory(
         return null
     }
 
+    fun replaceItem(targetX: Int, targetY: Int, newStack: ItemStack): GridInventory? {
+        val instance = getItemInstance(targetX, targetY) ?: return null
+        val newItems = if (newStack.isEmpty) {
+            items.filter { it != instance }
+        } else {
+            items.map { if (it == instance) it.copy(stack = newStack) else it }
+        }
+        return copy(items = newItems)
+    }
+
     fun findSpaceForItem(itemStack: ItemStack): Pair<Int, Int>? {
         if (singleItem) {
             return if (canPlace(itemStack, 0, 0, false)) Pair(0, 0) else null

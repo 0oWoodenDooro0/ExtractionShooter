@@ -4,17 +4,20 @@ import com.gmail.vincent031525.extractionshooter.datamap.GunStats
 import com.gmail.vincent031525.extractionshooter.item.GunItem
 import com.gmail.vincent031525.extractionshooter.item.MagazineItem
 import com.gmail.vincent031525.extractionshooter.network.payload.ShootPayload
+import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
 import net.minecraft.client.Minecraft
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 import net.neoforged.neoforge.client.network.ClientPacketDistributor
 import software.bernie.geckolib.animatable.GeoItem
 
 object ClientGunHandler {
 
     private var wasAttackKeyDown = false
+    private var hasPlayedDryFireSound = false
     private var nextShootTick = 0L
     private var burstRemaining = 0
     private var burstCooldown = 0
@@ -33,6 +36,7 @@ object ClientGunHandler {
         val gunItem = stack.item as? GunItem<*>
         if (gunItem == null) {
             wasAttackKeyDown = false
+            hasPlayedDryFireSound = false
             burstRemaining = 0
             return
         }
@@ -61,10 +65,15 @@ object ClientGunHandler {
         // Only handle user input if not in a GUI
         if (minecraft.screen != null) {
             wasAttackKeyDown = false
+            hasPlayedDryFireSound = false
             return
         }
 
         val isAttackDown = minecraft.options.keyAttack.isDown
+
+        if (!isAttackDown) {
+            hasPlayedDryFireSound = false
+        }
 
         if (isAttackDown) {
             when (fireMode) {
@@ -102,8 +111,26 @@ object ClientGunHandler {
     ) {
         val magazineStack = GunItem.getMagazineStack(stack)
         val magazineData = MagazineItem.getMagazineData(magazineStack)
+        val isCreative = player.abilities.instabuild
 
-        if (magazineData != null && magazineData.ammoCount > 0) {
+        if (magazineData != null && (magazineData.ammoCount > 0 || isCreative)) {
+            hasPlayedDryFireSound = false
+
+            // Instant local prediction of ammo consumption (survival mode only)
+            if (!isCreative) {
+                val newAmmoCount = (magazineData.ammoCount - 1).coerceAtLeast(0)
+                val updatedMag = magazineStack.copy()
+                val newMagData = magazineData.copy(
+                    ammoCount = newAmmoCount,
+                    ammoItem = if (newAmmoCount == 0) Items.AIR else magazineData.ammoItem
+                )
+                updatedMag.set(ModDataComponents.MAGAZINE_DATA, newMagData)
+                val gunData = GunItem.getGunData(stack)
+                if (gunData != null) {
+                    stack.set(ModDataComponents.GUN_DATA, gunData.copy(magazineStack = updatedMag))
+                }
+            }
+
             // 1. Instant local audio feedback
             val pitch = 1.9f + (Math.random().toFloat() * 0.2f)
             player.level().playLocalSound(
@@ -129,15 +156,18 @@ object ClientGunHandler {
             val direction = player.lookAngle
             ClientPacketDistributor.sendToServer(ShootPayload(origin, direction))
         } else {
-            // Instant dry-fire click sound
-            player.level().playLocalSound(
-                player.x, player.y, player.z,
-                SoundEvents.DISPENSER_FAIL,
-                SoundSource.PLAYERS,
-                1.0f,
-                1.5f,
-                false
-            )
+            // Instant dry-fire click sound: only play once until trigger is released!
+            if (!hasPlayedDryFireSound) {
+                player.level().playLocalSound(
+                    player.x, player.y, player.z,
+                    SoundEvents.DISPENSER_FAIL,
+                    SoundSource.PLAYERS,
+                    1.0f,
+                    1.5f,
+                    false
+                )
+                hasPlayedDryFireSound = true
+            }
             nextShootTick = player.level().gameTime + 10L
         }
     }
@@ -161,7 +191,7 @@ object ClientGunHandler {
         }
 
         if (Math.abs(recoilYawVelocity) > 0.005f) {
-            player.yRot += recoilYawVelocity
+            player.yRot -= recoilYawVelocity
             recoilYawVelocity *= 0.6f
         } else {
             recoilYawVelocity = 0f

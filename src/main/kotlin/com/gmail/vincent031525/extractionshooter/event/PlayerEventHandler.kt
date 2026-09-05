@@ -3,6 +3,7 @@ package com.gmail.vincent031525.extractionshooter.event
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
 import com.gmail.vincent031525.extractionshooter.network.payload.SyncEquipmentPayload
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
+import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
 import net.minecraft.server.level.ServerPlayer
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -38,6 +39,7 @@ object PlayerEventHandler {
 
     private fun syncEquipment(player: ServerPlayer) {
         val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
+        InventoryUtils.syncHotbarWithEquipment(player, equipment)
         PacketDistributor.sendToPlayer(player, SyncEquipmentPayload(equipment))
     }
 }

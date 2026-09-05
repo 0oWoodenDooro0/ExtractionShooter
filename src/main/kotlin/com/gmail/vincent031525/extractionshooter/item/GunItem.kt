@@ -174,16 +174,29 @@ class GunItem<T : GeoItemRenderer<*>>(
             if (data.burstTickDelay <= 0) {
                 val magazineStack = getMagazineStack(stack)
                 val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return
-                if (magazineData.ammoCount > 0) {
+                val isCreative = entity.abilities.instabuild
+
+                if (magazineData.ammoCount > 0 || isCreative) {
                     performShoot(level, entity, stack)
-                    magazineStack.set(
-                        ModDataComponents.MAGAZINE_DATA,
-                        magazineData.copy(ammoCount = magazineData.ammoCount - 1)
-                    )
+                    val newMagStack = if (!isCreative) {
+                        val mag = magazineStack.copy()
+                        val newAmmoCount = (magazineData.ammoCount - 1).coerceAtLeast(0)
+                        mag.set(
+                            ModDataComponents.MAGAZINE_DATA,
+                            magazineData.copy(
+                                ammoCount = newAmmoCount,
+                                ammoItem = if (newAmmoCount == 0) Items.AIR else magazineData.ammoItem
+                            )
+                        )
+                        mag
+                    } else {
+                        magazineStack
+                    }
                     stack.set(
                         ModDataComponents.GUN_DATA, data.copy(
                             burstRemaining = data.burstRemaining - 1,
-                            burstTickDelay = getGunStats().shootTickDelay
+                            burstTickDelay = getGunStats().shootTickDelay,
+                            magazineStack = newMagStack
                         )
                     )
                 } else {
@@ -327,14 +340,17 @@ class GunItem<T : GeoItemRenderer<*>>(
         stack: ItemStack,
         clientOrigin: Vec3? = null,
         clientDir: Vec3? = null
-    ) {
-        val gunData = getGunData(stack) ?: return
+    ): Boolean {
+        val gunData = getGunData(stack) ?: return false
         val magazineStack = getMagazineStack(stack)
-        val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return
+        val magazineData = MagazineItem.getMagazineData(magazineStack) ?: return false
 
-        if (level.gameTime < gunData.nextAttackTick) return
+        // 1 tick tolerance for network latency between client and server
+        if (level.gameTime < gunData.nextAttackTick - 1L) return false
 
-        if (magazineData.ammoCount <= 0) {
+        val isCreative = player.abilities.instabuild
+
+        if (magazineData.ammoCount <= 0 && !isCreative) {
             level.playSound(
                 player,
                 player.blockPosition(),
@@ -346,12 +362,13 @@ class GunItem<T : GeoItemRenderer<*>>(
 
             val cooldownData = gunData.copy(nextAttackTick = level.gameTime + 10)
             stack.set(ModDataComponents.GUN_DATA, cooldownData)
-            return
+            return false
         }
 
         performShoot(level, player, stack, clientOrigin, clientDir)
 
         val gunStats = getGunStats()
+        val nextTick = level.gameTime + gunStats.shootTickDelay
         val newData = if (gunStats.fireModeCycle[gunData.fireModeIndex] == GunStats.FireMode.BURST) {
             gunData.copy(
                 burstRemaining = 2,
@@ -360,19 +377,27 @@ class GunItem<T : GeoItemRenderer<*>>(
             )
         } else {
             gunData.copy(
-                nextAttackTick = level.gameTime + gunStats.shootTickDelay
+                nextAttackTick = nextTick
             )
         }
 
-        if (player.abilities.instabuild) return
-        magazineStack.set(
-            ModDataComponents.MAGAZINE_DATA,
-            magazineData.copy(
-                ammoCount = magazineData.ammoCount - 1,
-                ammoItem = if (magazineData.ammoCount - 1 == 0) Items.AIR else magazineData.ammoItem
-            )
+        if (isCreative) {
+            // Keep infinite ammo in creative mode while properly updating attack cooldown
+            stack.set(ModDataComponents.GUN_DATA, newData)
+            return true
+        }
+
+        val newAmmoCount = (magazineData.ammoCount - 1).coerceAtLeast(0)
+        val updatedMagStack = magazineStack.copy()
+        val updatedMagData = magazineData.copy(
+            ammoCount = newAmmoCount,
+            ammoItem = if (newAmmoCount == 0) Items.AIR else magazineData.ammoItem
         )
-        stack.set(ModDataComponents.GUN_DATA, newData)
+        updatedMagStack.set(ModDataComponents.MAGAZINE_DATA, updatedMagData)
+
+        val finalGunData = newData.copy(magazineStack = updatedMagStack)
+        stack.set(ModDataComponents.GUN_DATA, finalGunData)
+        return true
     }
 
     fun loadMagazine(level: Level, stack: ItemStack, magazineStack: ItemStack): ItemStack {

@@ -1,13 +1,18 @@
 package com.gmail.vincent031525.extractionshooter.client.screen
 
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
+import com.gmail.vincent031525.extractionshooter.inventory.GridActionHandler
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
+import com.gmail.vincent031525.extractionshooter.network.payload.InteractGridItemPayload
+import com.gmail.vincent031525.extractionshooter.network.payload.PickFromGridPayload
+import com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
 import kotlin.math.roundToInt
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
+import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.ItemStack
 import net.neoforged.neoforge.client.network.ClientPacketDistributor
@@ -119,6 +124,9 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val slotH = grid.rows * 18
 
                     renderScaledItem(guiGraphics, instance.stack, gridX, gridY, slotW, slotH)
+                    if (instance.stack.count > 1) {
+                        guiGraphics.renderItemDecorations(font, instance.stack, gridX + slotW - 18, gridY + slotH - 18)
+                    }
                 } else {
                     val size = instance.getActualSize(grid.sizeProvider)
                     val targetW = size.width * 18
@@ -127,6 +135,9 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     guiGraphics.fill(itemX, itemY, itemX + targetW - 1, itemY + targetH - 1, -0x555556)
 
                     renderScaledItem(guiGraphics, instance.stack, itemX, itemY, targetW, targetH)
+                    if (instance.stack.count > 1) {
+                        guiGraphics.renderItemDecorations(font, instance.stack, itemX + targetW - 18, itemY + targetH - 18)
+                    }
                 }
             }
         }
@@ -180,20 +191,30 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 }
 
                 if (mouseX >= gridX && mouseX < gridX + gridWidth && mouseY >= gridY && mouseY < gridY + gridHeight) {
+                    val hoverCol = if (grid.singleItem) 0 else ((mouseX - gridX) / 18).toInt()
+                    val hoverRow = if (grid.singleItem) 0 else ((mouseY - gridY) / 18).toInt()
+                    val targetInstance = grid.getItemInstance(hoverCol, hoverRow)
 
-                    // Calculate col/row based on mouse position relative to item center
-                    val col = if (grid.singleItem) 0 else ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
-                    val row = if (grid.singleItem) 0 else ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
-                    
-                    if (grid.canPlace(carried, col, row, heldItemRotated)) {
-                        tint = 0x8000FF00.toInt() // Valid: Green
+                    if (targetInstance != null && minecraft?.level != null &&
+                        GridActionHandler.canInteract(minecraft!!.level!!, grid, targetInstance.x, targetInstance.y, carried, 1)
+                    ) {
+                        tint = 0x8000FF00.toInt() // Valid interaction (e.g. ammo into magazine)
                         if (grid.singleItem) {
-                            // Brighter highlight for the hovered slot
                             guiGraphics.fill(gridX, gridY, gridX + gridWidth, gridY + gridHeight, tint)
-                            // Do NOT snap or scale. Let it fall through to floating render.
                         }
                     } else {
-                        tint = 0x80FF0000.toInt() // Invalid: Red
+                        // Calculate col/row based on mouse position relative to item center
+                        val col = if (grid.singleItem) 0 else ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
+                        val row = if (grid.singleItem) 0 else ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
+
+                        if (grid.canPlace(carried, col, row, heldItemRotated)) {
+                            tint = 0x8000FF00.toInt() // Valid: Green
+                            if (grid.singleItem) {
+                                guiGraphics.fill(gridX, gridY, gridX + gridWidth, gridY + gridHeight, tint)
+                            }
+                        } else {
+                            tint = 0x80FF0000.toInt() // Invalid: Red
+                        }
                     }
                 }
             }
@@ -204,10 +225,35 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
                 // Draw the actual scaled item (always floating with mouse)
                 renderScaledItem(guiGraphics, carried, renderX, renderY, targetW, targetH)
+                if (carried.count > 1) {
+                    guiGraphics.renderItemDecorations(font, carried, renderX + targetW - 18, renderY + targetH - 18)
+                }
             }
         }
 
-        renderTooltip(guiGraphics, mouseX, mouseY)
+        // Render tooltips when not holding an item
+        if (menu.carried.isEmpty) {
+            val x = (width - imageWidth) / 2
+            val y = (height - imageHeight) / 2
+            val activeGrids = menu.equipment.getAllActiveGrids()
+            for ((name, grid) in activeGrids) {
+                val pos = MenuLayout.getPos(name)
+                val gridX = x + pos.x
+                val gridY = y + pos.y
+                val gridHeight = grid.rows * 18
+                val gridWidth = grid.columns * 18
+
+                if (mouseX >= gridX && mouseX < gridX + gridWidth && mouseY >= gridY && mouseY < gridY + gridHeight) {
+                    val col = if (grid.singleItem) 0 else ((mouseX - gridX) / 18).toInt()
+                    val row = if (grid.singleItem) 0 else ((mouseY - gridY) / 18).toInt()
+                    val instance = grid.getItemInstance(col, row)
+                    if (instance != null) {
+                        guiGraphics.setTooltipForNextFrame(font, instance.stack, mouseX, mouseY)
+                        break
+                    }
+                }
+            }
+        }
     }
 
     fun onMouseClick(mouseX: Double, mouseY: Double, button: Int): Boolean {
@@ -223,17 +269,52 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             val gridX = x + pos.x
             val gridY = y + pos.y
             val gridHeight = grid.rows * 18
+            val gridWidth = grid.columns * 18
 
-            if (mouseX >= gridX && mouseX < gridX + grid.columns * 18 && mouseY >= gridY && mouseY < gridY + gridHeight) {
+            if (mouseX >= gridX && mouseX < gridX + gridWidth && mouseY >= gridY && mouseY < gridY + gridHeight) {
+                val col = if (grid.singleItem) 0 else ((mouseX - gridX) / 18).toInt()
+                val row = if (grid.singleItem) 0 else ((mouseY - gridY) / 18).toInt()
+                val targetInstance = grid.getItemInstance(col, row)
 
-                if (menu.carried.isEmpty) {
-                    val col = ((mouseX - gridX) / 18).toInt()
-                    val row = ((mouseY - gridY) / 18).toInt()
+                if (targetInstance != null) {
+                    // Try item interaction first (right-click loading/unloading, left-click stacking)
+                    val interaction = if (minecraft?.level != null) {
+                        GridActionHandler.interact(
+                            minecraft!!.level!!,
+                            grid,
+                            targetInstance.x,
+                            targetInstance.y,
+                            menu.carried,
+                            button
+                        )
+                    } else null
 
-                    // Try pickup
-                    val instance = grid.getItemInstance(col, row)
-                    if (instance != null) {
-                        // Optimistic update
+                    if (interaction != null) {
+                        menu.equipment.updateGrid(name, interaction.newGrid)
+                        menu.carried = interaction.newCarried
+                        heldItemRotated = false
+
+                        interaction.sound?.let { sound ->
+                            minecraft?.player?.let { p ->
+                                p.level().playLocalSound(
+                                    p.x, p.y, p.z,
+                                    sound,
+                                    SoundSource.PLAYERS,
+                                    1.0f,
+                                    interaction.pitch,
+                                    false
+                                )
+                            }
+                        }
+
+                        ClientPacketDistributor.sendToServer(
+                            InteractGridItemPayload(name, targetInstance.x, targetInstance.y, button)
+                        )
+                        return true
+                    }
+
+                    // If no interaction occurred and left-click with empty hand: pick up the item
+                    if (button == 0 && menu.carried.isEmpty) {
                         val result = grid.removeItem(col, row)
                         if (result != null) {
                             val (newGrid, stack) = result
@@ -241,50 +322,37 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                             menu.carried = stack
                         }
 
-                        heldItemRotated = instance.rotated
+                        heldItemRotated = targetInstance.rotated
 
-                        // Send Packet
                         ClientPacketDistributor.sendToServer(
-                            com.gmail.vincent031525.extractionshooter.network.payload.PickFromGridPayload(
-                                name, instance.x, instance.y
-                            )
+                            PickFromGridPayload(name, targetInstance.x, targetInstance.y)
                         )
                         return true
                     }
                 } else {
-                    // Try place
-                    val carried = menu.carried
+                    // Clicked on empty cell
+                    if (button == 0 && !menu.carried.isEmpty) {
+                        val carried = menu.carried
+                        val size = InventoryUtils.getItemSize(carried)
+                        val renderSize = if (heldItemRotated) ItemSize(size.height, size.width) else size
 
-                    val size = InventoryUtils.getItemSize(carried)
-                    val renderSize = if (heldItemRotated) ItemSize(size.height, size.width) else size
-                    val targetW = renderSize.width * 18
-                    val targetH = renderSize.height * 18
+                        // Calculate col/row based on mouse position relative to item center
+                        val placeCol = if (grid.singleItem) 0 else ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
+                        val placeRow = if (grid.singleItem) 0 else ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
 
-                    val renderX = mouseX - (targetW / 2)
-                    val renderY = mouseY - (targetH / 2)
+                        if (grid.canPlace(carried, placeCol, placeRow, heldItemRotated)) {
+                            val newGrid = grid.addItem(carried, placeCol, placeRow, heldItemRotated)
+                            if (newGrid != null) {
+                                menu.equipment.updateGrid(name, newGrid)
+                                menu.carried = ItemStack.EMPTY
+                            }
 
-                    // Calculate col/row based on mouse position relative to item center
-                    val col = if (grid.singleItem) 0 else ((mouseX - gridX) / 18.0 - renderSize.width / 2.0).roundToInt()
-                    val row = if (grid.singleItem) 0 else ((mouseY - gridY) / 18.0 - renderSize.height / 2.0).roundToInt()
-
-                    // We need to check locally if it fits to avoid desync flickering
-                    // Use a temp instance to check fit with current rotation
-                    if (grid.canPlace(carried, col, row, heldItemRotated)) {
-                        // Optimistic update
-                        val newGrid = grid.addItem(carried, col, row, heldItemRotated)
-                        if (newGrid != null) {
-                            menu.equipment.updateGrid(name, newGrid)
-                            menu.carried = ItemStack.EMPTY
-                        }
-
-                        ClientPacketDistributor.sendToServer(
-                            com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload(
-                                name, col, row, heldItemRotated
+                            ClientPacketDistributor.sendToServer(
+                                PlaceToGridPayload(name, placeCol, placeRow, heldItemRotated)
                             )
-                        )
-                        // Reset rotation after placing? Or keep it? Usually keep for multi-place, but here we place whole stack.
-                        heldItemRotated = false
-                        return true
+                            heldItemRotated = false
+                            return true
+                        }
                     }
                 }
             }
