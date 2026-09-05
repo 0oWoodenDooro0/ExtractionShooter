@@ -3,6 +3,7 @@ package com.gmail.vincent031525.extractionshooter.item
 import com.gmail.vincent031525.extractionshooter.dataattachment.PlayerHealth
 import com.gmail.vincent031525.extractionshooter.health.BodyPart
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
+import com.gmail.vincent031525.extractionshooter.util.HealthUtils
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -40,6 +41,7 @@ class HealItem(properties: Properties, val maxHealAmount: Float, val duration: I
             }
 
             entity.setData(ModDataAttachments.PLAYER_HEALTH, health)
+            HealthUtils.syncHealth(entity)
 
             if (!entity.abilities.instabuild) {
                 stack.hurtAndBreak((maxHealAmount - pool).toInt(), entity, EquipmentSlot.MAINHAND)

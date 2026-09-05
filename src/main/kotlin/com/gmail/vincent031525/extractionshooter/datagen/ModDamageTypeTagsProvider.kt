@@ -12,7 +12,10 @@ class ModDamageTypeTagsProvider(output: PackOutput, lookupProvider: CompletableF
     DamageTypeTagsProvider(output, lookupProvider, Extractionshooter.ID) {
 
     override fun addTags(provider: HolderLookup.Provider) {
-        tag(DamageTypeTags.NO_KNOCKBACK)
-            .addOptional(ModDamageTypes.BLEEDING)
+        tag(DamageTypeTags.NO_KNOCKBACK).addOptional(ModDamageTypes.BLEEDING)
+        tag(DamageTypeTags.BYPASSES_ARMOR).addOptional(ModDamageTypes.BLEEDING)
+        tag(DamageTypeTags.BYPASSES_COOLDOWN).addOptional(ModDamageTypes.BLEEDING)
+        tag(DamageTypeTags.BYPASSES_EFFECTS).addOptional(ModDamageTypes.BLEEDING)
+        tag(DamageTypeTags.BYPASSES_INVULNERABILITY).addOptional(ModDamageTypes.BLEEDING)
     }
 }

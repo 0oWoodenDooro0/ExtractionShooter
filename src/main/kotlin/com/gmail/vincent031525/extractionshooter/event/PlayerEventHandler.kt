@@ -1,8 +1,10 @@
 package com.gmail.vincent031525.extractionshooter.event
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
+import com.gmail.vincent031525.extractionshooter.dataattachment.PlayerHealth
 import com.gmail.vincent031525.extractionshooter.network.payload.SyncEquipmentPayload
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
+import com.gmail.vincent031525.extractionshooter.util.HealthUtils
 import net.minecraft.server.level.ServerPlayer
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -17,6 +19,7 @@ object PlayerEventHandler {
         val player = event.entity
         if (player is ServerPlayer) {
             syncEquipment(player)
+            HealthUtils.syncHealth(player)
         }
     }
 
@@ -24,7 +27,9 @@ object PlayerEventHandler {
     fun onPlayerRespawn(event: PlayerEvent.PlayerRespawnEvent) {
         val player = event.entity
         if (player is ServerPlayer) {
+            player.setData(ModDataAttachments.PLAYER_HEALTH, PlayerHealth())
             syncEquipment(player)
+            HealthUtils.syncHealth(player)
         }
     }
 
@@ -33,6 +38,7 @@ object PlayerEventHandler {
         val player = event.entity
         if (player is ServerPlayer) {
             syncEquipment(player)
+            HealthUtils.syncHealth(player)
         }
     }
 

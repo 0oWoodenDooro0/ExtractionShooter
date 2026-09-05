@@ -1,11 +1,13 @@
 package com.gmail.vincent031525.extractionshooter.client.screen
 
+import com.gmail.vincent031525.extractionshooter.client.gui.HealthHudOverlay
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
 import com.gmail.vincent031525.extractionshooter.inventory.GridActionHandler
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
 import com.gmail.vincent031525.extractionshooter.network.payload.InteractGridItemPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.PickFromGridPayload
 import com.gmail.vincent031525.extractionshooter.network.payload.PlaceToGridPayload
+import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
 import kotlin.math.roundToInt
 import net.minecraft.client.gui.GuiGraphics
@@ -61,6 +63,14 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
         // Draw background
         guiGraphics.fill(x, y, x + imageWidth, y + imageHeight, -0x333334)
+
+        // Draw Health Card beside inventory
+        val player = minecraft?.player
+        if (player != null) {
+            val health = player.getData(ModDataAttachments.PLAYER_HEALTH)
+            val cardX = if (x >= 134) x - 130 else maxOf(4, x - 130)
+            HealthHudOverlay.renderHealthCard(guiGraphics, cardX, y + 10, health, player)
+        }
 
         // Render Active Grids
         val activeGrids = menu.getAllActiveGrids()

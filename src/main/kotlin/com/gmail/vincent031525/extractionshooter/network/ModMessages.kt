@@ -34,6 +34,11 @@ object ModMessages {
             SyncEquipmentPayload.STREAM_CODEC,
             ClientPayloadHandler::handleSyncEquipment
         )
+        registrar.playToClient(
+            SyncHealthPayload.ID,
+            SyncHealthPayload.STREAM_CODEC,
+            ClientPayloadHandler::handleSyncHealth
+        )
         registrar.playToServer(
             OpenInventoryPayload.ID,
             OpenInventoryPayload.STREAM_CODEC,

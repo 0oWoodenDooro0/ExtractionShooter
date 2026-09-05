@@ -1,6 +1,7 @@
 package com.gmail.vincent031525.extractionshooter.item
 
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
+import com.gmail.vincent031525.extractionshooter.util.HealthUtils
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -25,6 +26,7 @@ class SurgeryKitItem(properties: Properties) : MedicalItem(properties) {
             }
 
             entity.setData(ModDataAttachments.PLAYER_HEALTH, data)
+            HealthUtils.syncHealth(entity)
 
             if (!entity.abilities.instabuild) {
                 stack.hurtAndBreak(1, entity, EquipmentSlot.MAINHAND)

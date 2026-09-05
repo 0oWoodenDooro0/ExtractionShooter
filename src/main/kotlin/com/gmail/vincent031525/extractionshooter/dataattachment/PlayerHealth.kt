@@ -4,6 +4,9 @@ import com.gmail.vincent031525.extractionshooter.health.BodyPart
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import io.netty.buffer.ByteBuf
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
 
 data class PlayerHealth(
     var head: Float = BodyPart.HEAD.maxHealth,
@@ -19,8 +22,19 @@ data class PlayerHealth(
             ).apply(instance, ::PlayerHealth)
         }
 
+        val STREAM_CODEC: StreamCodec<ByteBuf, PlayerHealth> = StreamCodec.composite(
+            ByteBufCodecs.FLOAT, { it.head },
+            ByteBufCodecs.FLOAT, { it.body },
+            ByteBufCodecs.FLOAT, { it.legs },
+            ::PlayerHealth
+        )
+
         val HEAL_ORDER = listOf(BodyPart.BODY, BodyPart.HEAD, BodyPart.LEGS)
     }
+
+    fun getTotalHealth(): Float = head + body + legs
+
+    fun getMaxTotalHealth(): Float = BodyPart.HEAD.maxHealth + BodyPart.BODY.maxHealth + BodyPart.LEGS.maxHealth
 
     fun getHealth(part: BodyPart): Float {
         return when (part) {

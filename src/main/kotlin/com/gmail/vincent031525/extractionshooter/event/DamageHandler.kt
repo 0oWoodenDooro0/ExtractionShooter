@@ -9,11 +9,16 @@ import com.gmail.vincent031525.extractionshooter.registry.ModDamageTypes
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import com.gmail.vincent031525.extractionshooter.registry.ModEffects
+import com.gmail.vincent031525.extractionshooter.util.HealthUtils
 import com.mojang.brigadier.arguments.FloatArgumentType
 import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.coordinates.Vec3Argument
 import net.minecraft.network.chat.Component
+import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.EquipmentSlot
@@ -35,7 +40,6 @@ object DamageHandler {
 
         val source = event.source
         val damage = event.amount
-        val healthData = player.getData(ModDataAttachments.PLAYER_HEALTH)
 
         val hitVec = if (source is BulletDamageSource) source.hitPos else source.sourcePosition
         val part = when {
@@ -51,10 +55,11 @@ object DamageHandler {
         if (source is BulletDamageSource) {
             handleArmorAndDamage(player, part, source.stats, damage)
         } else {
-            applyFinalDamage(player, BodyPart.BODY, damage)
+            applyFinalDamage(player, part, damage)
         }
 
-        if (healthData.head <= 0f || healthData.body <= 0f) {
+        val updatedHealth = player.getData(ModDataAttachments.PLAYER_HEALTH)
+        if (!player.isCreative && (updatedHealth.head <= 0f || updatedHealth.body <= 0f)) {
             event.amount = Float.MAX_VALUE
             return
         }
@@ -113,6 +118,20 @@ object DamageHandler {
         val data = player.getData(ModDataAttachments.PLAYER_HEALTH)
         data.damage(part, damage)
         player.setData(ModDataAttachments.PLAYER_HEALTH, data)
+        HealthUtils.syncHealth(player)
+
+        // Visual & audio hurt feedback
+        if (player is ServerPlayer) {
+            player.connection.send(ClientboundHurtAnimationPacket(player))
+        }
+        player.level().playSound(
+            null,
+            player.x, player.y, player.z,
+            SoundEvents.PLAYER_HURT,
+            SoundSource.PLAYERS,
+            1.0f,
+            (player.random.nextFloat() - player.random.nextFloat()) * 0.2f + 1.0f
+        )
 
         tryApplyBleeding(player, damage)
 
