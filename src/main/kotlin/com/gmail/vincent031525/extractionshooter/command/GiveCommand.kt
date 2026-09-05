@@ -29,7 +29,7 @@ object GiveCommand {
                                     val player = try { EntityArgument.getPlayer(ctx, "target") } catch (e: Exception) { null }
                                     if (player != null) {
                                         val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-                                        equipment.getAllActiveGrids().keys.forEach { builder.suggest(it) }
+                                        equipment.getAllActiveGrids(player).keys.forEach { builder.suggest(it) }
                                     }
                                     builder.buildFuture()
                                 }
@@ -51,7 +51,7 @@ object GiveCommand {
         val stackPrototype = itemInput.createItemStack(1, false)
 
         val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-        val allGrids = equipment.getAllActiveGrids()
+        val allGrids = equipment.getAllActiveGrids(player)
         val grid = allGrids[gridId]
 
         if (grid == null) {
@@ -107,10 +107,16 @@ object GiveCommand {
         }
 
         if (addedCount > 0) {
-            equipment.updateGrid(gridId, currentGrid)
-            player.setData(ModDataAttachments.PLAYER_EQUIPMENT, equipment)
-            InventoryUtils.syncHotbarWithEquipment(player, equipment)
-            PacketDistributor.sendToPlayer(player, SyncEquipmentPayload(equipment))
+            equipment.updateGrid(gridId, currentGrid, player)
+
+            val weaponSlot = InventoryUtils.getWeaponHotbarSlot(gridId) ?: InventoryUtils.getWeaponSubGridSlot(gridId)
+            if (weaponSlot != null) {
+                InventoryUtils.syncHotbarSlot(player, weaponSlot)
+                player.containerMenu.broadcastChanges()
+            } else {
+                player.setData(ModDataAttachments.PLAYER_EQUIPMENT, equipment)
+                PacketDistributor.sendToPlayer(player, SyncEquipmentPayload(equipment))
+            }
 
             context.source.sendSuccess({
                 Component.literal("Added $addedCount x ${stackPrototype.hoverName.string} to $gridId")

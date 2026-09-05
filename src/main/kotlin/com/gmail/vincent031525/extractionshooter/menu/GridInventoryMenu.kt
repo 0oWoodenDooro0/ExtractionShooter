@@ -1,5 +1,6 @@
 package com.gmail.vincent031525.extractionshooter.menu
 
+import com.gmail.vincent031525.extractionshooter.inventory.GridInventory
 import com.gmail.vincent031525.extractionshooter.inventory.PlayerEquipment
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModMenus
@@ -26,6 +27,10 @@ class GridInventoryMenu(windowId: Int, val playerInventory: Inventory, initialEq
         // Vanilla slots and hotbar removed as per GridInventory refactor.
         // Custom GridInventory slots will be added in subsequent phases.
     }
+
+    fun getAllActiveGrids(): Map<String, GridInventory> = equipment.getAllActiveGrids(playerInventory.player)
+
+    fun updateGrid(name: String, newGrid: GridInventory) = equipment.updateGrid(name, newGrid, playerInventory.player)
 
     override fun stillValid(player: Player): Boolean = true
 

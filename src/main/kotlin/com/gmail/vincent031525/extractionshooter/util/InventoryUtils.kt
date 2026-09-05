@@ -7,12 +7,54 @@ import com.gmail.vincent031525.extractionshooter.inventory.GridItemInstance
 import com.gmail.vincent031525.extractionshooter.inventory.PlayerEquipment
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 
 object InventoryUtils {
+    const val PRIMARY_1_SLOT = 0
+    const val PRIMARY_2_SLOT = 1
+    const val PISTOL_SLOT = 2
+
+    fun isWeaponGrid(gridName: String): Boolean =
+        gridName == "primary_1" || gridName == "primary_2" || gridName == "pistol"
+
+    fun getWeaponHotbarSlot(gridName: String): Int? = when (gridName) {
+        "primary_1" -> PRIMARY_1_SLOT
+        "primary_2" -> PRIMARY_2_SLOT
+        "pistol" -> PISTOL_SLOT
+        else -> null
+    }
+
+    fun getWeaponSubGridSlot(gridName: String): Int? = when (gridName) {
+        "primary_1_grid" -> PRIMARY_1_SLOT
+        "primary_2_grid" -> PRIMARY_2_SLOT
+        "pistol_grid" -> PISTOL_SLOT
+        else -> null
+    }
+
+    fun createWeaponGrid(gridName: String, stack: ItemStack): GridInventory {
+        val (cols, rows) = when (gridName) {
+            "primary_1", "primary_2" -> 4 to 2
+            "pistol" -> 2 to 2
+            else -> 1 to 1
+        }
+        val items = if (!stack.isEmpty) {
+            listOf(GridItemInstance(stack, 0, 0))
+        } else {
+            emptyList()
+        }
+        return GridInventory(cols, rows, items, filter = gridName, singleItem = true)
+    }
+
+    fun syncHotbarSlot(player: ServerPlayer, slot: Int) {
+        val stack = player.inventory.getItem(slot)
+        player.connection.send(ClientboundContainerSetSlotPacket(0, player.inventoryMenu.stateId, 36 + slot, stack))
+        player.connection.send(ClientboundContainerSetSlotPacket(-2, 0, slot, stack))
+    }
+
     /**
      * Gets the container stats (columns/rows) of an item.
      */
@@ -41,50 +83,5 @@ object InventoryUtils {
     fun getItemSize(stack: ItemStack): ItemSize {
         if (stack.isEmpty) return ItemSize(0, 0)
         return getItemSize(stack.item)
-    }
-
-    /**
-     * Syncs the primary_1, primary_2, and pistol grids from PlayerEquipment into
-     * hotbar slot 0 (key 1), slot 1 (key 2), and slot 2 (key 3).
-     */
-    fun syncHotbarWithEquipment(player: Player, equipment: PlayerEquipment) {
-        val p1 = equipment.persistentGrids["primary_1"]?.getItemInstance(0, 0)?.stack ?: ItemStack.EMPTY
-        val p2 = equipment.persistentGrids["primary_2"]?.getItemInstance(0, 0)?.stack ?: ItemStack.EMPTY
-        val pistol = equipment.persistentGrids["pistol"]?.getItemInstance(0, 0)?.stack ?: ItemStack.EMPTY
-
-        player.inventory.setItem(0, p1.copy())
-        player.inventory.setItem(1, p2.copy())
-        player.inventory.setItem(2, pistol.copy())
-
-        if (player is ServerPlayer) {
-            player.containerMenu.broadcastChanges()
-        }
-    }
-
-    /**
-     * If the player is currently holding hotbar slot 0, 1, or 2, syncs the held item back
-     * into primary_1, primary_2, or pistol in PlayerEquipment.
-     */
-    fun syncWeaponFromHotbarToEquipment(player: Player, equipment: PlayerEquipment) {
-        val slotName = when (player.inventory.selectedSlot) {
-            0 -> "primary_1"
-            1 -> "primary_2"
-            2 -> "pistol"
-            else -> return
-        }
-
-        val stack = player.mainHandItem
-        val grid = equipment.persistentGrids[slotName] ?: return
-        val newGrid = if (stack.isEmpty) {
-            grid.removeItem(0, 0)?.first ?: grid
-        } else {
-            grid.replaceItem(0, 0, stack.copy())
-                ?: GridInventory(
-                    grid.columns, grid.rows,
-                    listOf(GridItemInstance(stack.copy(), 0, 0)),
-                    grid.filter, grid.singleItem
-                )
-        }
-        equipment.updateGrid(slotName, newGrid)
     }
 }

@@ -63,7 +63,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
         guiGraphics.fill(x, y, x + imageWidth, y + imageHeight, -0x333334)
 
         // Render Active Grids
-        val activeGrids = menu.equipment.getAllActiveGrids()
+        val activeGrids = menu.getAllActiveGrids()
         activeGrids.forEach { (name, grid) ->
             val pos = MenuLayout.getPos(name)
             val gridX = x + pos.x
@@ -119,7 +119,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 val itemY = gridY + instance.y * 18
 
                 if (grid.singleItem) {
-                    // Scale item to fit the entire slot
+                    // Scale item to fit the entire slot (fixed to screen slot size)
                     val slotW = grid.columns * 18
                     val slotH = grid.rows * 18
 
@@ -128,7 +128,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                         guiGraphics.renderItemDecorations(font, instance.stack, gridX + slotW - 18, gridY + slotH - 18)
                     }
                 } else {
-                    val size = instance.getActualSize(grid.sizeProvider)
+                    val size = InventoryUtils.getItemSize(instance.stack)
                     val targetW = size.width * 18
                     val targetH = size.height * 18
 
@@ -175,7 +175,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             // Check if hovering over a grid to show valid/invalid placement
             val x = (width - imageWidth) / 2
             val y = (height - imageHeight) / 2
-            val activeGrids = menu.equipment.getAllActiveGrids()
+            val activeGrids = menu.getAllActiveGrids()
 
             for ((name, grid) in activeGrids) {
                 val pos = MenuLayout.getPos(name)
@@ -235,7 +235,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
         if (menu.carried.isEmpty) {
             val x = (width - imageWidth) / 2
             val y = (height - imageHeight) / 2
-            val activeGrids = menu.equipment.getAllActiveGrids()
+            val activeGrids = menu.getAllActiveGrids()
             for ((name, grid) in activeGrids) {
                 val pos = MenuLayout.getPos(name)
                 val gridX = x + pos.x
@@ -261,7 +261,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
         val x = (width - imageWidth) / 2
         val y = (height - imageHeight) / 2
-        val activeGrids = menu.equipment.getAllActiveGrids()
+        val activeGrids = menu.getAllActiveGrids()
 
         // Iterate grids to find click
         for ((name, grid) in activeGrids) {
@@ -290,7 +290,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     } else null
 
                     if (interaction != null) {
-                        menu.equipment.updateGrid(name, interaction.newGrid)
+                        menu.updateGrid(name, interaction.newGrid)
                         menu.carried = interaction.newCarried
                         heldItemRotated = false
 
@@ -318,7 +318,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                         val result = grid.removeItem(col, row)
                         if (result != null) {
                             val (newGrid, stack) = result
-                            menu.equipment.updateGrid(name, newGrid)
+                            menu.updateGrid(name, newGrid)
                             menu.carried = stack
                         }
 
@@ -343,7 +343,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                         if (grid.canPlace(carried, placeCol, placeRow, heldItemRotated)) {
                             val newGrid = grid.addItem(carried, placeCol, placeRow, heldItemRotated)
                             if (newGrid != null) {
-                                menu.equipment.updateGrid(name, newGrid)
+                                menu.updateGrid(name, newGrid)
                                 menu.carried = ItemStack.EMPTY
                             }
 

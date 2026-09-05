@@ -6,6 +6,7 @@ import com.gmail.vincent031525.extractionshooter.item.MagazineItem
 import com.gmail.vincent031525.extractionshooter.network.payload.*
 import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
+import com.gmail.vincent031525.extractionshooter.util.EquipmentValidator
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
@@ -29,15 +30,10 @@ object ServerPayloadHandler {
 
             val currentData = stack.get(ModDataComponents.GUN_DATA)
             if (currentData != null) {
-
                 val nextFireModeIndex = GunItem.nextFireMode(stack)
                 if (nextFireModeIndex == -1) return@enqueueWork
                 val nextFireMode = GunItem.getFireMode(stack) ?: return@enqueueWork
 
-                val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-                InventoryUtils.syncWeaponFromHotbarToEquipment(player, equipment)
-                player.setData(ModDataAttachments.PLAYER_EQUIPMENT, equipment)
-                PacketDistributor.sendToPlayer(player, SyncEquipmentPayload(equipment))
                 player.containerMenu.broadcastChanges()
 
                 player.level().playSound(
@@ -66,9 +62,6 @@ object ServerPayloadHandler {
             val shotFired = item.tryShoot(player.level() as ServerLevel, player, stack, payload.origin, payload.direction)
             if (!shotFired) return@enqueueWork
 
-            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-            InventoryUtils.syncWeaponFromHotbarToEquipment(player, equipment)
-            player.setData(ModDataAttachments.PLAYER_EQUIPMENT, equipment)
             player.containerMenu.broadcastChanges()
         }
     }
@@ -79,7 +72,7 @@ object ServerPayloadHandler {
             val stack = player.mainHandItem
             val item = stack.item as? GunItem<*> ?: return@enqueueWork
             val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-            val allGrids = equipment.getAllActiveGrids()
+            val allGrids = equipment.getAllActiveGrids(player)
 
             val gridSearchOrder = listOf(
                 "tactical_rig_grid",
@@ -99,6 +92,7 @@ object ServerPayloadHandler {
 
             val candidates = mutableListOf<MagCandidate>()
 
+            // 1. Search in tactical rig, pockets, backpack, etc.
             for (gridName in gridSearchOrder) {
                 val grid = allGrids[gridName] ?: continue
                 for (instance in grid.items) {
@@ -110,7 +104,9 @@ object ServerPayloadHandler {
                 }
             }
 
+            // 2. Search in vanilla inventory (excluding hands)
             for (i in 0 until player.inventory.containerSize) {
+                if (i == player.inventory.selectedSlot) continue
                 val invStack = player.inventory.getItem(i)
                 if (invStack.item is MagazineItem) {
                     val magData = MagazineItem.getMagazineData(invStack)
@@ -123,6 +119,7 @@ object ServerPayloadHandler {
 
             val chosen = candidates.maxByOrNull { it.ammoCount } ?: return@enqueueWork
 
+            // Remove the chosen magazine from its location
             val newMagStack: ItemStack
             if (chosen.gridName != null) {
                 val grid = allGrids[chosen.gridName] ?: return@enqueueWork
@@ -134,7 +131,7 @@ object ServerPayloadHandler {
                     grid.replaceItem(chosen.gridX, chosen.gridY, sourceStack)
                 }
                 if (newGrid != null) {
-                    equipment.updateGrid(chosen.gridName, newGrid)
+                    equipment.updateGrid(chosen.gridName, newGrid, player)
                 }
             } else {
                 val invStack = player.inventory.getItem(chosen.invSlot)
@@ -144,19 +141,20 @@ object ServerPayloadHandler {
             val oldMag = item.unloadMagazine(stack)
             if (!oldMag.isEmpty) {
                 var stored = false
-                val updatedGrids = equipment.getAllActiveGrids()
+                val updatedGrids = equipment.getAllActiveGrids(player)
                 for (storeName in gridSearchOrder) {
                     val storeGrid = updatedGrids[storeName] ?: continue
                     val space = storeGrid.findSpaceForItem(oldMag)
                     if (space != null) {
                         val updatedStoreGrid = storeGrid.addItem(oldMag, space.first, space.second, false)
                         if (updatedStoreGrid != null) {
-                            equipment.updateGrid(storeName, updatedStoreGrid)
+                            equipment.updateGrid(storeName, updatedStoreGrid, player)
                             stored = true
                             break
                         }
                     }
                 }
+
                 if (!stored) {
                     if (!player.inventory.add(oldMag)) {
                         player.drop(oldMag, false)
@@ -166,7 +164,6 @@ object ServerPayloadHandler {
 
             item.loadMagazine(player.level(), stack, newMagStack)
 
-            InventoryUtils.syncWeaponFromHotbarToEquipment(player, equipment)
             player.setData(ModDataAttachments.PLAYER_EQUIPMENT, equipment)
             PacketDistributor.sendToPlayer(player, SyncEquipmentPayload(equipment))
             player.containerMenu.broadcastChanges()
@@ -187,9 +184,6 @@ object ServerPayloadHandler {
             val player = context.player() as? ServerPlayer ?: return@enqueueWork
             val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
 
-            // Ensure held weapons are synced to equipment before opening GUI
-            InventoryUtils.syncWeaponFromHotbarToEquipment(player, equipment)
-            player.setData(ModDataAttachments.PLAYER_EQUIPMENT, equipment)
             PacketDistributor.sendToPlayer(player, SyncEquipmentPayload(equipment))
 
             player.openMenu(object : MenuProvider {
@@ -204,19 +198,46 @@ object ServerPayloadHandler {
     fun handlePickFromGrid(payload: PickFromGridPayload, context: IPayloadContext) {
         context.enqueueWork {
             val player = context.player() as? ServerPlayer ?: return@enqueueWork
-            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-            val allGrids = equipment.getAllActiveGrids()
-            val grid = allGrids[payload.gridName] ?: return@enqueueWork
+            if (!player.containerMenu.carried.isEmpty) return@enqueueWork
 
-            if (!player.containerMenu.carried.isEmpty) return@enqueueWork // Already holding something
+            val weaponSlot = InventoryUtils.getWeaponHotbarSlot(payload.gridName)
+            if (weaponSlot != null) {
+                // Pick from weapon hotbar slot
+                val stack = player.inventory.getItem(weaponSlot)
+                if (!stack.isEmpty) {
+                    player.inventory.setItem(weaponSlot, ItemStack.EMPTY)
+                    player.containerMenu.carried = stack
+                    InventoryUtils.syncHotbarSlot(player, weaponSlot)
+                    player.containerMenu.broadcastChanges()
+                }
+                return@enqueueWork
+            }
+
+            val weaponSubSlot = InventoryUtils.getWeaponSubGridSlot(payload.gridName)
+            if (weaponSubSlot != null) {
+                // Pick from weapon attachment sub-grid
+                val weaponStack = player.inventory.getItem(weaponSubSlot)
+                val grid = weaponStack.get(ModDataComponents.GRID_INVENTORY) ?: return@enqueueWork
+                val result = grid.removeItem(payload.x, payload.y) ?: return@enqueueWork
+                weaponStack.set(ModDataComponents.GRID_INVENTORY, result.first)
+                player.containerMenu.carried = result.second
+                InventoryUtils.syncHotbarSlot(player, weaponSubSlot)
+                player.containerMenu.broadcastChanges()
+                return@enqueueWork
+            }
+
+            // Regular equipment grid
+            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
+            val allGrids = equipment.getAllActiveGrids(player)
+            val grid = allGrids[payload.gridName] ?: return@enqueueWork
 
             val result = grid.removeItem(payload.x, payload.y)
             if (result != null) {
                 val (newGrid, stack) = result
-                equipment.updateGrid(payload.gridName, newGrid)
-                player.containerMenu.setCarried(stack)
+                equipment.updateGrid(payload.gridName, newGrid, player)
+                player.containerMenu.carried = stack
+                player.containerMenu.broadcastChanges()
 
-                InventoryUtils.syncHotbarWithEquipment(player, equipment)
                 val syncPacket = SyncEquipmentPayload(equipment)
                 PacketDistributor.sendToPlayer(player, syncPacket)
             }
@@ -229,19 +250,45 @@ object ServerPayloadHandler {
     ) {
         context.enqueueWork {
             val player = context.player() as? ServerPlayer ?: return@enqueueWork
-            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-            val allGrids = equipment.getAllActiveGrids()
-            val grid = allGrids[payload.gridName] ?: return@enqueueWork
-
             val carried = player.containerMenu.carried
             if (carried.isEmpty) return@enqueueWork
 
+            val weaponSlot = InventoryUtils.getWeaponHotbarSlot(payload.gridName)
+            if (weaponSlot != null) {
+                // Place into weapon hotbar slot
+                if (EquipmentValidator.isValid(payload.gridName, carried) && player.inventory.getItem(weaponSlot).isEmpty) {
+                    player.inventory.setItem(weaponSlot, carried)
+                    player.containerMenu.carried = ItemStack.EMPTY
+                    InventoryUtils.syncHotbarSlot(player, weaponSlot)
+                    player.containerMenu.broadcastChanges()
+                }
+                return@enqueueWork
+            }
+
+            val weaponSubSlot = InventoryUtils.getWeaponSubGridSlot(payload.gridName)
+            if (weaponSubSlot != null) {
+                // Place into weapon attachment sub-grid
+                val weaponStack = player.inventory.getItem(weaponSubSlot)
+                val grid = weaponStack.get(ModDataComponents.GRID_INVENTORY) ?: return@enqueueWork
+                val newGrid = grid.addItem(carried, payload.x, payload.y, payload.rotated) ?: return@enqueueWork
+                weaponStack.set(ModDataComponents.GRID_INVENTORY, newGrid)
+                player.containerMenu.carried = ItemStack.EMPTY
+                InventoryUtils.syncHotbarSlot(player, weaponSubSlot)
+                player.containerMenu.broadcastChanges()
+                return@enqueueWork
+            }
+
+            // Regular equipment grid
+            val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
+            val allGrids = equipment.getAllActiveGrids(player)
+            val grid = allGrids[payload.gridName] ?: return@enqueueWork
+
             val newGrid = grid.addItem(carried, payload.x, payload.y, payload.rotated)
             if (newGrid != null) {
-                equipment.updateGrid(payload.gridName, newGrid)
-                player.containerMenu.setCarried(ItemStack.EMPTY)
+                equipment.updateGrid(payload.gridName, newGrid, player)
+                player.containerMenu.carried = ItemStack.EMPTY
+                player.containerMenu.broadcastChanges()
 
-                InventoryUtils.syncHotbarWithEquipment(player, equipment)
                 val syncPacket = SyncEquipmentPayload(equipment)
                 PacketDistributor.sendToPlayer(player, syncPacket)
             }
@@ -254,11 +301,56 @@ object ServerPayloadHandler {
     ) {
         context.enqueueWork {
             val player = context.player() as? ServerPlayer ?: return@enqueueWork
+            val carried = player.containerMenu.carried
+
+            val weaponSlot = InventoryUtils.getWeaponHotbarSlot(payload.gridName)
+            if (weaponSlot != null) {
+                // Interact with weapon hotbar slot
+                val weaponStack = player.inventory.getItem(weaponSlot)
+                val tempGrid = InventoryUtils.createWeaponGrid(payload.gridName, weaponStack)
+                val result = GridActionHandler.interact(
+                    player.level(),
+                    tempGrid,
+                    payload.x,
+                    payload.y,
+                    carried,
+                    payload.button
+                ) ?: return@enqueueWork
+
+                val newWeapon = result.newGrid.getItemInstance(0, 0)?.stack ?: ItemStack.EMPTY
+                player.inventory.setItem(weaponSlot, newWeapon)
+                player.containerMenu.carried = result.newCarried
+                InventoryUtils.syncHotbarSlot(player, weaponSlot)
+                player.containerMenu.broadcastChanges()
+                return@enqueueWork
+            }
+
+            val weaponSubSlot = InventoryUtils.getWeaponSubGridSlot(payload.gridName)
+            if (weaponSubSlot != null) {
+                // Interact with weapon attachment sub-grid
+                val weaponStack = player.inventory.getItem(weaponSubSlot)
+                val grid = weaponStack.get(ModDataComponents.GRID_INVENTORY) ?: return@enqueueWork
+                val result = GridActionHandler.interact(
+                    player.level(),
+                    grid,
+                    payload.x,
+                    payload.y,
+                    carried,
+                    payload.button
+                ) ?: return@enqueueWork
+
+                weaponStack.set(ModDataComponents.GRID_INVENTORY, result.newGrid)
+                player.containerMenu.carried = result.newCarried
+                InventoryUtils.syncHotbarSlot(player, weaponSubSlot)
+                player.containerMenu.broadcastChanges()
+                return@enqueueWork
+            }
+
+            // Regular equipment grid
             val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-            val allGrids = equipment.getAllActiveGrids()
+            val allGrids = equipment.getAllActiveGrids(player)
             val grid = allGrids[payload.gridName] ?: return@enqueueWork
 
-            val carried = player.containerMenu.carried
             val result = GridActionHandler.interact(
                 player.level(),
                 grid,
@@ -268,10 +360,10 @@ object ServerPayloadHandler {
                 payload.button
             ) ?: return@enqueueWork
 
-            equipment.updateGrid(payload.gridName, result.newGrid)
-            player.containerMenu.setCarried(result.newCarried)
+            equipment.updateGrid(payload.gridName, result.newGrid, player)
+            player.containerMenu.carried = result.newCarried
+            player.containerMenu.broadcastChanges()
 
-            InventoryUtils.syncHotbarWithEquipment(player, equipment)
             val syncPacket = SyncEquipmentPayload(equipment)
             PacketDistributor.sendToPlayer(player, syncPacket)
         }
