@@ -1,8 +1,0 @@
-{
-  "track_id": "item_icon_centering_fix_20260125",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-01-25T14:30:00Z",
-  "updated_at": "2026-01-25T14:30:00Z",
-  "description": "bug fix 在自定義物品欄移動的時候 item 的圖示沒有在背景的正中間我希望他在正中間並且根據itemsize 縮放圖示"
-}
