@@ -198,7 +198,6 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
 
             val baseSize = InventoryUtils.getItemSize(carried)
             val renderSize = if (heldItemRotated) ItemSize(baseSize.height, baseSize.width) else baseSize
-
             val targetW = renderSize.width * 18
             val targetH = renderSize.height * 18
 
@@ -344,7 +343,7 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val slotRow = if (grid.singleItem) 0 else ((mouseY - gridY) / 18).toInt()
                     val targetInstance = grid.getItemInstance(slotCol, slotRow)
 
-                    // Try item interaction first (e.g. loading ammo into magazine)
+                    // Try item interaction first (e.g. loading ammo into magazine or magazine into gun)
                     if (targetInstance != null && minecraft?.level != null) {
                         val interaction = GridActionHandler.interact(
                             minecraft!!.level!!,
@@ -406,24 +405,63 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                         }
                     }
                 } else {
-                    // Case 2: Empty handed -> pick up item
+                    // Case 2: Empty handed -> interact (e.g. unload ammo, unload magazine, split) or pick up item
                     val slotCol = if (grid.singleItem) 0 else ((mouseX - gridX) / 18).toInt()
                     val slotRow = if (grid.singleItem) 0 else ((mouseY - gridY) / 18).toInt()
                     val targetInstance = grid.getItemInstance(slotCol, slotRow)
 
-                    if (targetInstance != null && button == 0) {
-                        val result = grid.removeItem(targetInstance.x, targetInstance.y)
-                        if (result != null) {
-                            val (newGrid, stack) = result
-                            menu.updateGrid(name, newGrid)
-                            menu.carried = stack
-                            heldItemRotated = targetInstance.rotated
+                    if (targetInstance != null) {
+                        // Right-click: attempt interaction (unload ammo from magazine, unload magazine from gun, split stack)
+                        if (button == 1 && minecraft?.level != null) {
+                            val interaction = GridActionHandler.interact(
+                                minecraft!!.level!!,
+                                grid,
+                                targetInstance.x,
+                                targetInstance.y,
+                                menu.carried,
+                                button
+                            )
+
+                            if (interaction != null) {
+                                menu.updateGrid(name, interaction.newGrid)
+                                menu.carried = interaction.newCarried
+                                heldItemRotated = false
+
+                                interaction.sound?.let { sound ->
+                                    minecraft?.player?.let { p ->
+                                        p.level().playLocalSound(
+                                            p.x, p.y, p.z,
+                                            sound,
+                                            SoundSource.PLAYERS,
+                                            1.0f,
+                                            interaction.pitch,
+                                            false
+                                        )
+                                    }
+                                }
+
+                                ClientPacketDistributor.sendToServer(
+                                    InteractGridItemPayload(name, targetInstance.x, targetInstance.y, button)
+                                )
+                                return true
+                            }
                         }
 
-                        ClientPacketDistributor.sendToServer(
-                            PickFromGridPayload(name, targetInstance.x, targetInstance.y)
-                        )
-                        return true
+                        // Left-click: pick up item
+                        if (button == 0) {
+                            val result = grid.removeItem(targetInstance.x, targetInstance.y)
+                            if (result != null) {
+                                val (newGrid, stack) = result
+                                menu.updateGrid(name, newGrid)
+                                menu.carried = stack
+                                heldItemRotated = targetInstance.rotated
+                            }
+
+                            ClientPacketDistributor.sendToServer(
+                                PickFromGridPayload(name, targetInstance.x, targetInstance.y)
+                            )
+                            return true
+                        }
                     }
                 }
             }

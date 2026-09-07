@@ -7,6 +7,12 @@ import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import net.minecraft.ChatFormatting
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
+import net.minecraft.world.entity.SlotAccess
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.ClickAction
+import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -29,8 +35,8 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
         fun loadAmmo(magazineStack: ItemStack, ammoStack: ItemStack): Boolean {
             if (ammoStack.isEmpty || ammoStack.item !is AmmoItem) return false
             val magazineItem = magazineStack.item as? MagazineItem ?: return false
-            val stats = magazineItem.getMagazineStats() ?: return false
-            val data = getMagazineData(magazineStack) ?: return false
+            val stats = magazineItem.getMagazineStats()
+            val data = getMagazineData(magazineStack) ?: MagazineData()
 
             val currentCount = data.ammoCount
             val maxCount = stats.maxAmmo
@@ -59,7 +65,7 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
             val data = getMagazineData(magazineStack) ?: return ItemStack.EMPTY
             val ammoItem = data.ammoItem
 
-            if (data.ammoCount <= 0 || ammoItem !is AmmoItem) return ItemStack.EMPTY
+            if (data.ammoCount <= 0 || ammoItem == Items.AIR || ammoItem !is AmmoItem) return ItemStack.EMPTY
             val amountToRemove = minOf(data.ammoCount, 64)
             val ammoStack = ItemStack(ammoItem, amountToRemove)
 
@@ -73,6 +79,42 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
 
             return ammoStack
         }
+    }
+
+    override fun overrideOtherStackedOnMe(
+        stack: ItemStack,
+        other: ItemStack,
+        slot: Slot,
+        action: ClickAction,
+        player: Player,
+        access: SlotAccess
+    ): Boolean {
+        if (action == ClickAction.SECONDARY && !other.isEmpty) {
+            val loaded = loadAmmo(stack, other)
+            if (loaded) {
+                player.level().playSound(
+                    null,
+                    player.blockPosition(),
+                    SoundEvents.ARMOR_EQUIP_GENERIC.value(),
+                    SoundSource.PLAYERS,
+                    1.0f, 1.5f
+                )
+                return true
+            }
+            return false
+        }
+
+        if (action == ClickAction.SECONDARY && other.isEmpty) {
+            val ammoStack = unloadAmmo(stack)
+            if (ammoStack.isEmpty) return false
+
+            access.set(ammoStack)
+            player.level()
+                .playSound(null, player.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.2f)
+            return true
+        }
+
+        return false
     }
 
     @Deprecated("Deprecated in Java")
@@ -89,6 +131,6 @@ class MagazineItem(properties: Properties) : Item(properties.stacksTo(1)) {
         )
     }
 
-    fun getMagazineStats(): MagazineStats? =
-        BuiltInRegistries.ITEM.wrapAsHolder(this).getData(ModDataMaps.MAGAZINE_STATS)
+    fun getMagazineStats(): MagazineStats =
+        BuiltInRegistries.ITEM.wrapAsHolder(this).getData(ModDataMaps.MAGAZINE_STATS) ?: MagazineStats()
 }

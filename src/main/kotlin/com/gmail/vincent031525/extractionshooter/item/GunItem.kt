@@ -4,6 +4,7 @@ import com.gmail.vincent031525.extractionshooter.damagesource.BulletDamageSource
 import com.gmail.vincent031525.extractionshooter.datacomponent.GunData
 import com.gmail.vincent031525.extractionshooter.datacomponent.MagazineData
 import com.gmail.vincent031525.extractionshooter.datamap.GunStats
+import com.gmail.vincent031525.extractionshooter.datamap.MagazineStats
 import com.gmail.vincent031525.extractionshooter.registry.ModDataComponents
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import net.minecraft.ChatFormatting
@@ -242,7 +243,19 @@ class GunItem<T : GeoItemRenderer<*>>(
             val magazineStack = getMagazineStack(stack)
             if (!magazineStack.isEmpty) return false
 
-            return !loadMagazine(player.level(), stack, other).isEmpty
+            val loadedMag = loadMagazine(player.level(), stack, other)
+            if (!loadedMag.isEmpty) {
+                player.level().playSound(
+                    null,
+                    player.blockPosition(),
+                    SoundEvents.ARMOR_EQUIP_GENERIC.value(),
+                    SoundSource.PLAYERS,
+                    1.0f,
+                    1.0f
+                )
+                return true
+            }
+            return false
         }
 
         if (action == ClickAction.SECONDARY && other.isEmpty) {
@@ -403,9 +416,9 @@ class GunItem<T : GeoItemRenderer<*>>(
     fun loadMagazine(level: Level, stack: ItemStack, magazineStack: ItemStack): ItemStack {
         if (stack.isEmpty) return ItemStack.EMPTY
         if (magazineStack.isEmpty) return ItemStack.EMPTY
-        val data = getGunData(stack) ?: return ItemStack.EMPTY
-        val magazineStats = (magazineStack.item as? MagazineItem)?.getMagazineStats() ?: return ItemStack.EMPTY
-        val newMagazineStack = magazineStack.copy()
+        val data = getGunData(stack) ?: GunData()
+        val magazineStats = (magazineStack.item as? MagazineItem)?.getMagazineStats() ?: MagazineStats()
+        val newMagazineStack = magazineStack.split(1)
         stack.set(
             ModDataComponents.GUN_DATA, data.copy(
                 nextAttackTick = level.gameTime + magazineStats.reloadTick,
@@ -413,7 +426,6 @@ class GunItem<T : GeoItemRenderer<*>>(
             )
         )
 
-        magazineStack.shrink(1)
         return newMagazineStack
     }
 
