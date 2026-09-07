@@ -7,6 +7,7 @@ import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandBuildContext
 import net.minecraft.commands.CommandSourceStack
@@ -19,24 +20,28 @@ import net.neoforged.neoforge.network.PacketDistributor
 
 object GiveCommand {
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>, context: CommandBuildContext) {
-        dispatcher.register(
-            Commands.literal("es")
-                .then(Commands.literal("give")
-                    .then(Commands.argument("target", EntityArgument.player())
-                        .then(Commands.argument("item", ItemArgument.item(context))
-                            .then(Commands.argument("grid", StringArgumentType.word())
-                                .suggests { ctx, builder ->
-                                    val player = try { EntityArgument.getPlayer(ctx, "target") } catch (e: Exception) { null }
-                                    if (player != null) {
-                                        val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
-                                        equipment.getAllActiveGrids(player).keys.forEach { builder.suggest(it) }
-                                    }
-                                    builder.buildFuture()
+        val root = Commands.literal("es")
+        register(root, context)
+        dispatcher.register(root)
+    }
+
+    fun register(root: LiteralArgumentBuilder<CommandSourceStack>, context: CommandBuildContext) {
+        root.then(
+            Commands.literal("give")
+                .then(Commands.argument("target", EntityArgument.player())
+                    .then(Commands.argument("item", ItemArgument.item(context))
+                        .then(Commands.argument("grid", StringArgumentType.word())
+                            .suggests { ctx, builder ->
+                                val player = try { EntityArgument.getPlayer(ctx, "target") } catch (e: Exception) { null }
+                                if (player != null) {
+                                    val equipment = player.getData(ModDataAttachments.PLAYER_EQUIPMENT)
+                                    equipment.getAllActiveGrids(player).keys.forEach { builder.suggest(it) }
                                 }
-                                .executes { execute(it, 1) }
-                                .then(Commands.argument("amount", IntegerArgumentType.integer(1))
-                                    .executes { execute(it, IntegerArgumentType.getInteger(it, "amount")) }
-                                )
+                                builder.buildFuture()
+                            }
+                            .executes { execute(it, 1) }
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(1))
+                                .executes { execute(it, IntegerArgumentType.getInteger(it, "amount")) }
                             )
                         )
                     )

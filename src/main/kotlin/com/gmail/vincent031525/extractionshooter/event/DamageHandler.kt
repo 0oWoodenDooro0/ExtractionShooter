@@ -10,10 +10,6 @@ import com.gmail.vincent031525.extractionshooter.registry.ModDataAttachments
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
 import com.gmail.vincent031525.extractionshooter.registry.ModEffects
 import com.gmail.vincent031525.extractionshooter.util.HealthUtils
-import com.mojang.brigadier.arguments.FloatArgumentType
-import net.minecraft.commands.Commands
-import net.minecraft.commands.arguments.coordinates.Vec3Argument
-import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -27,11 +23,22 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.event.RegisterCommandsEvent
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent
 
 @EventBusSubscriber(modid = Extractionshooter.ID)
 object DamageHandler {
+
+    data class BulletDamageReport(
+        val part: BodyPart,
+        val armorStack: ItemStack,
+        val penetrationChance: Float,
+        val isPenetrated: Boolean,
+        val rawDamage: Float,
+        val finalDamage: Float,
+        val armorDurabilityDamage: Int,
+        val remainingHealth: Float,
+        val bleedingLevel: Int?
+    )
 
     @SubscribeEvent
     fun onLivingDamage(event: LivingIncomingDamageEvent) {
@@ -63,10 +70,14 @@ object DamageHandler {
             event.amount = Float.MAX_VALUE
             return
         }
-
     }
 
-    private fun handleArmorAndDamage(player: Player, part: BodyPart, ammo: AmmoStats, rawDamage: Float) {
+    fun handleArmorAndDamage(
+        player: Player,
+        part: BodyPart,
+        ammo: AmmoStats,
+        rawDamage: Float
+    ): BulletDamageReport {
         val slot = when (part) {
             BodyPart.HEAD -> EquipmentSlot.HEAD
             BodyPart.BODY -> EquipmentSlot.CHEST
@@ -76,33 +87,62 @@ object DamageHandler {
         val armorStack = slot?.let { player.getItemBySlot(it) } ?: ItemStack.EMPTY
         val armorStats = if (armorStack.isEmpty) null else armorStack.itemHolder.getData(ModDataMaps.ARMOR_STATS)
 
-        if (armorStats == null || slot == null) {
-            applyFinalDamage(player, part, rawDamage)
-            return
-        }
+        val durabilityPercent = if (armorStack.isEmpty || armorStack.maxDamage == 0) 1.0f
+        else 1.0f - (armorStack.damageValue.toFloat() / armorStack.maxDamage.toFloat())
 
-        val durabilityPercent = 1.0f - (armorStack.damageValue.toFloat() / armorStack.maxDamage.toFloat())
-
-        val armorPotential = armorStats.armorClass * 10f
         val penPower = ammo.penetration
 
+        if (armorStats == null || slot == null) {
+            val bleeding = applyFinalDamage(player, part, rawDamage)
+            val remHealth = player.getData(ModDataAttachments.PLAYER_HEALTH).getHealth(part)
+            return BulletDamageReport(
+                part = part,
+                armorStack = ItemStack.EMPTY,
+                penetrationChance = 1.0f,
+                isPenetrated = true,
+                rawDamage = rawDamage,
+                finalDamage = rawDamage,
+                armorDurabilityDamage = 0,
+                remainingHealth = remHealth,
+                bleedingLevel = bleeding
+            )
+        }
+
+        val armorPotential = armorStats.armorClass * 10f
         val chance = calculatePenetrationChance(penPower, armorPotential, durabilityPercent)
         val isPenetrated = player.random.nextFloat() < chance
 
+        val finalDamage: Float
+        val armorDmg: Int
+
         if (isPenetrated) {
             val reduction = 0.8f
-            val finalDamage = rawDamage * reduction
-
-            damageArmor(armorStack, player, slot, 1)
-
+            finalDamage = rawDamage * reduction
+            armorDmg = 1
+            damageArmor(armorStack, player, slot, armorDmg)
             applyFinalDamage(player, part, finalDamage)
         } else {
             val bluntDamage = rawDamage * armorStats.bluntThroughput
-
-            damageArmor(armorStack, player, slot, 2)
-
-            applyFinalDamage(player, part, bluntDamage)
+            finalDamage = bluntDamage
+            armorDmg = 2
+            damageArmor(armorStack, player, slot, armorDmg)
+            applyFinalDamage(player, part, finalDamage)
         }
+
+        val bleeding = player.getEffect(ModEffects.BLEEDING)?.amplifier
+        val remHealth = player.getData(ModDataAttachments.PLAYER_HEALTH).getHealth(part)
+
+        return BulletDamageReport(
+            part = part,
+            armorStack = armorStack.copy(),
+            penetrationChance = chance,
+            isPenetrated = isPenetrated,
+            rawDamage = rawDamage,
+            finalDamage = finalDamage,
+            armorDurabilityDamage = armorDmg,
+            remainingHealth = remHealth,
+            bleedingLevel = bleeding
+        )
     }
 
     private fun calculatePenetrationChance(pen: Float, armor: Float, durability: Float): Float {
@@ -114,7 +154,7 @@ object DamageHandler {
         }
     }
 
-    private fun applyFinalDamage(player: Player, part: BodyPart, damage: Float) {
+    fun applyFinalDamage(player: Player, part: BodyPart, damage: Float): Int? {
         val data = player.getData(ModDataAttachments.PLAYER_HEALTH)
         data.damage(part, damage)
         player.setData(ModDataAttachments.PLAYER_HEALTH, data)
@@ -133,7 +173,7 @@ object DamageHandler {
             (player.random.nextFloat() - player.random.nextFloat()) * 0.2f + 1.0f
         )
 
-        tryApplyBleeding(player, damage)
+        val bleedingLevel = tryApplyBleeding(player, damage)
 
         if (part == BodyPart.LEGS && data.legs < 20f) {
             if (!player.hasEffect(ModEffects.FRACTURE)) {
@@ -149,6 +189,8 @@ object DamageHandler {
                 )
             }
         }
+
+        return bleedingLevel
     }
 
     private fun damageArmor(stack: ItemStack, player: Player, slot: EquipmentSlot, amount: Int) {
@@ -157,7 +199,7 @@ object DamageHandler {
         }
     }
 
-    private fun tryApplyBleeding(player: Player, damage: Float) {
+    private fun tryApplyBleeding(player: Player, damage: Float): Int? {
         val random = player.random.nextFloat()
 
         val (chance, level) = when {
@@ -182,48 +224,14 @@ object DamageHandler {
                         true
                     )
                 )
+                return level
             }
+            return currentLevel
         }
+        return null
     }
 
-    @SubscribeEvent
-    fun registerCommands(event: RegisterCommandsEvent) {
-        event.dispatcher.register(
-            Commands.literal("extdebug")
-                .then(Commands.literal("check").executes { context ->
-                    val player = context.source.playerOrException
-                    val data = player.getData(ModDataAttachments.PLAYER_HEALTH)
-                    context.source.sendSuccess({
-                        Component.literal("當前部位血量 -> 頭: ${data.head}, 身: ${data.body}, 腳: ${data.legs}")
-                    }, false)
-                    1
-                })
-        )
-        event.dispatcher.register(
-            Commands.literal("testdamage")
-                .then(
-                    Commands.argument("pos", Vec3Argument.vec3())
-                        .then(
-                            Commands.argument("penetration", FloatArgumentType.floatArg(0f, 100f))
-                                .then(
-                                    Commands.argument("damage", FloatArgumentType.floatArg(0f, 100f))
-                                        .executes { context ->
-                                            val pos = Vec3Argument.getVec3(context, "pos")
-                                            val pen = FloatArgumentType.getFloat(context, "penetration")
-                                            val dmg = FloatArgumentType.getFloat(context, "damage")
-
-                                            val player = context.source.player ?: return@executes 0
-
-                                            executeBulletDamage(player, pos, pen, dmg)
-                                            1
-                                        }
-                                )
-                        )
-                )
-        )
-    }
-
-    private fun executeBulletDamage(
+    fun executeBulletDamage(
         player: Player,
         hitPos: Vec3,
         pen: Float,
