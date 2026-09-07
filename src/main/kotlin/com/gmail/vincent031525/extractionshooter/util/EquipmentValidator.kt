@@ -1,5 +1,6 @@
 package com.gmail.vincent031525.extractionshooter.util
 
+import com.gmail.vincent031525.extractionshooter.item.GunItem
 import com.gmail.vincent031525.extractionshooter.registry.ModTags
 import net.minecraft.world.item.ItemStack
 
@@ -12,7 +13,7 @@ object EquipmentValidator {
             "armor" -> stack.`is`(ModTags.ARMORS)
             "tactical_rig" -> stack.`is`(ModTags.RIGS)
             "backpack" -> stack.`is`(ModTags.BACKPACKS)
-            "primary_1", "primary_2" -> stack.`is`(ModTags.PRIMARY_WEAPONS)
+            "primary_1", "primary_2" -> stack.`is`(ModTags.PRIMARY_WEAPONS) || stack.item is GunItem<*>
             "pistol" -> stack.`is`(ModTags.PISTOLS)
             else -> true
         }

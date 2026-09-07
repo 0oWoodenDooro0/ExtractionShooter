@@ -1,0 +1,465 @@
+{
+  "replace": true,
+  "values": {
+    "extractionshooter:ammo_556": {
+      "rarity": "military",
+      "value": 150
+    },
+    "extractionshooter:backpack": {
+      "rarity": "military",
+      "value": 15000
+    },
+    "extractionshooter:bandage": {
+      "rarity": "common",
+      "value": 300
+    },
+    "extractionshooter:loot_crate": {
+      "rarity": "high_value",
+      "value": 10000
+    },
+    "extractionshooter:m4a1": {
+      "rarity": "high_value",
+      "value": 45000
+    },
+    "extractionshooter:mag_30": {
+      "rarity": "military",
+      "value": 1500
+    },
+    "extractionshooter:mag_45": {
+      "rarity": "military",
+      "value": 2200
+    },
+    "extractionshooter:mag_60": {
+      "rarity": "high_value",
+      "value": 4000
+    },
+    "extractionshooter:medkit_large": {
+      "rarity": "high_value",
+      "value": 8000
+    },
+    "extractionshooter:medkit_small": {
+      "rarity": "military",
+      "value": 2500
+    },
+    "extractionshooter:painkillers": {
+      "rarity": "military",
+      "value": 1200
+    },
+    "extractionshooter:rig": {
+      "rarity": "military",
+      "value": 8000
+    },
+    "extractionshooter:splint": {
+      "rarity": "common",
+      "value": 400
+    },
+    "extractionshooter:surgery_kit": {
+      "rarity": "high_value",
+      "value": 6500
+    },
+    "minecraft:amethyst_shard": {
+      "rarity": "high_value",
+      "value": 4000
+    },
+    "minecraft:arrow": {
+      "rarity": "common",
+      "value": 50
+    },
+    "minecraft:blaze_powder": {
+      "rarity": "common",
+      "value": 600
+    },
+    "minecraft:blaze_rod": {
+      "rarity": "common",
+      "value": 800
+    },
+    "minecraft:bone": {
+      "rarity": "common",
+      "value": 120
+    },
+    "minecraft:book": {
+      "rarity": "common",
+      "value": 250
+    },
+    "minecraft:bow": {
+      "rarity": "military",
+      "value": 2000
+    },
+    "minecraft:bowl": {
+      "rarity": "common",
+      "value": 50
+    },
+    "minecraft:brick": {
+      "rarity": "common",
+      "value": 120
+    },
+    "minecraft:chainmail_chestplate": {
+      "rarity": "military",
+      "value": 2500
+    },
+    "minecraft:chainmail_helmet": {
+      "rarity": "military",
+      "value": 1500
+    },
+    "minecraft:charcoal": {
+      "rarity": "common",
+      "value": 100
+    },
+    "minecraft:clay_ball": {
+      "rarity": "common",
+      "value": 80
+    },
+    "minecraft:clock": {
+      "rarity": "high_value",
+      "value": 8500
+    },
+    "minecraft:coal": {
+      "rarity": "common",
+      "value": 150
+    },
+    "minecraft:comparator": {
+      "rarity": "military",
+      "value": 2000
+    },
+    "minecraft:compass": {
+      "rarity": "high_value",
+      "value": 5500
+    },
+    "minecraft:copper_block": {
+      "rarity": "military",
+      "value": 2400
+    },
+    "minecraft:copper_ingot": {
+      "rarity": "common",
+      "value": 300
+    },
+    "minecraft:crossbow": {
+      "rarity": "military",
+      "value": 3200
+    },
+    "minecraft:diamond": {
+      "rarity": "confidential",
+      "value": 15000
+    },
+    "minecraft:diamond_block": {
+      "rarity": "confidential",
+      "value": 45000
+    },
+    "minecraft:diamond_chestplate": {
+      "rarity": "confidential",
+      "value": 35000
+    },
+    "minecraft:diamond_helmet": {
+      "rarity": "confidential",
+      "value": 20000
+    },
+    "minecraft:dispenser": {
+      "rarity": "military",
+      "value": 3000
+    },
+    "minecraft:dragon_egg": {
+      "rarity": "top_tier",
+      "value": 300000
+    },
+    "minecraft:dropper": {
+      "rarity": "military",
+      "value": 2200
+    },
+    "minecraft:echo_shard": {
+      "rarity": "confidential",
+      "value": 20000
+    },
+    "minecraft:emerald": {
+      "rarity": "high_value",
+      "value": 5000
+    },
+    "minecraft:emerald_block": {
+      "rarity": "confidential",
+      "value": 30000
+    },
+    "minecraft:enchanted_golden_apple": {
+      "rarity": "top_tier",
+      "value": 100000
+    },
+    "minecraft:ender_eye": {
+      "rarity": "high_value",
+      "value": 10000
+    },
+    "minecraft:ender_pearl": {
+      "rarity": "high_value",
+      "value": 6500
+    },
+    "minecraft:feather": {
+      "rarity": "common",
+      "value": 60
+    },
+    "minecraft:fermented_spider_eye": {
+      "rarity": "common",
+      "value": 450
+    },
+    "minecraft:flint": {
+      "rarity": "common",
+      "value": 100
+    },
+    "minecraft:flint_and_steel": {
+      "rarity": "military",
+      "value": 850
+    },
+    "minecraft:ghast_tear": {
+      "rarity": "high_value",
+      "value": 8000
+    },
+    "minecraft:glass": {
+      "rarity": "common",
+      "value": 200
+    },
+    "minecraft:glass_bottle": {
+      "rarity": "common",
+      "value": 90
+    },
+    "minecraft:glowstone_dust": {
+      "rarity": "military",
+      "value": 900
+    },
+    "minecraft:goat_horn": {
+      "rarity": "high_value",
+      "value": 5000
+    },
+    "minecraft:gold_block": {
+      "rarity": "confidential",
+      "value": 25000
+    },
+    "minecraft:gold_ingot": {
+      "rarity": "high_value",
+      "value": 6000
+    },
+    "minecraft:golden_apple": {
+      "rarity": "confidential",
+      "value": 18000
+    },
+    "minecraft:golden_chestplate": {
+      "rarity": "high_value",
+      "value": 10000
+    },
+    "minecraft:golden_helmet": {
+      "rarity": "high_value",
+      "value": 6000
+    },
+    "minecraft:gunpowder": {
+      "rarity": "military",
+      "value": 1000
+    },
+    "minecraft:heart_of_the_sea": {
+      "rarity": "confidential",
+      "value": 35000
+    },
+    "minecraft:heavy_core": {
+      "rarity": "top_tier",
+      "value": 120000
+    },
+    "minecraft:iron_block": {
+      "rarity": "high_value",
+      "value": 9000
+    },
+    "minecraft:iron_chestplate": {
+      "rarity": "military",
+      "value": 5000
+    },
+    "minecraft:iron_helmet": {
+      "rarity": "military",
+      "value": 3000
+    },
+    "minecraft:iron_ingot": {
+      "rarity": "military",
+      "value": 1200
+    },
+    "minecraft:lead": {
+      "rarity": "military",
+      "value": 1200
+    },
+    "minecraft:leather": {
+      "rarity": "common",
+      "value": 200
+    },
+    "minecraft:leather_chestplate": {
+      "rarity": "common",
+      "value": 800
+    },
+    "minecraft:leather_helmet": {
+      "rarity": "common",
+      "value": 400
+    },
+    "minecraft:mace": {
+      "rarity": "top_tier",
+      "value": 120000
+    },
+    "minecraft:magma_cream": {
+      "rarity": "common",
+      "value": 500
+    },
+    "minecraft:music_disc_13": {
+      "rarity": "high_value",
+      "value": 8000
+    },
+    "minecraft:music_disc_5": {
+      "rarity": "confidential",
+      "value": 25000
+    },
+    "minecraft:music_disc_cat": {
+      "rarity": "high_value",
+      "value": 8000
+    },
+    "minecraft:music_disc_chirp": {
+      "rarity": "high_value",
+      "value": 8000
+    },
+    "minecraft:music_disc_creator": {
+      "rarity": "confidential",
+      "value": 25000
+    },
+    "minecraft:music_disc_otherside": {
+      "rarity": "confidential",
+      "value": 28000
+    },
+    "minecraft:music_disc_pigstep": {
+      "rarity": "confidential",
+      "value": 28000
+    },
+    "minecraft:music_disc_relic": {
+      "rarity": "confidential",
+      "value": 28000
+    },
+    "minecraft:name_tag": {
+      "rarity": "high_value",
+      "value": 4500
+    },
+    "minecraft:nautilus_shell": {
+      "rarity": "high_value",
+      "value": 7500
+    },
+    "minecraft:nether_brick": {
+      "rarity": "common",
+      "value": 150
+    },
+    "minecraft:nether_star": {
+      "rarity": "top_tier",
+      "value": 150000
+    },
+    "minecraft:netherite_block": {
+      "rarity": "top_tier",
+      "value": 250000
+    },
+    "minecraft:netherite_chestplate": {
+      "rarity": "top_tier",
+      "value": 110000
+    },
+    "minecraft:netherite_helmet": {
+      "rarity": "top_tier",
+      "value": 65000
+    },
+    "minecraft:netherite_ingot": {
+      "rarity": "top_tier",
+      "value": 60000
+    },
+    "minecraft:netherite_scrap": {
+      "rarity": "top_tier",
+      "value": 15000
+    },
+    "minecraft:netherite_upgrade_smithing_template": {
+      "rarity": "confidential",
+      "value": 40000
+    },
+    "minecraft:observer": {
+      "rarity": "military",
+      "value": 3200
+    },
+    "minecraft:ominous_trial_key": {
+      "rarity": "confidential",
+      "value": 25000
+    },
+    "minecraft:paper": {
+      "rarity": "common",
+      "value": 70
+    },
+    "minecraft:piston": {
+      "rarity": "military",
+      "value": 1800
+    },
+    "minecraft:recovery_compass": {
+      "rarity": "high_value",
+      "value": 12000
+    },
+    "minecraft:redstone": {
+      "rarity": "military",
+      "value": 800
+    },
+    "minecraft:redstone_lamp": {
+      "rarity": "military",
+      "value": 2500
+    },
+    "minecraft:repeater": {
+      "rarity": "military",
+      "value": 1500
+    },
+    "minecraft:rotten_flesh": {
+      "rarity": "common",
+      "value": 50
+    },
+    "minecraft:saddle": {
+      "rarity": "high_value",
+      "value": 6500
+    },
+    "minecraft:shears": {
+      "rarity": "military",
+      "value": 950
+    },
+    "minecraft:shield": {
+      "rarity": "military",
+      "value": 2800
+    },
+    "minecraft:slime_ball": {
+      "rarity": "common",
+      "value": 350
+    },
+    "minecraft:spider_eye": {
+      "rarity": "common",
+      "value": 250
+    },
+    "minecraft:spyglass": {
+      "rarity": "high_value",
+      "value": 7000
+    },
+    "minecraft:stick": {
+      "rarity": "common",
+      "value": 40
+    },
+    "minecraft:sticky_piston": {
+      "rarity": "military",
+      "value": 2500
+    },
+    "minecraft:string": {
+      "rarity": "common",
+      "value": 80
+    },
+    "minecraft:tnt": {
+      "rarity": "military",
+      "value": 3500
+    },
+    "minecraft:torch": {
+      "rarity": "common",
+      "value": 60
+    },
+    "minecraft:totem_of_undying": {
+      "rarity": "top_tier",
+      "value": 80000
+    },
+    "minecraft:trial_key": {
+      "rarity": "high_value",
+      "value": 6000
+    },
+    "minecraft:trident": {
+      "rarity": "confidential",
+      "value": 38000
+    }
+  }
+}

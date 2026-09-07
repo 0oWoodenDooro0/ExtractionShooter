@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "extractionshooter:block/loot_crate",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "extractionshooter:block/loot_crate"
+    },
+    "facing=south": {
+      "model": "extractionshooter:block/loot_crate",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "extractionshooter:block/loot_crate",
+      "y": 270
+    }
+  }
+}

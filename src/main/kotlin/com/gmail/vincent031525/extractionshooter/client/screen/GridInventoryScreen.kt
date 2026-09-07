@@ -158,6 +158,9 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val slotW = grid.columns * 18
                     val slotH = grid.rows * 18
 
+                    val bgColor = InventoryUtils.getItemBackgroundColor(instance.stack)
+                    guiGraphics.fill(gridX, gridY, gridX + slotW, gridY + slotH, bgColor)
+
                     renderScaledItem(guiGraphics, instance.stack, gridX, gridY, slotW, slotH, instance.rotated)
                     if (instance.stack.count > 1) {
                         guiGraphics.renderItemDecorations(font, instance.stack, gridX + slotW - 18, gridY + slotH - 18)
@@ -167,7 +170,8 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                     val targetW = size.width * 18
                     val targetH = size.height * 18
 
-                    guiGraphics.fill(itemX, itemY, itemX + targetW - 1, itemY + targetH - 1, -0x555556)
+                    val bgColor = InventoryUtils.getItemBackgroundColor(instance.stack)
+                    guiGraphics.fill(itemX, itemY, itemX + targetW - 1, itemY + targetH - 1, bgColor)
 
                     renderScaledItem(guiGraphics, instance.stack, itemX, itemY, targetW, targetH, instance.rotated)
                     if (instance.stack.count > 1) {

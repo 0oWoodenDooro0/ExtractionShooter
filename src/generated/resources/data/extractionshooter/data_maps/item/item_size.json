@@ -5,9 +5,17 @@
       "height": 1,
       "width": 1
     },
+    "extractionshooter:backpack": {
+      "height": 4,
+      "width": 4
+    },
     "extractionshooter:bandage": {
       "height": 1,
       "width": 1
+    },
+    "extractionshooter:loot_crate": {
+      "height": 2,
+      "width": 2
     },
     "extractionshooter:m4a1": {
       "height": 2,
@@ -37,6 +45,10 @@
       "height": 1,
       "width": 1
     },
+    "extractionshooter:rig": {
+      "height": 3,
+      "width": 3
+    },
     "extractionshooter:splint": {
       "height": 1,
       "width": 1
@@ -44,6 +56,410 @@
     "extractionshooter:surgery_kit": {
       "height": 1,
       "width": 2
+    },
+    "minecraft:amethyst_shard": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:arrow": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:blaze_powder": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:blaze_rod": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:bone": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:book": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:bow": {
+      "height": 3,
+      "width": 1
+    },
+    "minecraft:bowl": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:brick": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:chainmail_chestplate": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:chainmail_helmet": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:charcoal": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:clay_ball": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:clock": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:coal": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:comparator": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:compass": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:copper_block": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:copper_ingot": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:crossbow": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:diamond": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:diamond_block": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:diamond_chestplate": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:diamond_helmet": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:dispenser": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:dragon_egg": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:dropper": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:echo_shard": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:emerald": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:emerald_block": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:enchanted_golden_apple": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:ender_eye": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:ender_pearl": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:feather": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:fermented_spider_eye": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:flint": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:flint_and_steel": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:ghast_tear": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:glass": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:glass_bottle": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:glowstone_dust": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:goat_horn": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:gold_block": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:gold_ingot": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:golden_apple": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:golden_chestplate": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:golden_helmet": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:gunpowder": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:heart_of_the_sea": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:heavy_core": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:iron_block": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:iron_chestplate": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:iron_helmet": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:iron_ingot": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:lead": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:leather": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:leather_chestplate": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:leather_helmet": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:mace": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:magma_cream": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:music_disc_13": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:music_disc_5": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:music_disc_cat": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:music_disc_chirp": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:music_disc_creator": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:music_disc_otherside": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:music_disc_pigstep": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:music_disc_relic": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:name_tag": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:nautilus_shell": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:nether_brick": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:nether_star": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:netherite_block": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:netherite_chestplate": {
+      "height": 3,
+      "width": 2
+    },
+    "minecraft:netherite_helmet": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:netherite_ingot": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:netherite_scrap": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:netherite_upgrade_smithing_template": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:observer": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:ominous_trial_key": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:paper": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:piston": {
+      "height": 1,
+      "width": 2
+    },
+    "minecraft:recovery_compass": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:redstone": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:redstone_lamp": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:repeater": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:rotten_flesh": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:saddle": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:shears": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:shield": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:slime_ball": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:spider_eye": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:spyglass": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:stick": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:sticky_piston": {
+      "height": 1,
+      "width": 2
+    },
+    "minecraft:string": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:tnt": {
+      "height": 2,
+      "width": 2
+    },
+    "minecraft:torch": {
+      "height": 1,
+      "width": 1
+    },
+    "minecraft:totem_of_undying": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:trial_key": {
+      "height": 2,
+      "width": 1
+    },
+    "minecraft:trident": {
+      "height": 3,
+      "width": 1
     }
   }
 }

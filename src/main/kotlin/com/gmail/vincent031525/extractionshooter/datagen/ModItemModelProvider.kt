@@ -1,6 +1,7 @@
 package com.gmail.vincent031525.extractionshooter.datagen
 
 import com.gmail.vincent031525.extractionshooter.Extractionshooter
+import com.gmail.vincent031525.extractionshooter.registry.ModBlocks
 import com.gmail.vincent031525.extractionshooter.registry.ModItems
 import net.minecraft.client.data.models.BlockModelGenerators
 import net.minecraft.client.data.models.ItemModelGenerators
@@ -17,6 +18,8 @@ import software.bernie.geckolib.renderer.internal.GeckolibItemSpecialRenderer.Un
 class ModItemModelProvider(output: PackOutput) : ModelProvider(output, Extractionshooter.ID) {
 
     override fun registerModels(blockModels: BlockModelGenerators, itemModels: ItemModelGenerators) {
+        blockModels.createNonTemplateHorizontalBlock(ModBlocks.LOOT_CRATE.get())
+
         val m4a1Model =
             ItemModelUtils.specialModel(ModelLocationUtils.getModelLocation(ModItems.M4A1_ITEM.get()), Unbaked())
         itemModels.itemModelOutput.accept(ModItems.M4A1_ITEM.get(), m4a1Model)
@@ -100,7 +103,7 @@ class ModItemModelProvider(output: PackOutput) : ModelProvider(output, Extractio
                     TextureMapping.layer0(
                         Identifier.fromNamespaceAndPath(
                             Extractionshooter.ID,
-                            "item/medical/surger_kit"
+                            "item/medical/surgery_kit"
                         )
                     ),
                     itemModels.modelOutput
@@ -162,6 +165,10 @@ class ModItemModelProvider(output: PackOutput) : ModelProvider(output, Extractio
                     itemModels.modelOutput
                 )
             )
+        )
+        itemModels.itemModelOutput.accept(
+            ModItems.LOOT_CRATE_ITEM.get(),
+            ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(ModBlocks.LOOT_CRATE.get()))
         )
     }
 }

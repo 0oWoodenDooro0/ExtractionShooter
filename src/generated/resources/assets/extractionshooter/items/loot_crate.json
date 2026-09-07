@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "extractionshooter:block/loot_crate"
+  }
+}

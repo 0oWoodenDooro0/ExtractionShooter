@@ -46,10 +46,12 @@ data class GridInventory(
         if (!isValidForItem(itemStack)) return false
         if (singleItem && items.isNotEmpty()) return false
 
-        val tempInstance = GridItemInstance(itemStack, targetX, targetY, rotated)
+        val checkX = if (singleItem) 0 else targetX
+        val checkY = if (singleItem) 0 else targetY
+        val tempInstance = GridItemInstance(itemStack, checkX, checkY, rotated)
         val size = if (singleItem) ItemSize(1, 1) else tempInstance.getActualSize(sizeProvider)
 
-        if (targetX < 0 || targetY < 0 || targetX + size.width > columns || targetY + size.height > rows) {
+        if (checkX < 0 || checkY < 0 || checkX + size.width > columns || checkY + size.height > rows) {
             return false
         }
 
@@ -71,7 +73,7 @@ data class GridInventory(
         val actualY = if (singleItem) 0 else targetY
         if (canPlace(itemStack, actualX, actualY, rotated)) {
             val newItems = items.toMutableList()
-            newItems.add(GridItemInstance(itemStack, actualX, actualY, rotated))
+            newItems.add(GridItemInstance(itemStack, actualX, actualY, if (singleItem) false else rotated))
             return copy(items = newItems)
         }
         return null

@@ -22,6 +22,8 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.SURGERY_KIT_ITEM.get(), "Surgery Kit")
         add(ModItems.MEDKIT_SMALL_ITEM.get(), "Small Medkit")
         add(ModItems.MEDKIT_LARGE_ITEM.get(), "Tactical First Aid Kit")
+        add(ModItems.RIG_ITEM.get(), "Tactical Chest Rig")
+        add(ModItems.BACKPACK_ITEM.get(), "Tactical Backpack")
         add(ModItems.LOOT_CRATE_ITEM.get(), "Tactical Loot Crate")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "Switch Fire Mode")
@@ -30,6 +32,16 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add("message.extractionshooter.firemode_changed", "Fire Mode: %s")
 
         add("tooltip.extractionshooter.ammo", "Remaining Ammo: %s")
+        add("tooltip.extractionshooter.rarity", "Rarity: ")
+        add("tooltip.extractionshooter.value", "Value: $%s")
+        add("tooltip.extractionshooter.value_stack", "Value: $%s ($%s each)")
+        add("tooltip.extractionshooter.size", "Size: %s x %s")
+
+        add("rarity.extractionshooter.common", "Common")
+        add("rarity.extractionshooter.military", "Military")
+        add("rarity.extractionshooter.high_value", "High Value")
+        add("rarity.extractionshooter.confidential", "Confidential")
+        add("rarity.extractionshooter.top_tier", "Top Tier")
 
         add("firemode.extractionshooter.semi", "Semi")
         add("firemode.extractionshooter.burst", "Burst")
@@ -43,8 +55,8 @@ class ModLanguageProviderEnUs(output: PackOutput) : LanguageProvider(output, Ext
         add("effect.extractionshooter.bleeding", "Bleeding")
         add("effect.extractionshooter.on_painkillers", "On Painkillers")
 
-        add("death.attack.bleeding", $$"%1$s bled out")
-        add("death.attack.bleeding.player", $$"%1$s bled out while fighting %2$s")
+        add("death.attack.bleeding", "%1\$s bled out")
+        add("death.attack.bleeding.player", "%1\$s bled out while fighting %2\$s")
 
         add("container.extractionshooter.loot_crate", "Tactical Loot Crate")
     }
@@ -66,6 +78,8 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add(ModItems.SURGERY_KIT_ITEM.get(), "手術包")
         add(ModItems.MEDKIT_SMALL_ITEM.get(), "小型急救包")
         add(ModItems.MEDKIT_LARGE_ITEM.get(), "戰術急救箱")
+        add(ModItems.RIG_ITEM.get(), "戰術胸掛")
+        add(ModItems.BACKPACK_ITEM.get(), "戰術背包")
         add(ModItems.LOOT_CRATE_ITEM.get(), "戰術物資箱")
 
         add(KeyBindings.SWITCH_MODE_KEY.name, "切換射擊模式")
@@ -74,6 +88,16 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add("message.extractionshooter.firemode_changed", "射擊模式: %s")
 
         add("tooltip.extractionshooter.ammo", "剩餘子彈: %s")
+        add("tooltip.extractionshooter.rarity", "稀有度: ")
+        add("tooltip.extractionshooter.value", "價值: $%s")
+        add("tooltip.extractionshooter.value_stack", "價值: $%s (單價 $%s)")
+        add("tooltip.extractionshooter.size", "佔用空間: %s x %s")
+
+        add("rarity.extractionshooter.common", "普通")
+        add("rarity.extractionshooter.military", "軍品")
+        add("rarity.extractionshooter.high_value", "高價值")
+        add("rarity.extractionshooter.confidential", "機密")
+        add("rarity.extractionshooter.top_tier", "大金頂級")
 
         add("firemode.extractionshooter.semi", "半自動")
         add("firemode.extractionshooter.burst", "三連發")
@@ -87,8 +111,8 @@ class ModLanguageProviderZhTw(output: PackOutput) : LanguageProvider(output, Ext
         add("effect.extractionshooter.bleeding", "流血")
         add("effect.extractionshooter.on_painkillers", "止痛")
 
-        add("death.attack.bleeding", $$"%1$s 失血過多身亡")
-        add("death.attack.bleeding.player", $$"%1$s 在與 %2$s 戰鬥後失血過多身亡")
+        add("death.attack.bleeding", "%1\$s 失血過多身亡")
+        add("death.attack.bleeding.player", "%1\$s 在與 %2\$s 戰鬥後失血過多身亡")
 
         add("container.extractionshooter.loot_crate", "戰術物資箱")
     }

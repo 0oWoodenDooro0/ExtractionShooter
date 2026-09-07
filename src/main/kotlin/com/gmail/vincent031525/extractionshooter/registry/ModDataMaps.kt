@@ -42,6 +42,11 @@ object ModDataMaps {
         Registries.ITEM, ContainerStats.CODEC
     ).synced(ContainerStats.CODEC, true).build()
 
+    val LOOT_STATS = DataMapType.builder(
+        Identifier.fromNamespaceAndPath(Extractionshooter.ID, "loot_stats"),
+        Registries.ITEM, LootStats.CODEC
+    ).synced(LootStats.CODEC, true).build()
+
     @SubscribeEvent
     fun registerDataMapTypes(event: RegisterDataMapTypesEvent) {
         event.register(GUN_STATS)
@@ -50,5 +55,6 @@ object ModDataMaps {
         event.register(ARMOR_STATS)
         event.register(ITEM_SIZE)
         event.register(CONTAINER_STATS)
+        event.register(LOOT_STATS)
     }
 }

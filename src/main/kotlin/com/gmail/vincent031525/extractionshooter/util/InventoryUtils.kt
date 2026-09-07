@@ -1,7 +1,9 @@
 package com.gmail.vincent031525.extractionshooter.util
 
 import com.gmail.vincent031525.extractionshooter.datamap.ContainerStats
+import com.gmail.vincent031525.extractionshooter.datamap.ItemRarity
 import com.gmail.vincent031525.extractionshooter.datamap.ItemSize
+import com.gmail.vincent031525.extractionshooter.datamap.LootStats
 import com.gmail.vincent031525.extractionshooter.inventory.GridInventory
 import com.gmail.vincent031525.extractionshooter.inventory.GridItemInstance
 import com.gmail.vincent031525.extractionshooter.registry.ModDataMaps
@@ -42,11 +44,7 @@ object InventoryUtils {
             "pistol" -> 2 to 2
             else -> 1 to 1
         }
-        val items = if (!stack.isEmpty) {
-            listOf(GridItemInstance(stack, 0, 0))
-        } else {
-            emptyList()
-        }
+        val items = if (stack.isEmpty) emptyList() else listOf(GridItemInstance(stack, 0, 0, false))
         return GridInventory(cols, rows, items, filter = gridName, singleItem = true)
     }
 
@@ -149,5 +147,34 @@ object InventoryUtils {
     fun getItemSize(stack: ItemStack): ItemSize {
         if (stack.isEmpty) return ItemSize(0, 0)
         return getItemSize(stack.item)
+    }
+
+    /**
+     * Gets loot stats (rarity and value) of an item.
+     */
+    fun getLootStats(item: Item): LootStats? {
+        val holder = BuiltInRegistries.ITEM.wrapAsHolder(item)
+        return holder.getData(ModDataMaps.LOOT_STATS)
+    }
+
+    fun getLootStats(stack: ItemStack): LootStats? {
+        if (stack.isEmpty) return null
+        return getLootStats(stack.item)
+    }
+
+    /**
+     * Gets rarity of an item, defaulting to COMMON.
+     */
+    fun getItemRarity(stack: ItemStack): ItemRarity {
+        if (stack.isEmpty) return ItemRarity.COMMON
+        return getLootStats(stack)?.rarity ?: ItemRarity.COMMON
+    }
+
+    /**
+     * Gets background color in inventory/container grid based on rarity.
+     */
+    fun getItemBackgroundColor(stack: ItemStack): Int {
+        if (stack.isEmpty) return ItemRarity.COMMON.backgroundColor
+        return getItemRarity(stack).backgroundColor
     }
 }

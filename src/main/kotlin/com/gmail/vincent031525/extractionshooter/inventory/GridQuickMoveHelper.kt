@@ -1,5 +1,6 @@
 package com.gmail.vincent031525.extractionshooter.inventory
 
+import com.gmail.vincent031525.extractionshooter.item.GunItem
 import com.gmail.vincent031525.extractionshooter.menu.GridInventoryMenu
 import com.gmail.vincent031525.extractionshooter.registry.ModTags
 import com.gmail.vincent031525.extractionshooter.util.InventoryUtils
@@ -19,7 +20,7 @@ object GridQuickMoveHelper {
             stack.`is`(ModTags.ARMORS) -> EquipTarget.ARMOR
             stack.`is`(ModTags.RIGS) -> EquipTarget.RIG
             stack.`is`(ModTags.BACKPACKS) -> EquipTarget.BACKPACK
-            stack.`is`(ModTags.PRIMARY_WEAPONS) -> EquipTarget.PRIMARY_WEAPON
+            stack.`is`(ModTags.PRIMARY_WEAPONS) || stack.item is GunItem<*> -> EquipTarget.PRIMARY_WEAPON
             stack.`is`(ModTags.PISTOLS) -> EquipTarget.PISTOL
             else -> EquipTarget.NONE
         }
