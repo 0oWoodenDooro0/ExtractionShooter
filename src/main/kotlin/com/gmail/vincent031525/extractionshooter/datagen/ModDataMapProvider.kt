@@ -84,8 +84,8 @@ class ModDataMapProvider(output: PackOutput, lookupProvider: CompletableFuture<H
             .add(ModItems.SURGERY_KIT_ITEM, ItemSize(2, 1), false)
             .add(ModItems.MEDKIT_SMALL_ITEM, ItemSize(2, 1), false)
             .add(ModItems.MEDKIT_LARGE_ITEM, ItemSize(1, 2), false)
-            .add(ModItems.RIG_ITEM, ItemSize(3, 3), false)
-            .add(ModItems.BACKPACK_ITEM, ItemSize(4, 4), false)
+            .add(ModItems.RIG_ITEM, ItemSize(2, 2), false)
+            .add(ModItems.BACKPACK_ITEM, ItemSize(2, 2), false)
             .add(ModItems.LOOT_CRATE_ITEM, ItemSize(2, 2), false)
 
         lootStatsBuilder

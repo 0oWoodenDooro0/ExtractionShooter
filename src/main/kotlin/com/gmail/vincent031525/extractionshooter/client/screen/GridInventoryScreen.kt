@@ -205,10 +205,6 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
             val y = (height - imageHeight) / 2
             val activeGrids = menu.getAllActiveGrids()
 
-            var hoveredGrid: GridInventory? = null
-            var hoverGridX = 0
-            var hoverGridY = 0
-
             for ((name, grid) in activeGrids) {
                 val pos = MenuLayout.getPos(name)
                 val gridX = x + pos.x
@@ -220,38 +216,14 @@ class GridInventoryScreen(menu: GridInventoryMenu, playerInventory: Inventory, t
                 if (grid.singleItem && grid.canPlace(carried, 0, 0, false)) {
                     guiGraphics.fill(gridX, gridY, gridX + gridWidth, gridY + gridHeight, 0x4000FF00.toInt())
                 }
-
-                if (mouseX >= gridX && mouseX < gridX + gridWidth && mouseY >= gridY && mouseY < gridY + gridHeight) {
-                    hoveredGrid = grid
-                    hoverGridX = gridX
-                    hoverGridY = gridY
-                }
-            }
-
-            var tint = 0x80FFFFFF.toInt()
-
-            if (hoveredGrid != null) {
-                val hoverSlotCol = if (hoveredGrid.singleItem) 0 else ((mouseX - hoverGridX) / 18).toInt()
-                val hoverSlotRow = if (hoveredGrid.singleItem) 0 else ((mouseY - hoverGridY) / 18).toInt()
-                val targetInstance = hoveredGrid.getItemInstance(hoverSlotCol, hoverSlotRow)
-
-                if (targetInstance != null && minecraft?.level != null &&
-                    GridActionHandler.canInteract(minecraft!!.level!!, hoveredGrid, targetInstance.x, targetInstance.y, carried, 1)
-                ) {
-                    tint = 0x8000FF00.toInt()
-                } else {
-                    val placeCol = if (hoveredGrid.singleItem) 0 else Math.round((mouseX - targetW / 2.0 - hoverGridX).toFloat() / 18f)
-                    val placeRow = if (hoveredGrid.singleItem) 0 else Math.round((mouseY - targetH / 2.0 - hoverGridY).toFloat() / 18f)
-                    val canPlace = hoveredGrid.canPlace(carried, placeCol, placeRow, heldItemRotated)
-                    tint = if (canPlace) 0x8000FF00.toInt() else 0x80FF0000.toInt()
-                }
             }
 
             // Smoothly follow cursor without snapping to grid
             val renderX = mouseX - (targetW / 2)
             val renderY = mouseY - (targetH / 2)
 
-            guiGraphics.fill(renderX, renderY, renderX + targetW, renderY + targetH, tint)
+            val bgColor = InventoryUtils.getItemBackgroundColor(carried)
+            guiGraphics.fill(renderX, renderY, renderX + targetW, renderY + targetH, bgColor)
             renderScaledItem(guiGraphics, carried, renderX, renderY, targetW, targetH, heldItemRotated)
 
             if (carried.count > 1) {

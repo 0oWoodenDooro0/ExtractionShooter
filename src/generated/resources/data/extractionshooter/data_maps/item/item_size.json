@@ -6,8 +6,8 @@
       "width": 1
     },
     "extractionshooter:backpack": {
-      "height": 4,
-      "width": 4
+      "height": 2,
+      "width": 2
     },
     "extractionshooter:bandage": {
       "height": 1,
@@ -46,8 +46,8 @@
       "width": 1
     },
     "extractionshooter:rig": {
-      "height": 3,
-      "width": 3
+      "height": 2,
+      "width": 2
     },
     "extractionshooter:splint": {
       "height": 1,
